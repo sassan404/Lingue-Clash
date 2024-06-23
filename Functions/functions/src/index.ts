@@ -8,11 +8,29 @@
  */
 
 
-import {giveMeTwoWords} from "./ChatGPT/giveMeTwoWords";
+import {giveMeWords} from "./ChatGPT/giveMeWords";
+import {giveMeASentence} from "./ChatGPT/giveMeASentence";
+import {evaluateTheSentences} from "./ChatGPT/evaluateTheSentences";
+import {createRoom} from "./Rooms/CreateRoom";
+import {onCreateRoom, deleteExpiredRooms} from "./Rooms/deletingRooms";
+import {initiateNewRound} from "./Rooms/IncrementRound";
+import {joinRoom} from "./Rooms/JoinRoom";
+import {startNewRound} from "./Rooms/StartNewRound";
 
 import {helloWorld} from "./helloWorld";
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
 
-export {giveMeTwoWords, helloWorld};
+export {
+  giveMeWords,
+  giveMeASentence,
+  evaluateTheSentences,
+  helloWorld,
+  createRoom,
+  onCreateRoom,
+  deleteExpiredRooms,
+  initiateNewRound,
+  joinRoom,
+  startNewRound,
+};
