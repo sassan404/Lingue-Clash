@@ -33,7 +33,7 @@ export const joinRoom = onRequest(async (request, response) => {
   console.log(`Room created with code: ${roomCode}`);
 
 
-  const reponseContent: JoinResponse = {roomId, roomCode};
+  const reponseContent: JoinResponse = {roomCode};
   response.send(reponseContent);
 });
 
@@ -45,6 +45,5 @@ export const joinRoom = onRequest(async (request, response) => {
 }
 
 interface JoinResponse {
-    roomId: string;
     roomCode: string;
 }

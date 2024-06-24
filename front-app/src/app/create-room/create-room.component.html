@@ -1,0 +1,10 @@
+<div class="create-room">
+    <h2>Create Room</h2>
+    <form [formGroup]="createRoomForm" (submit)="createRoom()">
+    <input formControlName="username" type="text" placeholder="Username">
+    <input formControlName="language" type="text" placeholder="Language">
+    <button type="submit" class="primary">Create Room</button>
+  </form>
+    <p *ngIf="roomCode">Room created! Code: {{ roomCode }}</p>
+  </div>
+  

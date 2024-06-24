@@ -17,7 +17,6 @@ export const createRoom = onRequest(async (request, response) => {
   const roomCode = generateRoomCode();
 
   const roomRef = database.ref("rooms").push();
-  const roomId = roomRef.key || "";
 
 
   const currentTime = Date.now();
@@ -41,7 +40,7 @@ export const createRoom = onRequest(async (request, response) => {
   console.log(`Room created with code: ${roomCode}`);
 
 
-  const reponseContent: CreateResponse = {roomId, roomCode};
+  const reponseContent: CreateResponse = {roomCode};
   response.send(reponseContent);
 });
 
@@ -52,6 +51,5 @@ interface CreateRequest {
 }
 
 interface CreateResponse {
-    roomId: string;
     roomCode: string;
 }
