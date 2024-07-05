@@ -13,11 +13,14 @@ const generateRoomCode = () => {
 
 
 export const createRoom = onRequest(async (request, response) => {
+  console.log("request.body: ", request.body);
   const {username, language} = request.body as CreateRequest;
+
+  console.log(`Creating room for ${username} with language ${language}`);
+
   const roomCode = generateRoomCode();
 
   const roomRef = database.ref("rooms").push();
-
 
   const currentTime = Date.now();
 
