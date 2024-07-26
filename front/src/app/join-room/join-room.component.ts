@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from "@angular/common";
-import { HTTPService, JoinRequest } from '../http.service';
+import { HTTPService, JoinRequest, JoinRoomResponse } from '../http.service';
 
 @Component({
   selector: 'app-join-room',
@@ -31,6 +31,12 @@ export class JoinRoomComponent {
       roomCode: this.joinRoomForm.value.roomCode || '',
       language: this.joinRoomForm.value.language || ''
   }
-    this.httpService.joinRoom(joinRequest);
+    this.httpService.joinRoom(joinRequest).subscribe(
+      reply => {
+        const typedReply = reply as JoinRoomResponse;
+        this.router.navigate(['/room'], { queryParams: { roomCode: typedReply.roomCode } });
+      },
+    );
   }
 }
+

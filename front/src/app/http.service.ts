@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
-import { Database, ref } from '@angular/fire/database';
+import { Database, listVal, ref } from '@angular/fire/database';
 @Injectable({providedIn: 'root'})
 export class HTTPService {
   constructor(private http: HttpClient) {
@@ -19,14 +19,7 @@ export class HTTPService {
       username: creation.username,
       language: creation.language
     });
-    this.http.put(this.apiUrl + 'createRoom', body, {headers: this.headers}).subscribe(
-      response => {
-        console.log('Room created successfully', response);
-      },
-      error => {
-        console.error('Error creating room', error);
-      }
-    )
+    return this.http.put(this.apiUrl + 'createRoom', body, {headers: this.headers});
   }
 
 
@@ -38,32 +31,29 @@ export class HTTPService {
         language: joining.language
     })
   
-    this.http.put(this.apiUrl + 'joinRoom', body, {headers: this.headers}).subscribe(
-      response => {
-        console.log('Room joined successfully', response);
-      },
-      error => {
-        console.error('Error joining room', error);
-      }
-    )
+    return this.http.put(this.apiUrl + 'joinRoom', body, {headers: this.headers})
     };
 
+    getRoomIdByCode(roomCode: String){
+
+    }
 
     getPlayerUpdates(roomCode: string) {
       
 
-      const roomsRef = ref(this.database, 'rooms/roomCode')
+      const roomsRef = ref(this.database, 'rooms')
       const roomSnapshot = await roomsRef.orderByChild("roomCode").equalTo(roomCode).once("value");
 
 
-      const url = 'https://word-clash-2aa96-default-rtdb.europe-west1.firebasedatabase.app/rooms/-O05TOJqS2G1yeL4MdtL/players.json'
-      const headers = new HttpHeaders({
-        'Connection': 'keep-alive', 
-        'Accept': 'text/event-stream', 
-        'Cache-Control': 'no-cache',
-        'Access-Control-Allow-Origin': '*'
-      });
-      return this.http.get(url, {headers: headers});
+      const roomCodeValue = listVal(roomsRef, {keyField: 'roomCode'}).subscribe()
+      // const url = 'https://word-clash-2aa96-default-rtdb.europe-west1.firebasedatabase.app/rooms/-O05TOJqS2G1yeL4MdtL/players.json'
+      // const headers = new HttpHeaders({
+      //   'Connection': 'keep-alive', 
+      //   'Accept': 'text/event-stream', 
+      //   'Cache-Control': 'no-cache',
+      //   'Access-Control-Allow-Origin': '*'
+      // });
+      // return this.http.get(url, {headers: headers});
     }
   
 }
@@ -78,4 +68,8 @@ export interface JoinRequest {
     roomCode: string;
     username: string;
     language: string;
+}
+
+export interface JoinRoomResponse {
+  roomCode: string;
 }

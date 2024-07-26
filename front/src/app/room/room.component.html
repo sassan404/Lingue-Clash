@@ -1,5 +1,7 @@
 <p>Room cretaed: {{this.roomCode}}</p>
 
 <div >
-    <span *ngfor="let player of this.players">{{player}}</span>
+    <div *ngFor="let player of players">
+    <span >{{player}}</span>
+</div>
 </div>

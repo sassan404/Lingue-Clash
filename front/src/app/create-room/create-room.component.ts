@@ -2,7 +2,8 @@ import {CommonModule} from '@angular/common';
 import {Component, Injectable} from '@angular/core';
 
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import { HTTPService, CreateRequest } from '../http.service';
+import { HTTPService, CreateRequest, JoinRoomResponse } from '../http.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-room',
@@ -14,7 +15,6 @@ import { HTTPService, CreateRequest } from '../http.service';
 
 @Injectable({providedIn: 'root'})
 export class CreateRoomComponent {
-  roomCode: string | null = null;
 
   createRoomForm = new FormGroup({
     username: new FormControl(''),
@@ -22,7 +22,7 @@ export class CreateRoomComponent {
   });
  
 
-  constructor(private httpService: HTTPService) {
+  constructor(private httpService: HTTPService,private router: Router) {
   }
 
   createRoom() {
@@ -30,7 +30,11 @@ export class CreateRoomComponent {
       username: this.createRoomForm.value.username || '',
       language: this.createRoomForm.value.language || ''
     };
-    this.httpService.createRoom(createRequest);
+    this.httpService.createRoom(createRequest).subscribe(
+      reply => {
+        const typedReply = reply as JoinRoomResponse;
+        this.router.navigate(['/room'], { queryParams: { roomCode: typedReply.roomCode } });
+      },
+    );
   }
 }
-
