@@ -21,8 +21,14 @@ export const createRoom = onRequest(async (request, response) => {
   const roomCode = generateRoomCode();
 
   const roomRef = database.ref("rooms").push();
+  const roomId = roomRef.key as string; // Get the room ID and Assert that it is a string
 
   const currentTime = Date.now();
+
+  // Generate a unique player ID
+  const playerRef = roomRef.child("players").push();
+  const playerId = playerRef.key as string;
+
 
   await roomRef.set({
     roomName: `Room created by ${username}`,
@@ -31,7 +37,7 @@ export const createRoom = onRequest(async (request, response) => {
     currentRound: 0,
     roomCode,
     players: {
-      [username]: {
+      [playerId]: {
         username,
         language,
         score: 0,
@@ -40,10 +46,10 @@ export const createRoom = onRequest(async (request, response) => {
     },
     rounds: {},
   });
-  console.log(`Room created with code: ${roomCode}`);
+  console.log(`Room created with code: ${roomCode} and ID: ${roomId}`);
 
 
-  const reponseContent: CreateResponse = {roomCode};
+  const reponseContent: CreateResponse = {roomCode, roomId};
   response.send(reponseContent);
 });
 
@@ -55,4 +61,5 @@ interface CreateRequest {
 
 interface CreateResponse {
     roomCode: string;
+    roomId: string
 }

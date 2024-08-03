@@ -8,6 +8,7 @@ import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { getFunctions, provideFunctions } from '@angular/fire/functions';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,7 +29,7 @@ export const appConfig: ApplicationConfig = {
         "G-1ZXKW0MZRM"})), 
         provideFirestore(() => getFirestore()), 
         provideDatabase(() => getDatabase()), 
-        provideFunctions(() => getFunctions())]
+        provideFunctions(() => getFunctions()), provideAnimationsAsync()]
 };
 
 // private apiUrl = 'http://127.0.0.1:5001/word-clash-2aa96/us-central1/';

@@ -4,17 +4,15 @@ import {database} from "../realtime-db.config";
 
 // Function to handle user leaving a room
 export const leaveRoom = onRequest(async (request, response) => {
-  const {roomCode, username} = request.body as LeaveRoomRequest;
+  const {roomId, username} = request.body as LeaveRoomRequest;
 
-  const roomsRef = database.ref("rooms");
-  const roomSnapshot = await roomsRef.orderByChild("roomCode").equalTo(roomCode).once("value");
+  const roomRef = database.ref(`rooms/${roomId}`);
+  const roomSnapshot = await roomRef.once("value");
 
   if (!roomSnapshot.exists()) {
     throw new HttpsError("not-found", "Room not found");
   }
 
-  const roomId = Object.keys(roomSnapshot.val())[0];
-  const roomRef = database.ref(`rooms/${roomId}`);
   const playerRef = roomRef.child(`players/${username}`);
 
   // Remove the player from the players list
@@ -30,16 +28,16 @@ export const leaveRoom = onRequest(async (request, response) => {
     console.log(`User ${username} left room ${roomId}`);
   }
 
-  const reponseContent: LeaveRoomResponse = {roomCode};
+  const reponseContent: LeaveRoomResponse = {roomId};
   response.send(reponseContent);
 });
 
 
 interface LeaveRoomRequest {
-    roomCode: string;
+  roomId: string;
     username: string;
 }
 
 interface LeaveRoomResponse {
-    roomCode: string;
+  roomId: string;
 }
