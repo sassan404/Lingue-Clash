@@ -5,8 +5,8 @@ import { JoinRoomComponent } from './join-room/join-room.component';
 import { RoomComponent } from './room/room.component';
 
 export const routes: Routes = [
-    { path: '', component: HomeComponent },
-    { path: 'create-room', component: CreateRoomComponent },
-    { path: 'join-room', component: JoinRoomComponent },
-    { path: 'room', component: RoomComponent }
+  { path: '', component: HomeComponent },
+  { path: 'create-room', component: CreateRoomComponent },
+  { path: 'join-room', component: JoinRoomComponent },
+  { path: 'room', component: RoomComponent },
 ];

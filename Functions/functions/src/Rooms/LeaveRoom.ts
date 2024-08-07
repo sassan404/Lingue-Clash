@@ -1,10 +1,9 @@
-import {onRequest, HttpsError} from "firebase-functions/v2/https";
-import {database} from "../realtime-db.config";
-
+import { onRequest, HttpsError } from "firebase-functions/v2/https";
+import { database } from "../realtime-db.config";
 
 // Function to handle user leaving a room
 export const leaveRoom = onRequest(async (request, response) => {
-  const {roomId, username} = request.body as LeaveRoomRequest;
+  const { roomId, username } = request.body as LeaveRoomRequest;
 
   const roomRef = database.ref(`rooms/${roomId}`);
   const roomSnapshot = await roomRef.once("value");
@@ -28,14 +27,13 @@ export const leaveRoom = onRequest(async (request, response) => {
     console.log(`User ${username} left room ${roomId}`);
   }
 
-  const reponseContent: LeaveRoomResponse = {roomId};
+  const reponseContent: LeaveRoomResponse = { roomId };
   response.send(reponseContent);
 });
 
-
 interface LeaveRoomRequest {
   roomId: string;
-    username: string;
+  username: string;
 }
 
 interface LeaveRoomResponse {

@@ -1,8 +1,7 @@
-
-import {CommunicateWithChatGP} from "./communicateWithChatGPT";
-import {ParamsDictionary} from "express-serve-static-core";
-import {log} from "firebase-functions/logger";
-import {Request} from "firebase-functions/v1";
+import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
+import { ParamsDictionary } from "express-serve-static-core";
+import { log } from "firebase-functions/logger";
+import { Request } from "firebase-functions/v1";
 
 // Define the interface structure as a constant object
 const SentenceOrder = {
@@ -17,11 +16,11 @@ const explanation = {
   explanation: "string",
 } as const;
 
-
 const SentenceEvaluationReply = {
   order: [SentenceOrder],
   explanation: [explanation],
 } as const;
+
 /**
  * Container class for the 'giveMeTwoWords' function.
  */
@@ -48,7 +47,7 @@ class EvaluateTheSentencesContainer extends CommunicateWithChatGP {
     - The second worst sentence will have the order n-1
     - The worst sentence will have the order n
     Here are the sentences, their corresposing language and words:
-    ${languages.map((sentence) => (JSON.stringify(sentence))).join("\n")}
+    ${languages.map((sentence) => JSON.stringify(sentence)).join("\n")}
     In the response you should provide:
     1 - The order of each sentence
     2 - A detailed explanation of the evaluation process with respect to each rule.
@@ -72,8 +71,8 @@ const evaluateTheSentencesContainer = new EvaluateTheSentencesContainer();
 
 export const evaluateTheSentences = evaluateTheSentencesContainer.communicate;
 
-  interface Sentences {
-    language: string;
-    words: string[];
-    sentence: string;
-  }
+interface Sentences {
+  language: string;
+  words: string[];
+  sentence: string;
+}

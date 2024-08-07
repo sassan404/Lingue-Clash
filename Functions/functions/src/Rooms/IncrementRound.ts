@@ -1,10 +1,9 @@
-import {onRequest, HttpsError} from "firebase-functions/v2/https";
-import {database} from "../realtime-db.config";
+import { onRequest, HttpsError } from "firebase-functions/v2/https";
+import { database } from "../realtime-db.config";
 
 // Function to initiate the start of a new round
 export const initiateNewRound = onRequest(async (request, response) => {
-  const {roomId} = request.body as InitiateNewRoundRequest;
-
+  const { roomId } = request.body as InitiateNewRoundRequest;
 
   const roomRef = database.ref(`rooms/${roomId}`);
   const roomSnapshot = await roomRef.once("value");
@@ -22,14 +21,12 @@ export const initiateNewRound = onRequest(async (request, response) => {
   });
 
   console.log(`Initiated new round ${newRoundNumber} in room ${roomId}`);
-  response.send( {roomId, newRoundNumber});
+  response.send({ roomId, newRoundNumber });
 });
-
 
 //   functions.https.onCall(async (data, context) => {
 
-
 interface InitiateNewRoundRequest {
-    roomCode: string;
-    roomId: string;
+  roomCode: string;
+  roomId: string;
 }
