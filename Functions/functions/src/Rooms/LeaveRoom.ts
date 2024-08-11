@@ -14,20 +14,24 @@ export const leaveRoom = onRequest(async (request, response) => {
 
   const playerRef = roomRef.child(`players/${username}`);
 
+  console.log(playerRef.toString());
   // Remove the player from the players list
   await playerRef.remove();
 
   // Check if there are any players left in the room
   const playersSnapshot = await roomRef.child("players").once("value");
+  let event: string;
   if (!playersSnapshot.exists() || playersSnapshot.numChildren() === 0) {
     // If no players are left, delete the room
     await roomRef.remove();
     console.log(`Room ${roomId} deleted as no players are left`);
+    event = `Room ${roomId} deleted as no players are left`;
   } else {
     console.log(`User ${username} left room ${roomId}`);
+    event = `User ${username} left room ${roomId}`;
   }
 
-  const reponseContent: LeaveRoomResponse = { roomId };
+  const reponseContent: LeaveRoomResponse = { roomId, event };
   response.send(reponseContent);
 });
 
@@ -38,4 +42,5 @@ interface LeaveRoomRequest {
 
 interface LeaveRoomResponse {
   roomId: string;
+  event: string;
 }

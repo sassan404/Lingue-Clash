@@ -27,6 +27,5 @@ export const initiateNewRound = onRequest(async (request, response) => {
 //   functions.https.onCall(async (data, context) => {
 
 interface InitiateNewRoundRequest {
-  roomCode: string;
   roomId: string;
 }

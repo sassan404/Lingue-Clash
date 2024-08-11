@@ -23,10 +23,6 @@ export const createRoom = onRequest(async (request, response) => {
 
   const currentTime = Date.now();
 
-  // Generate a unique player ID
-  const playerRef = roomRef.child("players").push();
-  const playerId = playerRef.key as string;
-
   await roomRef.set({
     roomName: `Room created by ${username}`,
     createdAt: currentTime,
@@ -34,7 +30,7 @@ export const createRoom = onRequest(async (request, response) => {
     currentRound: 0,
     roomCode,
     players: {
-      [playerId]: {
+      [username]: {
         username,
         language,
         score: 0,

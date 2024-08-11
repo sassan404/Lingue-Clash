@@ -11,6 +11,7 @@ import { giveMeWords } from "./ChatGPT/giveMeWords";
 import { giveMeASentence } from "./ChatGPT/giveMeASentence";
 import { evaluateTheSentences } from "./ChatGPT/evaluateTheSentences";
 import { createRoom } from "./Rooms/CreateRoom";
+import { leaveRoom } from "./Rooms/LeaveRoom";
 import { onCreateRoom, deleteExpiredRooms } from "./Rooms/deletingRooms";
 import { initiateNewRound } from "./Rooms/IncrementRound";
 import { joinRoom } from "./Rooms/JoinRoom";
@@ -31,4 +32,5 @@ export {
   initiateNewRound,
   joinRoom,
   startNewRound,
+  leaveRoom,
 };

@@ -1,0 +1,13 @@
+<div class="create-room">
+  <h2>Create Room</h2>
+  <form [formGroup]="createRoomForm" (submit)="createRoom()">
+    <mat-form-field>
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" />
+    </mat-form-field>
+    <app-language-selector
+      [language]="createRoomForm.controls.language"
+    ></app-language-selector>
+    <button mat-fab extended [disabled]="createRoomForm.invalid">Create</button>
+  </form>
+</div>

@@ -21,9 +21,9 @@ export const joinRoom = onRequest(async (request, response) => {
   }
 
   const roomId = Object.keys(roomSnapshot.val())[0];
-  const roomRef = database.ref(`rooms/${roomId}/players/${username}`);
+  const playerRef = database.ref(`rooms/${roomId}/players/${username}`);
 
-  await roomRef.set({
+  await playerRef.set({
     username,
     language,
     score: 0,

@@ -28,7 +28,7 @@ export class HTTPService {
 
   private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-  roomcode = new Subject<string>();
+  roomcode = new Subject<string | null>();
   players = new Subject<Player[]>();
 
   createRoom(creation: CreateRequest) {
@@ -59,14 +59,17 @@ export class HTTPService {
     const result = onValue(query(roomsRef), (snapshot) => {
       const reply: RoomContainer = snapshot.val();
       console.log(reply);
-      if (reply.roomCode != undefined) {
-        this.roomcode.next(reply.roomCode);
-      }
-      if (reply.players !== undefined) {
-        console.log(reply.players);
-        const playersArray: Player[] = Object.values(reply.players);
-        console.log(playersArray);
-        this.players.next(playersArray);
+      if (reply != null) {
+        if (reply.roomCode != undefined) {
+          this.roomcode.next(reply.roomCode);
+        }
+        if (reply.players !== undefined) {
+          const playersArray: Player[] = Object.values(reply.players);
+          this.players.next(playersArray);
+        }
+      } else {
+        this.roomcode.next(null);
+        this.players.next([]);
       }
     });
     return result;
