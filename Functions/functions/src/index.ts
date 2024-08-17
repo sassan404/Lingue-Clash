@@ -7,9 +7,9 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import { giveMeWords } from "./ChatGPT/giveMeWords";
-import { giveMeASentence } from "./ChatGPT/giveMeASentence";
-import { evaluateTheSentences } from "./ChatGPT/evaluateTheSentences";
+import { giveMeWordsRequest } from "./ChatGPT/giveMeWords";
+import { giveMeASentenceRequest } from "./ChatGPT/giveMeASentence";
+import { evaluateTheSentencesRequest } from "./ChatGPT/evaluateTheSentences";
 import { createRoom } from "./Rooms/CreateRoom";
 import { leaveRoom } from "./Rooms/LeaveRoom";
 import { onCreateRoom, deleteExpiredRooms } from "./Rooms/deletingRooms";
@@ -22,9 +22,9 @@ import { helloWorld } from "./helloWorld";
 // https://firebase.google.com/docs/functions/typescript
 
 export {
-  giveMeWords,
-  giveMeASentence,
-  evaluateTheSentences,
+  giveMeWordsRequest as giveMeWords,
+  giveMeASentenceRequest as giveMeASentence,
+  evaluateTheSentencesRequest as evaluateTheSentences,
   helloWorld,
   createRoom,
   onCreateRoom,
