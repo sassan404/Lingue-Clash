@@ -1,4 +1,15 @@
+export enum PlayerStates {
+  WAITING = "waiting",
+  READY = "ready",
+  PLAYING = "playing",
+  FINISHED = "finished",
+}
 
+export enum RoomStates {
+  LOADING = "loading",
+  WAITING = "waiting",
+  READY = "ready",
+}
 
 // types of requests bosy received by the functions (onRequest)
 export interface InitiateNewRoundRequest {

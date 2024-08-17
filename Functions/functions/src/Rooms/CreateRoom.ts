@@ -3,6 +3,8 @@ import { database } from "../realtime-db.config";
 import {
   CreateRoomRequest,
   CreateRoomResponse,
+  PlayerStates,
+  RoomStates,
 } from "../Interfaces/interfaces";
 
 const generateRoomCode = () => {
@@ -32,10 +34,11 @@ export const createRoom = onRequest(async (request, response) => {
     createdAt: currentTime,
     createdBy: username,
     currentRound: 0,
-    roomCode,
+    status: RoomStates.WAITING,
     languages: [language],
     players: {
       [username]: {
+        state: PlayerStates.WAITING,
         username,
         language,
         score: 0,

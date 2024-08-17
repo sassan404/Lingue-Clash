@@ -1,6 +1,11 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { database } from "../realtime-db.config";
-import { JoinRoomRequest, JoinRoomResponse } from "../Interfaces/interfaces";
+import {
+  JoinRoomRequest,
+  JoinRoomResponse,
+  PlayerStates,
+  RoomStates,
+} from "../Interfaces/interfaces";
 
 // Example usage
 // joinRoom("ABC123", "user2", "Spanish").then(() => {
@@ -21,11 +26,16 @@ export const joinRoom = onRequest(async (request, response) => {
     return;
   }
 
+  roomSnapshot.ref.update({
+    state: RoomStates.LOADING,
+  });
+
   const roomId = Object.keys(roomSnapshot.val())[0];
   const playerRef = database.ref(`rooms/${roomId}/players/${username}`);
 
   await playerRef.set({
     username,
+    state: PlayerStates.WAITING,
     language,
     score: 0,
     joinedAt: Date.now(),
@@ -51,6 +61,10 @@ export const joinRoom = onRequest(async (request, response) => {
 
   // Update the languages array in the room
   await languagesRef.set(Array.from(languagesSet));
+
+  roomsRef.update({
+    state: RoomStates.WAITING,
+  });
 
   console.log(`Room joined with code: ${roomCode}`);
 
