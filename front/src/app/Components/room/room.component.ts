@@ -29,7 +29,7 @@ export class RoomComponent {
   players: Player[] = [];
   roomSubscription: Unsubscribe = () => {};
 
-  rounds: any[] = [];
+  round: any = [];
   currentRound: number | null = null;
   progressValue: number = 0;
 
@@ -57,6 +57,10 @@ export class RoomComponent {
     });
     this.httpService.players.subscribe((players) => {
       this.players = players;
+    });
+    this.httpService.roundNumber.subscribe((roundNumber) => {
+      this.currentRound = roundNumber;
+      this.updateProgress();
     });
     console.log('roomId', this.roomId);
     if (this.roomId != undefined) {

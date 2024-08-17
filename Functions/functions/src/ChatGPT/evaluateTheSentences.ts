@@ -1,10 +1,7 @@
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
-import { ParamsDictionary } from "express-serve-static-core";
-import { log } from "firebase-functions/logger";
-import { Request } from "firebase-functions/v1";
-
+import { SentenceEvaluationReply, Sentences } from "../Interfaces/interfaces";
 // Define the interface structure as a constant object
-const SentenceOrder = {
+const sentenceOrder = {
   language: "string",
   words: "string[]",
   sentence: "string",
@@ -16,22 +13,25 @@ const explanation = {
   explanation: "string",
 } as const;
 
-const SentenceEvaluationReply = {
-  order: [SentenceOrder],
+const sentenceEvaluationReply = {
+  order: [sentenceOrder],
   explanation: [explanation],
 } as const;
 
 /**
  * Container class for the 'giveMeTwoWords' function.
  */
-class EvaluateTheSentencesContainer extends CommunicateWithChatGP {
+class EvaluateTheSentencesContainer extends CommunicateWithChatGP<
+  SentenceEvaluationReply,
+  Sentences
+> {
   /**
    * Message to be sent to the ChatGPT model.
-   * @param {Languages} languages the languages to be used.
+   * @param {Languages} sentences the languages to be used.
    * @return {String} The message.
    */
-  private message = (languages: Sentences[]) =>
-    `I have several sentences that I need you to evaluate accoprding to the following rules:
+  override message(sentences: Sentences): string {
+    return `I have several sentences that I need you to evaluate accoprding to the following rules:
     1 - Each sentence should include all the corresposing words with their exact form
     2 - The sentence should be in the correct language
     3 - The spelling of the words should be correct
@@ -47,32 +47,16 @@ class EvaluateTheSentencesContainer extends CommunicateWithChatGP {
     - The second worst sentence will have the order n-1
     - The worst sentence will have the order n
     Here are the sentences, their corresposing language and words:
-    ${languages.map((sentence) => JSON.stringify(sentence)).join("\n")}
+    ${sentences.map((sentence) => JSON.stringify(sentence)).join("\n")}
     In the response you should provide:
     1 - The order of each sentence
     2 - A detailed explanation of the evaluation process with respect to each rule.
   The response should only be a json array following the format of this interface::
-  ${JSON.stringify(SentenceEvaluationReply, null, 2)}`;
-
-  /**
-   * Treats the request before sending it to the ChatGPT model.
-   * @param {Request<ParamsDictionary>} request The request object.
-   * @return {string} The modified request object.
-   */
-  override treatRequest(request: Request<ParamsDictionary>): string {
-    const requestBody: Sentences[] = request.body;
-    const messageTosend = this.message(requestBody);
-    log.apply("info", ["The message to send is: ", messageTosend]);
-    return messageTosend;
+  ${JSON.stringify(sentenceEvaluationReply, null, 2)}`;
   }
 }
 
 const evaluateTheSentencesContainer = new EvaluateTheSentencesContainer();
 
-export const evaluateTheSentences = evaluateTheSentencesContainer.communicate;
-
-interface Sentences {
-  language: string;
-  words: string[];
-  sentence: string;
-}
+export const evaluateTheSentencesRequest =
+  evaluateTheSentencesContainer.communicateOnRequest;
