@@ -1,7 +1,6 @@
-
-import {CommunicateWithChatGP} from "./CommunicateWithChatGPT";
-import {ParamsDictionary} from "express-serve-static-core";
-import {Request} from "firebase-functions/v1";
+import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
+import { ParamsDictionary } from "express-serve-static-core";
+import { Request } from "firebase-functions/v1";
 
 // Define the interface structure as a constant object
 
@@ -44,10 +43,8 @@ const giveMeWordsContainer = new GiveMeWordsContainer();
 
 export const giveMeWords = giveMeWordsContainer.communicate;
 
-  interface Languages {
-    wordNumber: number;
-    firstLanguage: string;
-    secondLanguage: string;
-  }
-
-
+interface Languages {
+  wordNumber: number;
+  firstLanguage: string;
+  secondLanguage: string;
+}

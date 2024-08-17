@@ -1,0 +1,18 @@
+<mat-form-field>
+  <mat-label>Choose a language</mat-label>
+  <input
+    matInput
+    [formControl]="language"
+    required
+    (blur)="updateErrorMessage()"
+    [matAutocomplete]="auto"
+  />
+  <mat-autocomplete #auto="matAutocomplete">
+    @for (option of filteredLanguages | async; track option) {
+      <mat-option [value]="option">{{ option }}</mat-option>
+    }
+  </mat-autocomplete>
+  @if (errorMessage()) {
+    <mat-error>{{ errorMessage() }}</mat-error>
+  }
+</mat-form-field>

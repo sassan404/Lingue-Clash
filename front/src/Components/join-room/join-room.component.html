@@ -1,0 +1,17 @@
+<div class="join-room">
+  <h2>Join Room</h2>
+  <form (submit)="joinRoom()" [formGroup]="joinRoomForm">
+    <mat-form-field>
+      <mat-label>Room Code</mat-label>
+      <input matInput formControlName="roomCode" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" />
+    </mat-form-field>
+    <app-language-selector
+      [language]="joinRoomForm.controls.language"
+    ></app-language-selector>
+    <button mat-fab extended [disabled]="joinRoomForm.invalid">Create</button>
+  </form>
+</div>

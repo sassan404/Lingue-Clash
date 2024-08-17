@@ -1,7 +1,6 @@
-
-import {CommunicateWithChatGP} from "./communicateWithChatGPT";
-import {ParamsDictionary} from "express-serve-static-core";
-import {Request} from "firebase-functions/v1";
+import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
+import { ParamsDictionary } from "express-serve-static-core";
+import { Request } from "firebase-functions/v1";
 
 // Define the interface structure as a constant object
 const SentenceReply = {
@@ -9,6 +8,7 @@ const SentenceReply = {
   words: "string[]",
   sentence: "string",
 } as const;
+
 /**
  * Container class for the 'giveMeTwoWords' function.
  */
@@ -39,7 +39,7 @@ const giveMeASentenceContainer = new GiveMeASentenceContainer();
 
 export const giveMeASentence = giveMeASentenceContainer.communicate;
 
-  interface SentenceRules {
-    language: string;
-    words: string[];
-  }
+interface SentenceRules {
+  language: string;
+  words: string[];
+}
