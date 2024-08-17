@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { HTTPService, Player } from '../../app/Services/http.service';
+import { HTTPService, Player } from '../../Services/http.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
 import { Unsubscribe } from 'firebase/database';
@@ -68,7 +68,7 @@ export class RoomComponent {
     this.roomSubscription();
   }
 
-  startRounds() {
+  startNextRound() {
     // Call cloud function to start rounds and update the currentRound in the room
     // This is a placeholder for the actual implementation
     console.log('Start rounds');

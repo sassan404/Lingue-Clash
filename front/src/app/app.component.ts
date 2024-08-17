@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HomeComponent } from '../Components/home/home.component';
-import { CreateRoomComponent } from '../Components/create-room/create-room.component';
-import { JoinRoomComponent } from '../Components/join-room/join-room.component';
-import { RoomComponent } from '../Components/room/room.component';
+import { HomeComponent } from './Components/home/home.component';
+import { RoomComponent } from './Components/room/room.component';
+import { CreateRoomComponent } from './Components/create-room/create-room.component';
+import { JoinRoomComponent } from './Components/join-room/join-room.component';
 
 @Component({
   selector: 'app-root',

@@ -14,7 +14,7 @@ import {
   CreateRequest,
   JoinRoomResponse,
   JoinRequest,
-} from '../../app/Services/http.service';
+} from '../../Services/http.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AsyncPipe } from '@angular/common';

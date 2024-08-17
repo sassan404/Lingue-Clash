@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 
 import { Router } from '@angular/router';
-;
 import { MatButtonModule } from '@angular/material/button';
-import { JoinRoomComponent } from '../join-room/join-room.component';
 import { CreateRoomComponent } from '../create-room/create-room.component';
+import { JoinRoomComponent } from '../join-room/join-room.component';
 
 @Component({
   selector: 'app-home',
