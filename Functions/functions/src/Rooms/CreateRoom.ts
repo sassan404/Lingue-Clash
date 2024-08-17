@@ -1,5 +1,9 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { database } from "../realtime-db.config";
+import {
+  CreateRoomRequest,
+  CreateRoomResponse,
+} from "../Interfaces/interfaces";
 
 const generateRoomCode = () => {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -12,7 +16,7 @@ const generateRoomCode = () => {
 
 export const createRoom = onRequest(async (request, response) => {
   console.log("request.body: ", request.body);
-  const { username, language } = request.body as CreateRequest;
+  const { username, language } = request.body as CreateRoomRequest;
 
   console.log(`Creating room for ${username} with language ${language}`);
 
@@ -29,6 +33,7 @@ export const createRoom = onRequest(async (request, response) => {
     createdBy: username,
     currentRound: 0,
     roomCode,
+    languages: [language],
     players: {
       [username]: {
         username,
@@ -41,16 +46,6 @@ export const createRoom = onRequest(async (request, response) => {
   });
   console.log(`Room created with code: ${roomCode} and ID: ${roomId}`);
 
-  const reponseContent: CreateResponse = { roomCode, roomId };
+  const reponseContent: CreateRoomResponse = { roomCode, roomId };
   response.send(reponseContent);
 });
-
-interface CreateRequest {
-  username: string;
-  language: string;
-}
-
-interface CreateResponse {
-  roomCode: string;
-  roomId: string;
-}

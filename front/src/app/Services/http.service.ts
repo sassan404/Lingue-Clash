@@ -30,6 +30,7 @@ export class HTTPService {
 
   roomcode = new Subject<string | null>();
   players = new Subject<Player[]>();
+  roundNumber = new Subject<number>();
 
   createRoom(creation: CreateRequest) {
     const body = JSON.stringify({
@@ -66,6 +67,9 @@ export class HTTPService {
         if (reply.players !== undefined) {
           const playersArray: Player[] = Object.values(reply.players);
           this.players.next(playersArray);
+        }
+        if (reply.currentRound !== undefined) {
+          this.roundNumber.next(reply.currentRound);
         }
       } else {
         this.roomcode.next(null);

@@ -1,5 +1,6 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { database } from "../realtime-db.config";
+import { JoinRoomRequest, JoinRoomResponse } from "../Interfaces/interfaces";
 
 // Example usage
 // joinRoom("ABC123", "user2", "Spanish").then(() => {
@@ -7,7 +8,7 @@ import { database } from "../realtime-db.config";
 // });
 
 export const joinRoom = onRequest(async (request, response) => {
-  const { roomCode, username, language } = request.body as JoinRequest;
+  const { roomCode, username, language } = request.body as JoinRoomRequest;
 
   const roomsRef = database.ref("rooms");
   const roomSnapshot = await roomsRef
@@ -30,18 +31,29 @@ export const joinRoom = onRequest(async (request, response) => {
     joinedAt: Date.now(),
   });
 
+  const languagesRef = database.ref(`rooms/${roomId}/languages`);
+  const languagesSnapshot = await languagesRef.once("value");
+
+  let languagesArray = languagesSnapshot.val();
+  // Ensure we have an array
+  if (!Array.isArray(languagesArray)) {
+    languagesArray = [];
+  }
+
+  console.log(`Languages snapshot: ${languagesArray}`);
+
+  const languagesSet = new Set(languagesArray);
+
+  console.log(`Languages set: ${languagesSet}`);
+
+  // Add the new language if it's not already present
+  languagesSet.add(language);
+
+  // Update the languages array in the room
+  await languagesRef.set(Array.from(languagesSet));
+
   console.log(`Room joined with code: ${roomCode}`);
 
-  const reponseContent: JoinResponse = { roomId };
+  const reponseContent: JoinRoomResponse = { roomId };
   response.send(reponseContent);
 });
-
-interface JoinRequest {
-  username: string;
-  language: string;
-  roomCode: string;
-}
-
-interface JoinResponse {
-  roomId: string;
-}

@@ -1,0 +1,23 @@
+.room-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  mat-card {
+    padding: 20px;
+  }
+  
+  mat-list-item {
+    font-size: 18px;
+  }
+  
+  mat-progress-bar {
+    margin-top: 20px;
+  }
+  
+
+  h4 {
+    margin-bottom: 0;
+  }
+

@@ -4,11 +4,13 @@
       <mat-card-title>Room Code: {{ roomCode }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <h3>Players</h3>
+      <h4>Players</h4>
       <mat-list>
-        <mat-list-item *ngFor="let player of players">
-          {{ player.username }} ({{ player.language }})
-        </mat-list-item>
+        @for (player of players; track player) {
+          <mat-list-item>
+            {{ player.username }} ({{ player.language }})
+          </mat-list-item>
+        }
       </mat-list>
 
       <h3 *ngIf="!currentRound">Rounds Not Started</h3>
@@ -21,17 +23,18 @@
         Start Rounds
       </button>
 
-      <mat-tab-group *ngIf="currentRound">
+      <!-- <mat-tab-group *ngIf="currentRound">
         <mat-tab
           *ngFor="let round of rounds; let i = index"
           label="Round {{ i + 1 }}"
         >
           <p>Round {{ i + 1 }} Details: {{ round.details }}</p>
         </mat-tab>
-      </mat-tab-group>
+      </mat-tab-group> -->
 
+      <h3 *ngIf="currentRound">Round {{currentRound}}</h3>
+      <p>Round {{currentRound}} Details: {{ round.details }}</p>
       <mat-progress-bar
-        *ngIf="currentRound"
         mode="determinate"
         [value]="progressValue"
       ></mat-progress-bar>
