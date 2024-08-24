@@ -2,19 +2,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import {
   Database,
-  listVal,
   ref,
-  list,
-  onChildChanged,
-  orderByChild,
   onValue,
   query,
   Unsubscribe,
 } from '@angular/fire/database';
 
-import { where } from 'firebase/firestore';
-import { Observable, Subject } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class HTTPService {
@@ -28,9 +22,10 @@ export class HTTPService {
 
   private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-  roomcode = new Subject<string | null>();
+  roomCode = new Subject<string | null>();
   players = new Subject<Player[]>();
   roundNumber = new Subject<number>();
+  roomState = new Subject<RoomStates>();
 
   createRoom(creation: CreateRequest) {
     const body = JSON.stringify({
@@ -62,7 +57,7 @@ export class HTTPService {
       console.log(reply);
       if (reply != null) {
         if (reply.roomCode != undefined) {
-          this.roomcode.next(reply.roomCode);
+          this.roomCode.next(reply.roomCode);
         }
         if (reply.players !== undefined) {
           const playersArray: Player[] = Object.values(reply.players);
@@ -71,8 +66,11 @@ export class HTTPService {
         if (reply.currentRound !== undefined) {
           this.roundNumber.next(reply.currentRound);
         }
+        if (reply.status !== undefined) {
+          this.roomState.next(reply.status);
+        }
       } else {
-        this.roomcode.next(null);
+        this.roomCode.next(null);
         this.players.next([]);
       }
     });
@@ -99,6 +97,7 @@ export interface RoomContainer {
   roomId: string;
   roomCode: string;
   createdBy: string;
+  status: RoomStates;
   currentRound: 0;
   roomName: string;
   players: {
@@ -114,4 +113,18 @@ export interface Player {
   language: string;
   score: number;
   username: string;
+  state: PlayerStates;
+}
+
+export enum PlayerStates {
+  WAITING = 'waiting',
+  READY = 'ready',
+  PLAYING = 'playing',
+  FINISHED = 'finished',
+}
+
+export enum RoomStates {
+  LOADING = 'loading',
+  WAITING = 'waiting',
+  READY = 'ready',
 }

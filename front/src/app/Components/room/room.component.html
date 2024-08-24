@@ -1,29 +1,27 @@
 <div class="room-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Room Code: {{ roomCode }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <h4>Players</h4>
-      <mat-list>
-        @for (player of players; track player) {
-          <mat-list-item>
-            {{ player.username }} ({{ player.language }})
-          </mat-list-item>
-        }
-      </mat-list>
+  <h3>Room Code: {{ roomCode }}</h3>
 
-      <h3 *ngIf="!currentRound">Rounds Not Started</h3>
-      <button
-        mat-raised-button
-        color="primary"
-        *ngIf="!currentRound"
-        (click)="startNextRound()"
-      >
-        Start Rounds
-      </button>
+  <h4>Players</h4>
 
-      <!-- <mat-tab-group *ngIf="currentRound">
+  <mat-chip-listbox aria-label="Player list">
+    @for (player of players; track player) {
+      <mat-chip [ngClass]="{ 'ready-chip': isPlayerReady(player) }">
+        {{ player.username }} ({{ player.language }})
+      </mat-chip>
+    }
+  </mat-chip-listbox>
+
+  <h3 *ngIf="!currentRound">Rounds Not Started</h3>
+  <button
+    mat-raised-button
+    color="primary"
+    *ngIf="!currentRound"
+    (click)="declarePlayerReady()"
+  >
+    Ready
+  </button>
+
+  <!-- <mat-tab-group *ngIf="currentRound">
         <mat-tab
           *ngFor="let round of rounds; let i = index"
           label="Round {{ i + 1 }}"
@@ -32,12 +30,12 @@
         </mat-tab>
       </mat-tab-group> -->
 
-      <h3 *ngIf="currentRound">Round {{currentRound}}</h3>
-      <p>Round {{currentRound}} Details: {{ round.details }}</p>
-      <mat-progress-bar
-        mode="determinate"
-        [value]="progressValue"
-      ></mat-progress-bar>
-    </mat-card-content>
-  </mat-card>
+  <h3 *ngIf="currentRound">Round {{ currentRound }}</h3>
+  <p>Round {{ currentRound }} Details: {{ round.details }}</p>
+  <mat-progress-bar
+    mode="determinate"
+    [value]="progressValue"
+  ></mat-progress-bar>
+
+  <mat-spinner *ngIf="roomIsLoading"></mat-spinner>
 </div>
