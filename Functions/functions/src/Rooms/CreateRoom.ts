@@ -35,7 +35,7 @@ export const createRoom = onRequest(async (request, response) => {
     createdBy: username,
     currentRound: 0,
     roomCode: roomCode,
-    status: RoomStates.WAITING,
+    state: RoomStates.WAITING,
     languages: [language],
     players: {
       [username]: {

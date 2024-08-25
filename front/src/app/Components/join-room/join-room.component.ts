@@ -61,7 +61,7 @@ export class JoinRoomComponent {
     this.httpService.joinRoom(joinRequest).subscribe((reply) => {
       const typedReply = reply as JoinRoomResponse;
       this.router.navigate(['/room'], {
-        queryParams: { roomId: typedReply.roomId },
+        queryParams: { roomId: typedReply.roomId, playerUsername: joinRequest.username },
       });
     });
   }

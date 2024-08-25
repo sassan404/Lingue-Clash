@@ -15,7 +15,8 @@
   <button
     mat-raised-button
     color="primary"
-    *ngIf="!currentRound"
+    *ngIf="showReadyButton()"
+    [disabled]="!canStart()"
     (click)="declarePlayerReady()"
   >
     Ready

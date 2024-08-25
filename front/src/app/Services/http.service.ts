@@ -22,10 +22,11 @@ export class HTTPService {
 
   private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-  roomCode = new Subject<string | null>();
-  players = new Subject<Player[]>();
-  roundNumber = new Subject<number>();
-  roomState = new Subject<RoomStates>();
+  roomCodeSubject = new Subject<string | null>();
+  playersSubject = new Subject<Player[]>();
+  roundNumberSubject = new Subject<number>();
+  roomStateSubject = new Subject<RoomStates>();
+  playerSubject = new Subject<Player>();
 
   createRoom(creation: CreateRequest) {
     const body = JSON.stringify({
@@ -49,7 +50,21 @@ export class HTTPService {
     });
   }
 
-  getRoomUpdates(roomId: string): Unsubscribe {
+  setPlayerReady(roomId: string, username: string) {
+    const body = JSON.stringify({
+      roomId,
+      username,
+    });
+
+    console.log('setPlayerReady', body);
+    this.http
+      .put(this.apiUrl + 'setPlayerReady', body, {
+        headers: this.headers,
+      })
+      .subscribe();
+  }
+
+  getRoomUpdates(roomId: string, playerUsername: string): Unsubscribe {
     const roomsRef = ref(this.database, 'rooms/' + roomId);
 
     const result = onValue(query(roomsRef), (snapshot) => {
@@ -57,21 +72,22 @@ export class HTTPService {
       console.log(reply);
       if (reply != null) {
         if (reply.roomCode != undefined) {
-          this.roomCode.next(reply.roomCode);
+          this.roomCodeSubject.next(reply.roomCode);
         }
         if (reply.players !== undefined) {
           const playersArray: Player[] = Object.values(reply.players);
-          this.players.next(playersArray);
+          this.playersSubject.next(playersArray);
+          this.playerSubject.next(reply.players[playerUsername]);
         }
         if (reply.currentRound !== undefined) {
-          this.roundNumber.next(reply.currentRound);
+          this.roundNumberSubject.next(reply.currentRound);
         }
-        if (reply.status !== undefined) {
-          this.roomState.next(reply.status);
+        if (reply.state !== undefined) {
+          this.roomStateSubject.next(reply.state);
         }
       } else {
-        this.roomCode.next(null);
-        this.players.next([]);
+        this.roomCodeSubject.next(null);
+        this.playersSubject.next([]);
       }
     });
     return result;
@@ -97,7 +113,7 @@ export interface RoomContainer {
   roomId: string;
   roomCode: string;
   createdBy: string;
-  status: RoomStates;
+  state: RoomStates;
   currentRound: 0;
   roomName: string;
   players: {

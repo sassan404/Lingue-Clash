@@ -40,8 +40,6 @@ import { LanguageSelectorComponent } from '../language-selector/language-selecto
 })
 @Injectable({ providedIn: 'root' })
 export class CreateRoomComponent {
-
-
   createRoomForm = new FormGroup({
     username: new FormControl('', Validators.required),
     language: new FormControl(''),
@@ -61,7 +59,7 @@ export class CreateRoomComponent {
       const typedReply = reply as JoinRoomResponse;
       console.log('typedReply', typedReply);
       this.router.navigate(['/room'], {
-        queryParams: { roomId: typedReply.roomId },
+        queryParams: { roomId: typedReply.roomId, playerUsername: createRequest.username },
       });
     });
   }

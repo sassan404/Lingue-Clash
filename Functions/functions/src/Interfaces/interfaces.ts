@@ -11,6 +11,14 @@ export enum RoomStates {
   READY = "ready",
 }
 
+export interface Player {
+  joinedAt: number;
+  language: string;
+  score: number;
+  username: string;
+  state: PlayerStates;
+}
+
 // types of requests bosy received by the functions (onRequest)
 export interface InitiateNewRoundRequest {
   roomId: string;

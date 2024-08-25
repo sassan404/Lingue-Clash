@@ -16,6 +16,7 @@ import { onCreateRoom, deleteExpiredRooms } from "./Rooms/deletingRooms";
 import { initiateNewRound } from "./Rooms/IncrementRound";
 import { joinRoom } from "./Rooms/JoinRoom";
 import { startNewRound } from "./Rooms/StartNewRound";
+import { setPlayerReady } from "./Rooms/SetPlayerReady";
 
 import { helloWorld } from "./helloWorld";
 // Start writing functions
@@ -33,4 +34,5 @@ export {
   joinRoom,
   startNewRound,
   leaveRoom,
+  setPlayerReady,
 };
