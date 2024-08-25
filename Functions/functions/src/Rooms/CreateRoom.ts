@@ -28,10 +28,12 @@ export const createRoom = onRequest(async (request, response) => {
   const roomId = roomRef.key as string; // Get the room ID and Assert that it is a string
 
   const currentTime = Date.now();
+  const currentTimestamp = new Date(currentTime);
 
   await roomRef.set({
     roomName: `Room created by ${username}`,
     createdAt: currentTime,
+    createdAtTimestamp: currentTimestamp.toISOString(),
     createdBy: username,
     currentRound: 0,
     roomCode: roomCode,
@@ -44,6 +46,7 @@ export const createRoom = onRequest(async (request, response) => {
         language,
         score: 0,
         joinedAt: currentTime,
+        joinedAtTimestamp: currentTimestamp.toISOString(),
       },
     },
     rounds: {},

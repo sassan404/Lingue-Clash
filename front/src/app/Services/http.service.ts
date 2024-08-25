@@ -65,9 +65,9 @@ export class HTTPService {
   }
 
   getRoomUpdates(roomId: string, playerUsername: string): Unsubscribe {
-    const roomsRef = ref(this.database, 'rooms/' + roomId);
+    const roomRef = ref(this.database, 'rooms/' + roomId);
 
-    const result = onValue(query(roomsRef), (snapshot) => {
+    const result = onValue(query(roomRef), (snapshot) => {
       const reply: RoomContainer = snapshot.val();
       console.log(reply);
       if (reply != null) {

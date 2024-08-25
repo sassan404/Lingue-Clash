@@ -15,8 +15,8 @@ import {
 export const joinRoom = onRequest(async (request, response) => {
   const { roomCode, username, language } = request.body as JoinRoomRequest;
 
-  const roomsRef = database.ref("rooms");
-  const roomSnapshot = await roomsRef
+ 
+  const roomSnapshot = await  database.ref("rooms")
     .orderByChild("roomCode")
     .equalTo(roomCode)
     .once("value");
@@ -26,7 +26,9 @@ export const joinRoom = onRequest(async (request, response) => {
     return;
   }
 
-  roomSnapshot.ref.update({
+
+  const roomRef = roomSnapshot.ref;
+  roomRef.update({
     state: RoomStates.LOADING,
   });
 
@@ -39,6 +41,7 @@ export const joinRoom = onRequest(async (request, response) => {
     language,
     score: 0,
     joinedAt: Date.now(),
+    joinedAtTimestamp: new Date().toISOString(),
   });
 
   const languagesRef = database.ref(`rooms/${roomId}/languages`);
@@ -62,7 +65,7 @@ export const joinRoom = onRequest(async (request, response) => {
   // Update the languages array in the room
   await languagesRef.set(Array.from(languagesSet));
 
-  roomsRef.update({
+  roomRef.update({
     state: RoomStates.WAITING,
   });
 
