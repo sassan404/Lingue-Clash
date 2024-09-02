@@ -97,7 +97,7 @@ export class LanguageSelectorComponent {
 
   updateErrorMessage() {
     if (this.language.hasError('required')) {
-      this.errorMessage.set('You must enter a value');
+      this.errorMessage.set('Pick your language before continuing');
     } else if (this.language.hasError('forbiddenName')) {
       this.errorMessage.set('Invalid language');
     } else {

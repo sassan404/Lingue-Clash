@@ -18,4 +18,6 @@ form {
 
 button {
   margin: 10px;
+  font-size: larger;
+  width: 100%
 }
