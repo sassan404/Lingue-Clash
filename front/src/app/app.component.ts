@@ -20,4 +20,5 @@ import { JoinRoomComponent } from './Components/join-room/join-room.component';
 })
 export class AppComponent {
   title = 'front';
+  content = process.env["API_KEY"] || 'DEF_A';
 }

@@ -18,16 +18,15 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     provideFirebaseApp(() =>
       initializeApp({
-        projectId: 'word-clash-2aa96',
-        appId: '1:986535699243:web:0087737f5280f980001b6e',
-        databaseURL:
-          'https://word-clash-2aa96-default-rtdb.europe-west1.firebasedatabase.app',
-        storageBucket: 'word-clash-2aa96.appspot.com',
-        apiKey: 'AIzaSyAzKquPglvVG3zbRXkW82tB8Kf2aqZGdV4',
-        authDomain: 'word-clash-2aa96.firebaseapp.com',
-        messagingSenderId: '986535699243',
-        measurementId: 'G-1ZXKW0MZRM',
-      })
+        projectId: process.env['projectId'],
+        appId: process.env['appId'],
+        databaseURL: process.env['databaseURL'],
+        storageBucket: process.env['storageBucket'],
+        apiKey: process.env['apiKey'],
+        authDomain: process.env['authDomain'],
+        messagingSenderId: process.env['messagingSenderId'],
+        measurementId: process.env['measurementId'],
+      }),
     ),
     provideFirestore(() => getFirestore()),
     provideDatabase(() => getDatabase()),

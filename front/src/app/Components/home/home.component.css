@@ -1,6 +1,6 @@
 a {
   margin: 10px;
-  width: fill-available;
+  width: stretch;
   font-size: 20px;
 }
 
