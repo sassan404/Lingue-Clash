@@ -15,8 +15,8 @@ import {
 export const joinRoom = onRequest(async (request, response) => {
   const { roomCode, username, language } = request.body as JoinRoomRequest;
 
- 
-  const roomSnapshot = await  database.ref("rooms")
+  const roomSnapshot = await database
+    .ref("rooms")
     .orderByChild("roomCode")
     .equalTo(roomCode)
     .once("value");
@@ -26,13 +26,13 @@ export const joinRoom = onRequest(async (request, response) => {
     return;
   }
 
+  const roomId = Object.keys(roomSnapshot.val())[0];
 
-  const roomRef = roomSnapshot.ref;
-  roomRef.update({
+  const roomRef = database.ref(`rooms/${roomId}`);
+  await roomRef.update({
     state: RoomStates.LOADING,
   });
 
-  const roomId = Object.keys(roomSnapshot.val())[0];
   const playerRef = database.ref(`rooms/${roomId}/players/${username}`);
 
   await playerRef.set({
@@ -65,7 +65,7 @@ export const joinRoom = onRequest(async (request, response) => {
   // Update the languages array in the room
   await languagesRef.set(Array.from(languagesSet));
 
-  roomRef.update({
+  await roomRef.update({
     state: RoomStates.WAITING,
   });
 

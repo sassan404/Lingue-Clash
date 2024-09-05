@@ -48,7 +48,6 @@ export class RoomComponent {
     private router: Router,
     private httpService: HTTPService,
   ) {
-    console.log('room component');
     this.route.queryParams.subscribe((params) => {
       this.roomId = params['roomId'];
       this.playerUsername = params['playerUsername'];
@@ -57,12 +56,15 @@ export class RoomComponent {
 
   ngOnInit() {
     this.httpService.roomCodeSubject.subscribe((roomCode) => {
-      console.log('roomCode', roomCode);
-      if (roomCode) this.roomCode = roomCode;
-      else {
+      console.log('roomCode: ', roomCode);
+      if (roomCode) {
+        this.roomCode = roomCode;
+      } else {
         this.router.navigate(['/']);
         this.httpService.roomCodeSubject.unsubscribe();
         this.httpService.playersSubject.unsubscribe();
+        this.httpService.roundNumberSubject.unsubscribe();
+        this.httpService.roomStateSubject.unsubscribe();
         this.roomSubscription();
       }
     });
@@ -80,7 +82,6 @@ export class RoomComponent {
     this.httpService.roomStateSubject.subscribe((roomState) => {
       this.roomIsLoading = roomState === RoomStates.LOADING;
     });
-    console.log('roomId', this.roomId);
     if (this.roomId != undefined && this.playerUsername != undefined) {
       this.roomSubscription = this.httpService.getRoomUpdates(
         this.roomId,

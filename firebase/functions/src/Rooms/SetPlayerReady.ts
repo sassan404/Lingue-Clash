@@ -19,7 +19,7 @@ export const setPlayerReady = onRequest(async (request, response) => {
     return;
   }
 
-  roomSnapshot.ref.update({
+  await roomSnapshot.ref.update({
     state: RoomStates.LOADING,
   });
 
@@ -30,23 +30,44 @@ export const setPlayerReady = onRequest(async (request, response) => {
     state: PlayerStates.READY,
   });
 
-  const players = roomSnapshot.val().players;
+  const players = (await roomRef.child("players").once("value")).val();
   const playersList: Player[] = Object.values(players);
   const allPlayersReady = playersList.every(
     (player: { state: PlayerStates }) => player.state === PlayerStates.READY,
   );
+
   if (allPlayersReady) {
-    roomRef.update({
+    await roomRef.update({
       state: RoomStates.READY,
     });
+    const currentRound = (
+      await roomRef.child("currentRound").once("value")
+    ).val();
+    console.log("Current round: ", currentRound);
+    await roomRef.update({ currentRound: currentRound + 1 });
+    const roundRef = roomRef.child(`rounds/${currentRound}`);
+    roundRef.set({
+      startAt: Date.now(),
+      startAtTimestamp: new Date().toISOString(),
+      countDown: 5,
+    });
+    let count = 5;
+    const intervalId = setInterval(() => {
+      count--;
+      roundRef.update({ countDown: count });
+      if (count <= 0) {
+        clearInterval(intervalId);
+      }
+    }, 1000);
   } else {
-    roomRef.update({
+    await roomRef.update({
       state: RoomStates.WAITING,
     });
   }
 
-  const responseContent = `Player: "${username}" is ready in room: "${roomId}"`;
-  console.log(responseContent);
+  const responseContent = {
+    success: `Player: "${username}" is ready in room: "${roomId}"`,
+  };
 
   response.send(responseContent);
 });

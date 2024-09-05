@@ -3,13 +3,13 @@
 	"tasks": [
 		{
 			"type": "typescript",
-			"tsconfig": "Functions/functions/tsconfig.json",
+			"tsconfig": "firebase/functions/tsconfig.json",
 			"option": "watch",
 			"problemMatcher": [
 				"$tsc-watch"
 			],
 			"group": "build",
-			"label": "tsc: watch - Functions/functions/tsconfig.json"
+			"label": "tsc: watch - firebase/functions/tsconfig.json"
 		}
 	]
 }
