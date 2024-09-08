@@ -11,7 +11,7 @@ import {
   Languages,
   PlayerStates,
   RoomStates,
-} from "../Interfaces/interfaces";
+} from "../../../../common/Interfaces/Interfaces";
 
 // Function to initiate the start of a new round
 export const initiateNewRound: HttpsFunction = onRequest(
@@ -29,7 +29,7 @@ export const initiateNewRound: HttpsFunction = onRequest(
     roomRef.update({
       state: RoomStates.LOADING,
     });
- 
+
     const newRoundNumber = roomData.currentRound + 1;
 
     // Update the currentRound in the room to trigger startNewRound function
@@ -51,18 +51,16 @@ export const initiateNewRound: HttpsFunction = onRequest(
 
     const players = roomData.players;
     players.forEach((username: string) => {
-      const playerRef = database.ref(
-        `rooms/${roomId}/players/${username}`,
-      );
+      const playerRef = database.ref(`rooms/${roomId}/players/${username}`);
       playerRef.update({
         state: PlayerStates.WAITING,
       });
-    })
+    });
 
     roomRef.update({
       state: RoomStates.WAITING,
     });
-    
+
     console.log(`Initiated new round ${newRoundNumber} in room ${roomId}`);
     response.send({ roomId, newRoundNumber });
   },

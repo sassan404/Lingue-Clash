@@ -7,6 +7,15 @@ import {
   query,
   Unsubscribe,
 } from '@angular/fire/database';
+import {
+  CreateRoomRequest,
+  JoinRoomRequest,
+  Player,
+  RoomContainer,
+  RoomStates,
+  RoundContainer,
+  RoundStates,
+} from '../../../../common/Interfaces/Interfaces';
 
 import { Subject } from 'rxjs';
 
@@ -27,8 +36,9 @@ export class HTTPService {
   roundNumberSubject = new Subject<number>();
   roomStateSubject = new Subject<RoomStates>();
   playerSubject = new Subject<Player>();
+  roundSubject = new Subject<RoundContainer>();
 
-  createRoom(creation: CreateRequest) {
+  createRoom(creation: CreateRoomRequest) {
     const body = JSON.stringify({
       username: creation.username,
       language: creation.language,
@@ -38,7 +48,7 @@ export class HTTPService {
     });
   }
 
-  joinRoom(joining: JoinRequest) {
+  joinRoom(joining: JoinRoomRequest) {
     const body = JSON.stringify({
       roomCode: joining.roomCode,
       username: joining.username,
@@ -68,22 +78,28 @@ export class HTTPService {
     const roomRef = ref(this.database, 'rooms/' + roomId);
 
     const result = onValue(query(roomRef), (snapshot) => {
-      const reply: RoomContainer = snapshot.val();
-      console.log(reply);
-      if (reply != null) {
-        if (reply.roomCode != undefined) {
-          this.roomCodeSubject.next(reply.roomCode);
+      const room: RoomContainer = snapshot.val();
+      console.log(room);
+      if (room != null) {
+        if (room.roomCode != undefined) {
+          this.roomCodeSubject.next(room.roomCode);
         }
-        if (reply.players !== undefined) {
-          const playersArray: Player[] = Object.values(reply.players);
+        if (room.players !== undefined) {
+          const playersArray: Player[] = Object.values(room.players);
           this.playersSubject.next(playersArray);
-          this.playerSubject.next(reply.players[playerUsername]);
+          this.playerSubject.next(room.players[playerUsername]);
         }
-        if (reply.currentRound !== undefined) {
-          this.roundNumberSubject.next(reply.currentRound);
+        if (room.currentRound !== undefined) {
+          this.roundNumberSubject.next(room.currentRound);
         }
-        if (reply.state !== undefined) {
-          this.roomStateSubject.next(reply.state);
+        if (room.rounds !== undefined) {
+          // Do something with rounds
+          console.log('round number', room.currentRound);
+          console.log('round', room.rounds[room.currentRound]);
+          this.roundSubject.next(room.rounds[room.currentRound]);
+        }
+        if (room.state !== undefined) {
+          this.roomStateSubject.next(room.state);
         }
       } else {
         this.roomCodeSubject.next(null);
@@ -92,55 +108,34 @@ export class HTTPService {
     });
     return result;
   }
-}
 
-export interface CreateRequest {
-  username: string;
-  language: string;
-}
+  listenToCountdown(
+    roomId: string,
+    roundNumber: number,
+    countDownSubject: Subject<number>,
+  ): Unsubscribe {
+    const countDownRef = ref(
+      this.database,
+      'rooms/' + roomId + '/rounds/' + roundNumber + '/countDown',
+    );
+    const countdownSubscription = onValue(query(countDownRef), (snapshot) => {
+      countDownSubject.next(snapshot.val());
+    });
+    return countdownSubscription;
+  }
 
-export interface JoinRequest {
-  roomCode: string;
-  username: string;
-  language: string;
-}
-
-export interface JoinRoomResponse {
-  roomId: string;
-}
-
-export interface RoomContainer {
-  roomId: string;
-  roomCode: string;
-  createdBy: string;
-  state: RoomStates;
-  currentRound: 0;
-  roomName: string;
-  players: {
-    [playerId: string]: Player;
-  };
-  rounds: {
-    [roundId: string]: any; // Define the structure of a round if needed
-  };
-}
-
-export interface Player {
-  joinedAt: number;
-  language: string;
-  score: number;
-  username: string;
-  state: PlayerStates;
-}
-
-export enum PlayerStates {
-  WAITING = 'waiting',
-  READY = 'ready',
-  PLAYING = 'playing',
-  FINISHED = 'finished',
-}
-
-export enum RoomStates {
-  LOADING = 'loading',
-  WAITING = 'waiting',
-  READY = 'ready',
+  listenToState(
+    roomId: string,
+    roundNumber: number,
+    stateSubject: Subject<RoundStates>,
+  ) {
+    const roundStateRef = ref(
+      this.database,
+      'rooms/' + roomId + '/rounds/' + roundNumber + '/state',
+    );
+    const stateSubscription = onValue(query(roundStateRef), (snapshot) => {
+      stateSubject.next(snapshot.val());
+    });
+    return stateSubscription;
+  }
 }

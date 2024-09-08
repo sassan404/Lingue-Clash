@@ -5,7 +5,7 @@ import {
   CreateRoomResponse,
   PlayerStates,
   RoomStates,
-} from "../Interfaces/interfaces";
+} from "../../../../common/Interfaces/Interfaces";
 
 const generateRoomCode = () => {
   return Math.random().toString(36).substring(2, 8).toUpperCase();

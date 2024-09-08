@@ -1,4 +1,7 @@
-import { GivenWords, Languages } from "../Interfaces/interfaces";
+import {
+  GivenWords,
+  Languages,
+} from "../../../../common/Interfaces/Interfaces";
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
 import { ChatCompletion } from "openai/resources";
 

@@ -5,7 +5,7 @@ import {
   JoinRoomResponse,
   PlayerStates,
   RoomStates,
-} from "../Interfaces/interfaces";
+} from "../../../../common/Interfaces/Interfaces";
 
 // Example usage
 // joinRoom("ABC123", "user2", "Spanish").then(() => {
@@ -29,6 +29,13 @@ export const joinRoom = onRequest(async (request, response) => {
   const roomId = Object.keys(roomSnapshot.val())[0];
 
   const roomRef = database.ref(`rooms/${roomId}`);
+
+  // const isRoomLocked = (await roomRef.child("locked").once("value")).val();
+  // if (isRoomLocked) {
+  //   console.log("Room is locked");
+  //   response.send({response: "Room is locked"});
+  //   return
+  // }
   await roomRef.update({
     state: RoomStates.LOADING,
   });

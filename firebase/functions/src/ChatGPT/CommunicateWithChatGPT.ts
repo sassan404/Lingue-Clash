@@ -6,7 +6,7 @@ import { ParamsDictionary } from "express-serve-static-core";
 import {
   TreatedChatGPTStructure,
   TreatedRequest,
-} from "../Interfaces/interfaces";
+} from "../../../../common/Interfaces/Interfaces";
 import { openai } from "../Utilities/OpenAI.utils";
 import { HttpsFunction, onRequest } from "firebase-functions/v2/https";
 
@@ -50,12 +50,12 @@ export class CommunicateWithChatGP<
     async (request: Request, response: Response) => {
       const treatedRequestBody: U = this.treatRequest(request);
 
-      const treatedChatGPTReply = await this.communicate( treatedRequestBody);
+      const treatedChatGPTReply = await this.communicate(treatedRequestBody);
       response.send(treatedChatGPTReply);
     },
   );
 
-  public  communicate = async (request: U): Promise<T> =>  {
+  public communicate = async (request: U): Promise<T> => {
     log.apply("info", ["The request is: ", request]);
     const messageTosend = this.message(request);
     log.apply("info", ["The message to send is: ", messageTosend]);
@@ -66,5 +66,5 @@ export class CommunicateWithChatGP<
     });
 
     return this.treatChatGPTReply(chatCompletion);
-  }
+  };
 }

@@ -1,11 +1,13 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { database } from "../realtime-db.config";
+import { Reference } from "@firebase/database-types";
 import {
   LeaveRoomRequest,
   Player,
   PlayerStates,
   RoomStates,
-} from "../Interfaces/interfaces";
+  RoundStates,
+} from "../../../../common/Interfaces/Interfaces";
 
 export const setPlayerReady = onRequest(async (request, response) => {
   console.log("request.body: ", request.body);
@@ -37,28 +39,7 @@ export const setPlayerReady = onRequest(async (request, response) => {
   );
 
   if (allPlayersReady) {
-    await roomRef.update({
-      state: RoomStates.READY,
-    });
-    const currentRound = (
-      await roomRef.child("currentRound").once("value")
-    ).val();
-    console.log("Current round: ", currentRound);
-    await roomRef.update({ currentRound: currentRound + 1 });
-    const roundRef = roomRef.child(`rounds/${currentRound}`);
-    roundRef.set({
-      startAt: Date.now(),
-      startAtTimestamp: new Date().toISOString(),
-      countDown: 5,
-    });
-    let count = 5;
-    const intervalId = setInterval(() => {
-      count--;
-      roundRef.update({ countDown: count });
-      if (count <= 0) {
-        clearInterval(intervalId);
-      }
-    }, 1000);
+    await startNewRound(roomRef);
   } else {
     await roomRef.update({
       state: RoomStates.WAITING,
@@ -71,3 +52,32 @@ export const setPlayerReady = onRequest(async (request, response) => {
 
   response.send(responseContent);
 });
+
+const startNewRound = async (roomRef: Reference) => {
+  await roomRef.update({
+    state: RoomStates.READY,
+  });
+  const currentRound = (
+    await roomRef.child("currentRound").once("value")
+  ).val();
+  console.log("Current round: ", currentRound);
+  const newRound = currentRound + 1;
+  await roomRef.update({ currentRound: newRound });
+  const roundRef = roomRef.child(`rounds/${newRound}`);
+  roundRef.set({
+    startAt: Date.now(),
+    startAtTimestamp: new Date().toISOString(),
+    countDown: 5,
+    state: RoundStates.STARTING,
+  });
+  let count = 5;
+  const intervalId = setInterval(() => {
+    count--;
+    roundRef.update({ countDown: count });
+    if (count <= 0) {
+      clearInterval(intervalId);
+    }
+  }, 1000);
+  roundRef.update({ state: RoundStates.PLAYING });
+  roomRef.update({ locked: true });
+};

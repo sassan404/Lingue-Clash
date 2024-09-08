@@ -1,0 +1,17 @@
+.countdown-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .countdown-card {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 48px;
+    font-weight: bold;
+  }
+  

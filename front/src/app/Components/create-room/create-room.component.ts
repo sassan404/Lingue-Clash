@@ -8,11 +8,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import {
-  HTTPService,
-  CreateRequest,
-  JoinRoomResponse,
-} from '../../Services/http.service';
+import { HTTPService } from '../../Services/http.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AsyncPipe } from '@angular/common';
@@ -21,6 +17,10 @@ import { Router } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
+import {
+  CreateRoomRequest,
+  JoinRoomResponse,
+} from '../../../../../common/Interfaces/Interfaces';
 @Component({
   selector: 'app-create-room',
   standalone: true,
@@ -51,7 +51,7 @@ export class CreateRoomComponent {
   ) {}
 
   createRoom() {
-    const createRequest: CreateRequest = {
+    const createRequest: CreateRoomRequest = {
       username: this.createRoomForm.value.username || '',
       language: this.createRoomForm.value.language || '',
     };
@@ -59,7 +59,10 @@ export class CreateRoomComponent {
       const typedReply = reply as JoinRoomResponse;
       console.log('typedReply', typedReply);
       this.router.navigate(['/room'], {
-        queryParams: { roomId: typedReply.roomId, playerUsername: createRequest.username },
+        queryParams: {
+          roomId: typedReply.roomId,
+          playerUsername: createRequest.username,
+        },
       });
     });
   }

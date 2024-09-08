@@ -1,0 +1,8 @@
+<div class="countdown-container">
+  <mat-card *ngIf="countdown > 1" class="countdown-card" [@fadeAnimation]>
+    <h1>{{ countdown }}</h1>
+  </mat-card>
+  <mat-card *ngIf="message" class="countdown-card" [@fadeAnimation]>
+    <h1>{{ message }}</h1>
+  </mat-card>
+</div>

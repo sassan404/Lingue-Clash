@@ -22,21 +22,25 @@
     Ready
   </button>
 
-  <!-- <mat-tab-group *ngIf="currentRound">
-        <mat-tab
-          *ngFor="let round of rounds; let i = index"
-          label="Round {{ i + 1 }}"
-        >
-          <p>Round {{ i + 1 }} Details: {{ round.details }}</p>
-        </mat-tab>
-      </mat-tab-group> -->
-
-  <h3 *ngIf="currentRound">Round {{ currentRound }}</h3>
-  <p>Round {{ currentRound }} Details: {{ round.details }}</p>
+  <div id="hello-component-host"></div>
+  <div id="round-container">
+    <h3 *ngIf="currentRound">Round {{ currentRoundNumber }}</h3>
+    <p>Round {{ currentRoundNumber }} Details:</p>
+    <p>started at: {{ currentRound.startAt }}</p>
+    <p>state: {{ currentRound.state }}</p>
+  </div>
   <mat-progress-bar
     mode="determinate"
     [value]="progressValue"
   ></mat-progress-bar>
+  <button
+    mat-raised-button
+    color="primary"
+    *ngIf="showSubmitButton()"
+    (click)="submitRoundAnswer()"
+  >
+    Submit
+  </button>
 
   <mat-spinner *ngIf="roomIsLoading"></mat-spinner>
 </div>

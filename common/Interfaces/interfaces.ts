@@ -11,12 +11,39 @@ export enum RoomStates {
   READY = "ready",
 }
 
+export enum RoundStates {
+  STARTING = "starting",
+  PLAYING = "playing",
+  FINISHED = "finished",
+}
+
 export interface Player {
   joinedAt: number;
   language: string;
   score: number;
   username: string;
   state: PlayerStates;
+}
+
+export interface RoomContainer {
+  roomId: string;
+  roomCode: string;
+  createdBy: string;
+  state: RoomStates;
+  currentRound: 0;
+  roomName: string;
+  players: {
+    [playerId: string]: Player;
+  };
+  rounds: {
+    [roundId: string]: any; // Define the structure of a round if needed
+  };
+}
+
+export interface RoundContainer {
+  countDown: number;
+  startAt: number;
+  state: RoundStates;
 }
 
 // types of requests bosy received by the functions (onRequest)
