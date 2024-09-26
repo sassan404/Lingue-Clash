@@ -30,13 +30,14 @@ export interface RoomContainer {
   roomCode: string;
   createdBy: string;
   state: RoomStates;
+  roundCanStart: false;
   currentRound: 0;
   roomName: string;
   players: {
     [playerId: string]: Player;
   };
   rounds: {
-    [roundId: string]: any; // Define the structure of a round if needed
+    [roundId: string]: RoundContainer; // Define the structure of a round if needed
   };
 }
 
@@ -44,6 +45,18 @@ export interface RoundContainer {
   countDown: number;
   startAt: number;
   state: RoundStates;
+}
+
+export interface SentenceBuildingRound extends RoundContainer {
+  givenWords: GivenWords;
+  playerWords: string[];
+  playerResponses: {
+    [playerId: string]: {
+      score: number;
+      explanation: string;
+      answer: string;
+    };
+  };
 }
 
 // types of requests bosy received by the functions (onRequest)
@@ -76,6 +89,12 @@ export interface LeaveRoomRequest {
   username: string;
 }
 
+export interface PlayerAnswer {
+  roomId: string;
+  username: string;
+  answer: string;
+}
+
 export interface LeaveRoomResponse {
   roomId: string;
   event: string;
@@ -98,7 +117,7 @@ export interface Explanation {
 }
 
 export interface SentenceEvaluationReply extends TreatedChatGPTStructure {
-  order: SentenceOrder[];
+  score: number;
   explanation: Explanation[];
 }
 
@@ -108,14 +127,9 @@ export interface SentenceReply extends TreatedChatGPTStructure {
   sentence: string;
 }
 
-interface Translation {
-  language: string;
-  word: string;
-}
-
 export interface GivenWord {
   wordInEnglish: string;
-  translation: Translation[];
+  translation: {[language: string]: string};
 }
 
 export interface GivenWords extends TreatedChatGPTStructure, Array<GivenWord> {}

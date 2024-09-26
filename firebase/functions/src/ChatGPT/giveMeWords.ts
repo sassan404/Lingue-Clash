@@ -6,21 +6,16 @@ import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
 import { ChatCompletion } from "openai/resources";
 
 // Define the interface structure as a constant object
-
-const translation = {
-  language: "string",
-  word: "string",
-} as const;
 const wordMeaningStructure = {
   wordInEnglish: "string",
-  translation: [translation],
+  translation: "[lanugage: string]: string",
 } as const;
 /**
  * Container class for the 'giveMeWords' function.
  */
 class GiveMeWordsContainer extends CommunicateWithChatGP<
-  GivenWords,
-  Languages
+  Languages,
+  GivenWords
 > {
   /**
    * Message to be sent to the ChatGPT model.

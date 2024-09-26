@@ -16,31 +16,55 @@
     mat-raised-button
     color="primary"
     *ngIf="showReadyButton()"
-    [disabled]="!canStart()"
+    [disabled]="!roundCanStart"
     (click)="declarePlayerReady()"
   >
     Ready
   </button>
 
   <div id="hello-component-host"></div>
-  <div id="round-container">
-    <h3 *ngIf="currentRound">Round {{ currentRoundNumber }}</h3>
+  <div *ngIf="currentRound" id="round-container">
+    <h3>Round {{ currentRoundNumber }}</h3>
     <p>Round {{ currentRoundNumber }} Details:</p>
     <p>started at: {{ currentRound.startAt }}</p>
     <p>state: {{ currentRound.state }}</p>
+    <mat-chip-listbox
+      *ngIf="isSentenceBuildingRound(round)"
+      aria-label="Words list"
+    >
+      @for (word of currentRound.playerWords; track word) {
+        <mat-chip> {{ word }} </mat-chip>
+      }
+    </mat-chip-listbox>
   </div>
   <mat-progress-bar
     mode="determinate"
     [value]="progressValue"
   ></mat-progress-bar>
-  <button
-    mat-raised-button
-    color="primary"
-    *ngIf="showSubmitButton()"
-    (click)="submitRoundAnswer()"
+
+  <div
+    *ngIf="currentRound && isSentenceBuildingRound(round) && showSubmitButton()"
   >
-    Submit
-  </button>
+    <mat-form-field>
+      <input
+        matInput
+        placeholder="Enter your sentence"
+        [formControl]="answer"
+        (keyup.enter)="submitRoundAnswer()"
+      />
+    </mat-form-field>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="submitRoundAnswer()"
+      [disabled]="answer.invalid"
+    >
+      Submit
+    </button>
+  </div>
+  <div
+    *ngIf="currentRound && !showSubmitButton()"
+  >Waiting for other players</div>
 
   <mat-spinner *ngIf="roomIsLoading"></mat-spinner>
 </div>

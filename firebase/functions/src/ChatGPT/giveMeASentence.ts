@@ -15,8 +15,8 @@ const sentenceReply = {
  * Container class for the 'giveMeTwoWords' function.
  */
 class GiveMeASentenceContainer extends CommunicateWithChatGP<
-  SentenceReply,
-  SentenceRules
+  SentenceRules,
+  SentenceReply
 > {
   /**
    * Message to be sent to the ChatGPT model.

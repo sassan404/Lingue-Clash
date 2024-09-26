@@ -7,9 +7,10 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-// import { giveMeWordsRequest } from "./ChatGPT/giveMeWords";
+import { giveMeWordsRequest } from "./ChatGPT/giveMeWords";
 // import { giveMeASentenceRequest } from "./ChatGPT/giveMeASentence";
 // import { evaluateTheSentencesRequest } from "./ChatGPT/evaluateTheSentences";
+import { evaluateTheSentenceRequest } from "./ChatGPT/evaluateTheSentence";
 import { createRoom } from "./Rooms/CreateRoom";
 import { leaveRoom } from "./Rooms/LeaveRoom";
 // import { onCreateRoom, deleteExpiredRooms } from "./Rooms/deletingRooms";
@@ -17,13 +18,14 @@ import { leaveRoom } from "./Rooms/LeaveRoom";
 import { joinRoom } from "./Rooms/JoinRoom";
 // import { startNewRound } from "./Rooms/StartNewRound";
 import { setPlayerReady } from "./Rooms/SetPlayerReady";
+import { submitPlayerAnswer } from "./Rooms/SubmitPlayerAnswer";
 
 import { helloWorld } from "./helloWorld";
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
 export {
-  //   giveMeWordsRequest as giveMeWords,
+    giveMeWordsRequest as giveMeWords,
   //   giveMeASentenceRequest as giveMeASentence,
   //   evaluateTheSentencesRequest as evaluateTheSentences,
   helloWorld,
@@ -35,4 +37,6 @@ export {
   //   startNewRound,
   leaveRoom,
   setPlayerReady,
+  evaluateTheSentenceRequest as evaluateTheSentence,
+  submitPlayerAnswer,
 };

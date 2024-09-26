@@ -7,10 +7,6 @@ import {
   RoomStates,
 } from "../../../../common/Interfaces/Interfaces";
 
-// Example usage
-// joinRoom("ABC123", "user2", "Spanish").then(() => {
-//   console.log("User joined the room");
-// });
 
 export const joinRoom = onRequest(async (request, response) => {
   const { roomCode, username, language } = request.body as JoinRoomRequest;
@@ -30,12 +26,12 @@ export const joinRoom = onRequest(async (request, response) => {
 
   const roomRef = database.ref(`rooms/${roomId}`);
 
-  // const isRoomLocked = (await roomRef.child("locked").once("value")).val();
-  // if (isRoomLocked) {
-  //   console.log("Room is locked");
-  //   response.send({response: "Room is locked"});
-  //   return
-  // }
+  const isRoomLocked = (await roomRef.child("locked").once("value")).val();
+  if (isRoomLocked) {
+    console.log("Room is locked");
+    response.send({response: "Room is locked"});
+    return
+  }
   await roomRef.update({
     state: RoomStates.LOADING,
   });

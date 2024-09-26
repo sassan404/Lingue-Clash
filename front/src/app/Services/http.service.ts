@@ -5,7 +5,7 @@ import {
   ref,
   onValue,
   query,
-  Unsubscribe,
+  Unsubscribe
 } from '@angular/fire/database';
 import {
   CreateRoomRequest,
@@ -37,6 +37,7 @@ export class HTTPService {
   roomStateSubject = new Subject<RoomStates>();
   playerSubject = new Subject<Player>();
   roundSubject = new Subject<RoundContainer>();
+  roundCanStartSubject = new Subject<boolean>();
 
   createRoom(creation: CreateRoomRequest) {
     const body = JSON.stringify({
@@ -74,9 +75,23 @@ export class HTTPService {
       .subscribe();
   }
 
+  submitPlayerAnswer(roomId: string, username: string, answer: string){
+    const body = JSON.stringify({
+      roomId,
+      username,
+      answer
+    });
+
+    console.log('submitPlayerAnswer', body);
+    this.http
+      .put(this.apiUrl + 'submitPlayerAnswer', body, {
+        headers: this.headers,
+      })
+      .subscribe();
+  }
+
   getRoomUpdates(roomId: string, playerUsername: string): Unsubscribe {
     const roomRef = ref(this.database, 'rooms/' + roomId);
-
     const result = onValue(query(roomRef), (snapshot) => {
       const room: RoomContainer = snapshot.val();
       console.log(room);
@@ -101,6 +116,7 @@ export class HTTPService {
         if (room.state !== undefined) {
           this.roomStateSubject.next(room.state);
         }
+        this.roundCanStartSubject.next(room.roundCanStart);
       } else {
         this.roomCodeSubject.next(null);
         this.playersSubject.next([]);

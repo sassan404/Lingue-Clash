@@ -2,12 +2,14 @@ import { onRequest } from "firebase-functions/v2/https";
 import { database } from "../realtime-db.config";
 import { Reference } from "@firebase/database-types";
 import {
+  Languages,
   LeaveRoomRequest,
   Player,
   PlayerStates,
   RoomStates,
   RoundStates,
 } from "../../../../common/Interfaces/Interfaces";
+import { giveMeWords } from "../ChatGPT/giveMeWords";
 
 export const setPlayerReady = onRequest(async (request, response) => {
   console.log("request.body: ", request.body);
@@ -32,14 +34,21 @@ export const setPlayerReady = onRequest(async (request, response) => {
     state: PlayerStates.READY,
   });
 
-  const players = (await roomRef.child("players").once("value")).val();
+  const players: { [playerId: string]: Player } = (
+    await roomRef.child("players").once("value")
+  ).val();
   const playersList: Player[] = Object.values(players);
   const allPlayersReady = playersList.every(
-    (player: { state: PlayerStates }) => player.state === PlayerStates.READY,
+    (player: Player) => player.state === PlayerStates.READY,
   );
 
   if (allPlayersReady) {
     await startNewRound(roomRef);
+    for (let playerId of Object.keys(players)) {
+      await roomRef.child(`players/${playerId}`).update({
+        state: PlayerStates.PLAYING,
+      });
+    }
   } else {
     await roomRef.update({
       state: RoomStates.WAITING,
@@ -70,6 +79,20 @@ const startNewRound = async (roomRef: Reference) => {
     countDown: 5,
     state: RoundStates.STARTING,
   });
+
+  await roomRef
+    .child("languages")
+    .once("value")
+    .then((snapshot) => {
+      const languages: Languages = {
+        wordNumber: newRound,
+        languages: snapshot.val(),
+      };
+      giveMeWords(languages).then((words) => {
+        roundRef.update({ givenWords: words });
+      });
+    });
+
   let count = 5;
   const intervalId = setInterval(() => {
     count--;

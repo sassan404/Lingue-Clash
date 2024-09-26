@@ -12,10 +12,12 @@ import { HttpsFunction, onRequest } from "firebase-functions/v2/https";
 
 /**
  * CommunicateWithChatGP class.
+ * @param {U} TreatedRequest - The shape of the input received by the request
+ * @param {T} TreatedChatGPTStructure - The shape of the reply from chatGPT
  */
 export class CommunicateWithChatGP<
-  T extends TreatedChatGPTStructure,
   U extends TreatedRequest,
+  T extends TreatedChatGPTStructure,
 > {
   /**
    * Treat the request.

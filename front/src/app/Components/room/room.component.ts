@@ -15,20 +15,27 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips';
 import {
+  GivenWord,
   Player,
   PlayerStates,
   RoomStates,
-  RoundContainer,
   RoundStates,
+  SentenceBuildingRound,
 } from '../../../../../common/Interfaces/Interfaces';
 import { CountdownComponent } from '../countdown/countdown.component';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-room',
   standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatTabsModule,
     MatProgressBarModule,
     MatButton,
@@ -46,17 +53,20 @@ export class RoomComponent {
   currentPlayer?: Player;
   players: Player[] = [];
   roomIsLoading: boolean = true;
+  roundCanStart: boolean = false;
   roomSubscription: Unsubscribe = () => {};
 
-  currentRound!: RoundContainer;
+  currentRound: SentenceBuildingRound | undefined;
 
-  countdownContainer!: ViewContainerRef;
+  countdownContainer: ViewContainerRef | undefined;
 
   round: any = [];
-  currentRoundNumber!: number;
+  currentRoundNumber: number | undefined;
   progressValue: number = 0;
 
-  private countdownComponentRef!: ComponentRef<CountdownComponent>;
+  private countdownComponentRef: ComponentRef<CountdownComponent> | undefined;
+
+  answer = new FormControl('', Validators.required);
 
   constructor(
     private route: ActivatedRoute,
@@ -100,12 +110,41 @@ export class RoomComponent {
     });
     this.httpService.roundSubject.subscribe((round) => {
       console.log('round', round);
-      this.currentRound = round;
+
+      if (this.isSentenceBuildingRound(round)) {
+        console.log(round.givenWords);
+
+        const test = round.givenWords.flatMap((word: GivenWord) => {
+          console.log('word', word);
+          const wordForPlayer: string[] = this.currentPlayer
+            ? [word.translation[this.currentPlayer.language]]
+            : [];
+          console.log('wordForPlayer', wordForPlayer);
+          console.log('player language', this.currentPlayer?.language);
+          return wordForPlayer;
+        });
+        round.playerWords = round.givenWords?.flatMap((word: GivenWord) => {
+          console.log('word', word);
+          const wordForPlayer: string[] = this.currentPlayer
+            ? [word.translation[this.currentPlayer.language]]
+            : [];
+          console.log('wordForPlayer', wordForPlayer);
+          console.log('player language', this.currentPlayer?.language);
+          return wordForPlayer;
+        });
+      }
+
+      this.currentRound = round as SentenceBuildingRound;
+
       // if (round.state === RoundStates.STARTING) {
       //   this.createCountdownComponent();
       // } else if (this.countdownComponentRef) {
       //   this.destroyCountdownComponent();
       // }
+    });
+    this.httpService.roundCanStartSubject.subscribe((roundCanStart) => {
+      this.roundCanStart = roundCanStart;
+      console.log('roundCanStart', roundCanStart);
     });
     if (this.roomId != undefined && this.playerUsername != undefined) {
       this.roomSubscription = this.httpService.getRoomUpdates(
@@ -126,7 +165,23 @@ export class RoomComponent {
       this.httpService.setPlayerReady(this.roomId, this.playerUsername);
   }
 
-  submitRoundAnswer() {}
+  isSentenceBuildingRound(round: any): round is SentenceBuildingRound {
+    return round;
+  }
+
+  submitRoundAnswer() {
+    if (
+      this.roomId &&
+      this.playerUsername &&
+      this.currentRound &&
+      this.answer.value
+    )
+      this.httpService.submitPlayerAnswer(
+        this.roomId,
+        this.playerUsername,
+        this.answer.value,
+      );
+  }
 
   isPlayerReady(player: Player) {
     return player.state === PlayerStates.READY;
@@ -137,11 +192,10 @@ export class RoomComponent {
   }
 
   showSubmitButton() {
-    return this.currentRound?.state === RoundStates.PLAYING;
-  }
-
-  canStart() {
-    return this.players.length >= 2;
+    return (
+      this.currentRound?.state === RoundStates.PLAYING &&
+      this.currentPlayer?.state === PlayerStates.PLAYING
+    );
   }
 
   updateProgress() {
