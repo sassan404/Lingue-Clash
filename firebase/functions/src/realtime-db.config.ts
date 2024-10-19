@@ -1,4 +1,5 @@
-import admin = require("firebase-admin");
+import * as admin from "firebase-admin";
+import { Database } from "firebase-admin/database";
 
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://firebase.google.com/docs/web/learn-more#config-object
@@ -14,6 +15,6 @@ const firebaseConfig = {
 const app = admin.initializeApp(firebaseConfig);
 
 // Initialize Realtime Database and get a reference to the service
-const database = app.database();
+const database: Database = app.database();
 
 export { database };

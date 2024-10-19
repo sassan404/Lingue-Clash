@@ -1,7 +1,6 @@
-import {
-  SentenceReply,
-  SentenceRules,
-} from "../../../../common/Interfaces/Interfaces";
+
+import { SentenceReply } from "../../../../common/Interfaces/TreatedChatGPTStructure";
+import { SentenceRules } from "../../../../common/Interfaces/TreatedRequest";
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
 
 // Define the interface structure as a constant object

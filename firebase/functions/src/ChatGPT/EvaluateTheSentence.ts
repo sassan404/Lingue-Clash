@@ -1,8 +1,7 @@
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
-import {
-  Sentence,
-  SentenceEvaluationReply,
-} from "../../../../common/Interfaces/Interfaces";
+
+import { Sentence } from "../../../../common/Interfaces/Sentence";
+import { SentenceEvaluationReply } from "../../../../common/Interfaces/TreatedChatGPTStructure";
 // Define the interface structure as a constant object
 
 const explanation = {

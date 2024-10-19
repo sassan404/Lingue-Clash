@@ -1,8 +1,6 @@
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
-import {
-  SentenceEvaluationReply,
-  Sentences,
-} from "../../../../common/Interfaces/Interfaces";
+import { Sentence, Sentences } from "../../../../common/Interfaces/Sentence";
+import { SentenceEvaluationReply } from "../../../../common/Interfaces/TreatedChatGPTStructure";
 // Define the interface structure as a constant object
 const sentenceOrder = {
   language: "string",
@@ -50,7 +48,7 @@ class EvaluateTheSentencesContainer extends CommunicateWithChatGP<
     - The second worst sentence will have the order n-1
     - The worst sentence will have the order n
     Here are the sentences, their corresposing language and words:
-    ${sentences.map((sentence) => JSON.stringify(sentence)).join("\n")}
+    ${sentences.sentences.map((sentence: Sentence) => JSON.stringify(sentence)).join("\n")}
     In the response you should provide:
     1 - The order of each sentence
     2 - A detailed explanation of the evaluation process with respect to each rule.

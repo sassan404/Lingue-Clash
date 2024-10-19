@@ -1,15 +1,17 @@
-import {
-  GivenWords,
-  Languages,
-} from "../../../../common/Interfaces/Interfaces";
+import { GivenWords } from "../../../../common/Interfaces/GivenWord";
+import { Languages } from "../../../../common/Interfaces/TreatedRequest";
+
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
 import { ChatCompletion } from "openai/resources";
 
 // Define the interface structure as a constant object
 const wordMeaningStructure = {
-  wordInEnglish: "string",
-  translation: "[lanugage: string]: string",
+  word: "[lanugage: string]: string",
 } as const;
+
+const wordMeaningArray = {
+  words: [wordMeaningStructure],
+};
 /**
  * Container class for the 'giveMeWords' function.
  */
@@ -33,7 +35,7 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
     const messageContent = `${firstSentence}
     - ${languagesList}
    The response should be a json array following the format of this interface:
-   ${JSON.stringify(wordMeaningStructure, null, 2)}`;
+   ${JSON.stringify(wordMeaningArray, null, 2)}`;
     return messageContent;
   }
   /**
@@ -49,6 +51,7 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
     return treatedChatGPTReply;
   }
 }
+
 const giveMeWordsContainer = new GiveMeWordsContainer();
 
 export const giveMeWordsRequest = giveMeWordsContainer.communicateOnRequest;

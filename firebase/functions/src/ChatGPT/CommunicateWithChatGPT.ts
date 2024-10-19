@@ -3,12 +3,11 @@ import { ChatCompletion } from "openai/resources";
 import { log } from "firebase-functions/logger";
 
 import { ParamsDictionary } from "express-serve-static-core";
-import {
-  TreatedChatGPTStructure,
-  TreatedRequest,
-} from "../../../../common/Interfaces/Interfaces";
+
 import { openai } from "../Utilities/OpenAI.utils";
 import { HttpsFunction, onRequest } from "firebase-functions/v2/https";
+import { TreatedRequest } from "../../../../common/Interfaces/TreatedRequest";
+import { TreatedChatGPTStructure } from "../../../../common/Interfaces/TreatedChatGPTStructure";
 
 /**
  * CommunicateWithChatGP class.
@@ -67,6 +66,7 @@ export class CommunicateWithChatGP<
       model: "gpt-3.5-turbo",
     });
 
+    console.log("chatCompletion: ", chatCompletion);
     return this.treatChatGPTReply(chatCompletion);
   };
 }
