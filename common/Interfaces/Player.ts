@@ -9,19 +9,19 @@ export interface Player {
 }
 
 export class Player {
-  constructor(
-    joinedAt: number,
-    language: string,
-    score: number,
-    username: string,
-    state: PlayerStates
-  ) {
-    this.joinedAt = joinedAt;
-    this.language = language;
-    this.score = score;
-    this.username = username;
-    this.state = state;
+  constructor(player: Player) {
+    this.joinedAt = player.joinedAt;
+    this.language = player.language;
+    this.score = player.score;
+    this.username = player.username;
+    this.state = player.state;
   }
+
+  isPlayerReady = () => {
+    return (
+      this.state === PlayerStates.READY || this.state === PlayerStates.FINISHED
+    );
+  };
 
   canReady = (PlayerCount: number, roundState: RoundStates | undefined) => {
     return (
@@ -35,5 +35,9 @@ export class Player {
     return (
       roundState === RoundStates.PLAYING && this.state === PlayerStates.PLAYING
     );
+  };
+
+  isWaiting = (roundState: RoundStates) => {
+    return roundState === RoundStates.PLAYING && this.state === PlayerStates.FINISHED;
   };
 }

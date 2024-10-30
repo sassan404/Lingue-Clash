@@ -18,7 +18,8 @@ import { Router } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
-import { JoinRoomRequest, JoinRoomResponse } from '../../../../../common/Interfaces/Interfaces';
+import { JoinRoomRequest } from '../../../../../common/Interfaces/Requests';
+import { JoinRoomResponse } from '../../../../../common/Interfaces/Responses';
 @Component({
   selector: 'app-join-room',
   standalone: true,

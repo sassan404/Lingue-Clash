@@ -6,7 +6,7 @@ import { ChatCompletion } from "openai/resources";
 
 // Define the interface structure as a constant object
 const wordMeaningStructure = {
-  word: "[lanugage: string]: string",
+  "[lanugage: string]": "string",
 } as const;
 
 const wordMeaningArray = {
@@ -25,7 +25,11 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
    * @return {String} The message.
    */
   override message(languages: Languages): string {
-    const languagesList = languages.languages.join("\n- ");
+    const languagesWithEnglish =
+      languages.languages.indexOf("English") < 0
+        ? ["English", ...languages.languages]
+        : languages.languages;
+    const languagesList = languagesWithEnglish.join("\n- ");
 
     const firstSentence =
       languages.wordNumber == 1

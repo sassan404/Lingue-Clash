@@ -10,9 +10,9 @@ export interface RoomContainer {
   createdAtTimestamp: string,
   isLocked: boolean;
   progress: number;
-  roundCanStart: boolean;
   currentRound: RoundContainer;
   currentRoundNumber: number;
+  countDown: number;
   players: {
     [playerId: string]: Player;
   };
@@ -28,7 +28,6 @@ export class RoomContainer {
     this.roomCode = room.roomCode;
     this.createdBy = room.createdBy;
     this.isLocked = room.isLocked;
-    this.roundCanStart = room.roundCanStart;
     this.currentRound = room.currentRound;
     this.roomName = room.roomName;
     this.players = room.players;

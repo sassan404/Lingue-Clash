@@ -79,7 +79,6 @@ export class LanguageSelectorComponent {
       startWith(''),
       map((value) => {
         const filterValue = value?.toLowerCase();
-        console.log(filterValue);
         return this.languages.filter((language) =>
           language.toLowerCase().includes(filterValue ? filterValue : ''),
         );

@@ -15,9 +15,6 @@ export const onCreateRoom = fireDatabase
       roomId,
       expiresAt: expirationTime,
     });
-    console.log(
-      `Room ${roomId} will be deleted at ${new Date(expirationTime)}`,
-    );
   });
 
 export const deleteExpiredRooms = onSchedule("every 1 minutes", async () => {

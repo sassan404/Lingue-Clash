@@ -20,8 +20,6 @@ export const setPlayerReady = onRequest(async (request, response) => {
       isLocked: true,
     });
 
-    console.log(`Setting player: "${username}" as ready in room: "${roomId}"`);
-
     const playerRef = roomRef.child(`players/${username}`);
 
     await playerRef.update({

@@ -1,8 +1,11 @@
-<div class="countdown-container">
-  <mat-card *ngIf="countdown > 1" class="countdown-card" [@fadeAnimation]>
-    <h1>{{ countdown }}</h1>
+<div
+  class="countdown-container"
+  *ngIf="firebaseDBService.countDownSubject | async as countDown"
+>
+  <mat-card *ngIf="countDown > 0" class="countdown-card" [@fadeAnimation]>
+    <h1>{{ countDown }}</h1>
   </mat-card>
-  <mat-card *ngIf="message" class="countdown-card" [@fadeAnimation]>
-    <h1>{{ message }}</h1>
+  <mat-card *ngIf="countDown == 0" class="countdown-card" [@fadeAnimation]>
+    <h1>Ready!</h1>
   </mat-card>
 </div>

@@ -69,8 +69,6 @@ export const joinRoom = onRequest(async (request, response) => {
     isLocked: false,
   });
 
-  console.log(`Room joined with code: ${roomCode}`);
-
   const reponseContent: JoinRoomResponse = { roomId };
   response.send(reponseContent);
 });

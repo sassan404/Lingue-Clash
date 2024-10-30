@@ -7,9 +7,51 @@
   min-width: fit-content;
 }
 
-
-
 .mat-mdc-standard-chip.ready-chip {
   --mdc-chip-label-text-color: #fff;
-  --mdc-chip-elevated-container-color: #4caf50;
+  --mdc-chip-elevated-container-color: #4caf50; /* Green for ready players */
+  border: 2px solid #4caf50;
+  padding-left: 24px; /* Space for the icon */
+  position: relative;
+}
+
+.mat-mdc-standard-chip.ready-chip::before {
+  content: "✔"; /* Checkmark icon */
+  color: #fff;
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.mat-mdc-standard-chip.current-player {
+  --mdc-chip-label-text-color: #fff;
+  --mdc-chip-elevated-container-color: #2196f3; /* Blue for current player */
+  border: 2px solid #2196f3;
+  font-weight: bold;
+}
+
+.mat-mdc-standard-chip.ready-chip.current-player {
+  --mdc-chip-label-text-color: #fff;
+  --mdc-chip-elevated-container-color: #66bb89; /* Light green for current player who is ready */
+  border: 2px solid #66bb89;
+  font-weight: bold;
+  padding-left: 24px; /* Space for the icon */
+  position: relative;
+}
+
+.ready-button {
+  margin: 16px;
+}
+
+.app-countdown {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  z-index: 1000;
+  left: 0;
+  top: 0;
 }

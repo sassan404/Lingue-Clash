@@ -37,11 +37,12 @@ export class CommunicateWithChatGP<
    * @return {string} The treated response object.
    */
   treatChatGPTReply(chatGPTReply: ChatCompletion): T {
-    return JSON.parse(
+    const treatedReply = JSON.parse(
       chatGPTReply.choices.find(
         (choice) => choice.message && choice.message.content != null,
       )?.message.content ?? "",
     );
+    return treatedReply;
   }
 
   /**
@@ -66,7 +67,6 @@ export class CommunicateWithChatGP<
       model: "gpt-3.5-turbo",
     });
 
-    console.log("chatCompletion: ", chatCompletion);
     return this.treatChatGPTReply(chatCompletion);
   };
 }

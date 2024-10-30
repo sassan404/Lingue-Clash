@@ -17,10 +17,9 @@ import { Router } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
-import {
-  CreateRoomRequest,
-  JoinRoomResponse,
-} from '../../../../../common/Interfaces/Interfaces';
+import { CreateRoomRequest } from '../../../../../common/Interfaces/Requests';
+import { JoinRoomResponse } from '../../../../../common/Interfaces/Responses';
+
 @Component({
   selector: 'app-create-room',
   standalone: true,
@@ -57,7 +56,6 @@ export class CreateRoomComponent {
     };
     this.httpService.createRoom(createRequest).subscribe((reply) => {
       const typedReply = reply as JoinRoomResponse;
-      console.log('typedReply', typedReply);
       this.router.navigate(['/room'], {
         queryParams: {
           roomId: typedReply.roomId,

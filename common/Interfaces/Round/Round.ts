@@ -1,7 +1,7 @@
 import { RoundStates, RoundTypes } from "../enums";
 
 export interface RoundContainer {
-  countDown: number;
+  
   startAt: number;
   startAtTimestamp: string;
   state: RoundStates;
@@ -11,8 +11,8 @@ export interface RoundContainer {
 
 export class RoundContainer {
   constructor(round: RoundContainer) {
-    this.countDown = round.countDown;
     this.startAt = round.startAt;
+    this.startAtTimestamp = round.startAtTimestamp;
     this.state = round.state;
     this.type = round.type;
   }

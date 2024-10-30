@@ -1,70 +1,71 @@
 <div class="room-container">
-  <h3>Room Code: {{ roomCode }}</h3>
+  <h3 *ngIf="firebaseDBService.roomCodeSubject | async as roomCode">
+    Room Code: {{ roomCode }}
+  </h3>
 
   <h4>Players</h4>
 
   <mat-chip-listbox aria-label="Player list">
-    @for (player of players; track player) {
-      <mat-chip [ngClass]="{ 'ready-chip': isPlayerReady(player) }">
-        {{ player.username }} ({{ player.language }})
-      </mat-chip>
-    }
+    <ng-container
+      *ngIf="firebaseDBService.allPlayersSubject | async as players"
+    >
+      @for (player of getPlayersArray(players); track player) {
+        <mat-chip
+          [ngClass]="{
+            'ready-chip': player.isPlayerReady(),
+            'current-player': player.username == this.playerUsername,
+          }"
+        >
+          {{ player.username }} ({{ player.language }})
+        </mat-chip>
+      }
+    </ng-container>
   </mat-chip-listbox>
 
-  <h3 *ngIf="!currentRound">Rounds Not Started</h3>
+  <h3 *ngIf="!(firebaseDBService.roundSubject | async)">Rounds Not Started</h3>
   <button
+    class="ready-button"
     mat-raised-button
     color="primary"
-    *ngIf="showReadyButton()"
-    [disabled]="!roundCanStart"
+    *ngIf="showReadyButton | async"
     (click)="declarePlayerReady()"
   >
     Ready
   </button>
 
-  <div id="hello-component-host"></div>
-  <div *ngIf="currentRound" id="round-container">
-    <h3>Round {{ currentRoundNumber }}</h3>
-    <p>Round {{ currentRoundNumber }} Details:</p>
-    <p>started at: {{ currentRound.startAt }}</p>
-    <p>state: {{ currentRound.state }}</p>
-    <mat-chip-listbox
-      *ngIf="isSentenceBuildingRound(round)"
-      aria-label="Words list"
-    >
-      @for (word of currentRound.playerWords; track word) {
-        <mat-chip> {{ word }} </mat-chip>
-      }
-    </mat-chip-listbox>
-  </div>
   <mat-progress-bar
     mode="determinate"
-    [value]="progressValue"
+    [value]="firebaseDBService.progressSubject | async"
   ></mat-progress-bar>
 
-  <div
-    *ngIf="currentRound && isSentenceBuildingRound(round) && showSubmitButton()"
-  >
-    <mat-form-field>
-      <input
-        matInput
-        placeholder="Enter your sentence"
-        [formControl]="answer"
-        (keyup.enter)="submitRoundAnswer()"
-      />
-    </mat-form-field>
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="submitRoundAnswer()"
-      [disabled]="answer.invalid"
-    >
-      Submit
-    </button>
+  <div id="app-countdown" *ngIf="countDown > 0">
+    <app-countdown></app-countdown>
   </div>
-  <div
-    *ngIf="currentRound && !showSubmitButton()"
-  >Waiting for other players</div>
 
-  <mat-spinner *ngIf="roomIsLoading"></mat-spinner>
+  <div *ngIf="countDown === 0">
+    <div
+      *ngIf="firebaseDBService.roundSubject | async as currentRound"
+      id="round-container"
+    >
+      <h3>Round {{ firebaseDBService.roundNumberSubject | async }}</h3>
+      <p>Round Details:</p>
+      <p>started at: {{ currentRound.startAtTimestamp }}</p>
+      <p>state: {{ currentRound.state }}</p>
+
+      <ng-container *ngIf=" !(showPlayerIsWaiting | async) && (firebaseDBService.roundSubject | async) as round">
+        <ng-container *ngIf="firebaseDBService.playerSubject | async as player">
+          <app-sentence-building-round
+            [currentRound]="round"
+            [currentPlayer]="player"
+            [roomId]="roomId"
+          />
+        </ng-container>
+      </ng-container>
+      <div *ngIf="showPlayerIsWaiting | async">Waiting for other players</div>
+    </div>
+  </div>
+
+  <mat-spinner
+    *ngIf="firebaseDBService.roomLockedSubject | async"
+  ></mat-spinner>
 </div>

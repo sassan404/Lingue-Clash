@@ -42,17 +42,17 @@ export const submitPlayerAnswer = onRequest(async (request, response) => {
     const playerRef = roomRef.child(`players/${username}`);
 
     await playerRef.update({
-      state: PlayerStates.WAITING,
+      state: PlayerStates.FINISHED,
     });
 
     const players = (await roomRef.child("players").once("value")).val();
     const playersList: Player[] = Object.values(players);
-    const allPlayersWaiting = playersList.every(
+    const allPlayersFinished = playersList.every(
       (player: { state: PlayerStates }) =>
-        player.state === PlayerStates.WAITING,
+        player.state === PlayerStates.FINISHED,
     );
 
-    if (allPlayersWaiting) {
+    if (allPlayersFinished) {
       await currentRoundHelper.finishRound();
     }
 

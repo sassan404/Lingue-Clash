@@ -45,10 +45,8 @@ export class SentenceBuildingRoundHelper extends RoundHelper<Sentence> {
       words = [words];
     }
 
-    console.log("words array: ", words);
     const wordsForPlayerLanguage: string[] = words.map(
       (givenWord: { [language: string]: string }) => {
-        console.log("one word: ", givenWord);
         return givenWord[playerLanguage];
       },
     );

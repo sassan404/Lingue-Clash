@@ -6,11 +6,8 @@ import {
   RoundStates,
   RoundTypes,
 } from "../../../../common/Interfaces/enums";
-import { RoomContainer } from "../../../../common/Interfaces/Room";
-
 import { Reference } from "firebase-admin/database";
 import { database } from "../realtime-db.config";
-import { Player } from "../../../../common/Interfaces/Player";
 
 const generateRoomCode = () => {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -38,10 +35,11 @@ export const createRoom = onRequest(async (request, response) => {
     isLocked: false,
     progress: 0,
     roundCanStart: false,
+    countDown: 0,
     currentRound: {
       startAt: currentTime,
       startAtTimestamp: currentTimeISOString,
-      state: RoundStates.STARTING,
+      state: RoundStates.FINISHED,
       type: RoundTypes.LOBBY,
     },
     currentRoundNumber: 0,
@@ -58,50 +56,49 @@ export const createRoom = onRequest(async (request, response) => {
     },
     rounds: {},
   });
-  console.log(`Room created with code: ${roomCode} and ID: ${roomId}`);
 
-  // Monitor changes to the players array
-  roomRef.child("players").on("value", () => {
-    updateCanStart(roomRef);
-  });
+  // // Monitor changes to the players array
+  // roomRef.child("players").on("value", () => {
+  //   updateCanStart(roomRef);
+  // });
 
-  // Monitor changes to the round state flag
-  roomRef.child("currentRound/state").on("value", () => {
-    updateCanStart(roomRef);
-  });
+  // // Monitor changes to the round state flag
+  // roomRef.child("currentRound/state").on("value", () => {
+  //   updateCanStart(roomRef);
+  // });
 
-  // Monitor changes to the locked flag
-  roomRef.child("isLocked").on("value", () => {
-    updateCanStart(roomRef);
-  });
+  // // Monitor changes to the locked flag
+  // roomRef.child("isLocked").on("value", () => {
+  //   updateCanStart(roomRef);
+  // });
 
   const reponseContent: CreateRoomResponse = { roomCode, roomId };
   response.send(reponseContent);
 });
 
 // Function to update canStart
-function updateCanStart(roomRef: Reference) {
-  roomRef.transaction((roomData: RoomContainer) => {
-    if (roomData) {
-      const roomIsLocked = roomData.isLocked;
-      const players: Player[] = Object.values(roomData.players) || [];
-      const playerStates = players.map((player) => player.state);
-      const allPlayersWaiting = playerStates.every(
-        (state) => state === PlayerStates.WAITING,
-      );
-      const roundsStarting =
-        roomData.currentRound.state === RoundStates.STARTING;
+// function updateCanStart(roomRef: Reference) {
+//   roomRef.transaction((roomData: RoomContainer) => {
+//     if (roomData) {
+//       const roomIsLocked = roomData.isLocked;
+//       const players: Player[] = Object.values(roomData.players) || [];
+//       const playerStates = players.map((player) => player.state);
+//       const allPlayersWaiting = playerStates.every(
+//         (state) => state === PlayerStates.WAITING,
+//       );
+//       const roundsStarting =
+//         roomData.currentRound.state === RoundStates.STARTING;
 
-      // Determine if the game can start
-      const canStart =
-        players.length > 1 &&
-        allPlayersWaiting &&
-        !roundsStarting &&
-        !roomIsLocked;
+//       // Determine if the game can start
+//       const canStart =
+//         players.length > 1 &&
+//         allPlayersWaiting &&
+//         !roundsStarting &&
+//         !roomIsLocked;
 
-      roomData.roundCanStart = canStart;
-      // Update canStart in the database
-    }
-    return roomData;
-  });
-}
+//       roomData.roundCanStart = canStart;
+//       // Update canStart in the database
+//     }
+//     return roomData;
+//   });
+// }

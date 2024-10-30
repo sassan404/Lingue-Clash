@@ -4,21 +4,24 @@ import { Languages } from "../../../../common/Interfaces/TreatedRequest";
 import { giveMeWords } from "../ChatGPT/giveMeWords";
 import { SentenceBuildingRound } from "../../../../common/Interfaces/Round/SentenceBuildingRound";
 import { RoundStates, RoundTypes } from "../../../../common/Interfaces/enums";
+import { RoomContainer } from "../../../../common/Interfaces/Room";
 
 export const startNewRound = async (roomRef: Reference) => {
   let newRoundNumber!: number;
   let lastRound!: RoundContainer;
 
-  const transtactionResult = await roomRef.transaction((room) => {
-    if (room) {
-      room.currentRoundNumber++;
+  const transtactionResult = await roomRef.transaction(
+    (room: RoomContainer) => {
+      if (room) {
+        room.currentRoundNumber++;
 
-      newRoundNumber = room.currentRoundNumber;
+        newRoundNumber = room.currentRoundNumber;
 
-      lastRound = room.currentRound;
-    }
-    return room;
-  });
+        lastRound = room.currentRound;
+      }
+      return room;
+    },
+  );
 
   if (
     transtactionResult.committed &&
@@ -31,25 +34,25 @@ export const startNewRound = async (roomRef: Reference) => {
       languages: (await roomRef.child("languages").get()).val(),
     };
 
-    console.log("Starting new round with words: ", languages);
-
     let newRound: SentenceBuildingRound = {
       startAt: Date.now(),
       startAtTimestamp: new Date().toISOString(),
-      countDown: 5,
       state: RoundStates.STARTING,
       type: RoundTypes.SENTENCE_BUILDING,
       givenWords: [],
       playerWords: [],
       result: {},
     };
+    await roomRef.child("countDown").transaction((countDown) => {
+      countDown = 5;
+      return countDown;
+    });
 
     await roomRef.update({
       currentRound: newRound,
     });
 
     giveMeWords(languages).then(async (words) => {
-      console.log("Words received: ", words);
       await roomRef.child("currentRound").update({
         givenWords: words.words,
       });
@@ -59,19 +62,22 @@ export const startNewRound = async (roomRef: Reference) => {
       [newRoundNumber - 1]: lastRound,
     });
 
+    console.log("start countdown");
     let count = 5;
     const intervalId = await setInterval(async () => {
-      count--;
-      await roomRef.child("currentRound").transaction((round) => {
-        if (round) {
-          round.countDown = count;
-          if (count == 0) {
-            round.state = RoundStates.PLAYING;
-            clearInterval(intervalId);
-          }
+      await roomRef.child("countDown").transaction((countDown) => {
+        if (countDown >= 0) {
+          countDown = count;
         }
-        return round;
+        return countDown;
       });
-    }, 1000);
+      if (count === 0) {
+        clearInterval(intervalId);
+      }
+      count--;
+    }, 500);
+    await roomRef.child("currentRound").update({
+      state: RoundStates.PLAYING,
+    });
   }
 };
