@@ -58,15 +58,29 @@ export class CommunicateWithChatGP<
   );
 
   public communicate = async (request: U): Promise<T> => {
-    log.apply("info", ["The request is: ", request]);
     const messageTosend = this.message(request);
-    log.apply("info", ["The message to send is: ", messageTosend]);
 
+    let getAndTreatmentOfAnswerStatus = async () => {
+      const answer = await this.buildChatGPTCompletion(messageTosend);
+      const treatedAnswer = this.treatChatGPTReply(answer);
+      if (this.checkAnswer(request, treatedAnswer)) {
+        return treatedAnswer;
+      }
+      log.apply("alert", ["The answer was not as expected, trying again"]);
+      return await getAndTreatmentOfAnswerStatus();
+    };
+    return await getAndTreatmentOfAnswerStatus();
+  };
+
+  buildChatGPTCompletion = async (message: string): Promise<ChatCompletion> => {
     const chatCompletion = await openai.chat.completions.create({
-      messages: [{ role: "user", content: messageTosend }],
+      messages: [{ role: "user", content: message }],
       model: "gpt-3.5-turbo",
     });
-
-    return this.treatChatGPTReply(chatCompletion);
+    return chatCompletion;
   };
+
+  checkAnswer(input: U, answer: T): boolean {
+    return true;
+  }
 }

@@ -49,10 +49,17 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
    */
 
   override treatChatGPTReply(chatGPTReply: ChatCompletion): GivenWords {
-    const treatedChatGPTReply: GivenWords = super.treatChatGPTReply(
-      chatGPTReply,
-    );
+    const treatedChatGPTReply = super.treatChatGPTReply(chatGPTReply);
     return treatedChatGPTReply;
+  }
+
+  override checkAnswer(input: Languages, answer: GivenWords): boolean {
+    return (
+      input.wordNumber == answer.words.length &&
+      input.languages.every((language) =>
+        answer.words.every((word) => word.hasOwnProperty(language)),
+      )
+    );
   }
 }
 
