@@ -45,7 +45,7 @@
 }
 
 .app-countdown {
-  position: fixed;
+  position: static;
   display: flex;
   justify-content: center;
   align-items: center;

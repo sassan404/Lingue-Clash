@@ -1,5 +1,4 @@
 .countdown-container {
-  position: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -9,8 +8,8 @@
 }
 
 .countdown-card {
-  width: 200px;
-  height: 200px;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;

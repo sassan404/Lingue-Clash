@@ -38,8 +38,8 @@ import { combineLatest, map } from 'rxjs';
     MatChipsModule,
     MatProgressSpinnerModule,
     SentenceBuildingRoundComponent,
-    CountdownComponent
-],
+    CountdownComponent,
+  ],
   templateUrl: './room.component.html',
   styleUrl: './room.component.css',
 })
@@ -70,13 +70,9 @@ export class RoomComponent {
     } else this.router.navigate(['/']);
 
     this.firebaseDBService.countDownSubject.subscribe((countDown) => {
-      console.log('Countdown: ', countDown);
+      console.log('countDown', countDown);
       this.countDown = countDown;
-    })
-  }
-  logCountDown(countDown: number | null) {
-    console.log('CountDown:', countDown);
-    return true
+    });
   }
 
   ngOnDestroy() {}

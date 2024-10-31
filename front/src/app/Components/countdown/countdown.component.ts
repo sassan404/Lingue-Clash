@@ -1,5 +1,5 @@
 import { trigger, transition, style, animate } from '@angular/animations';
-import { Component, Input } from '@angular/core';
+import { Component, Input, numberAttribute } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -24,5 +24,11 @@ import { FireBaseDBService } from '../../Services/firebase-db.service';
 })
 export class CountdownComponent {
 
-  constructor(public firebaseDBService: FireBaseDBService) {}
+  @Input({transform: numberAttribute}) countDown = 0;
+  constructor() {}
+
+  ngOnChanges(){
+    console.log('countDown', this.countDown);
+  }
+
 }

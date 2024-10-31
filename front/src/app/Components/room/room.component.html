@@ -39,7 +39,7 @@
   ></mat-progress-bar>
 
   <div id="app-countdown" *ngIf="countDown > 0">
-    <app-countdown></app-countdown>
+    <app-countdown [countDown]="countDown"></app-countdown>
   </div>
 
   <div *ngIf="countDown === 0">
