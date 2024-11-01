@@ -1,41 +1,20 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Injectable,
-  Input,
-  Output,
-  signal,
-} from '@angular/core';
+import { Component, Input, Output, signal } from '@angular/core';
 
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
-import {
-  AbstractControl,
-  NG_VALIDATORS,
-  ValidationErrors,
-  Validator,
-  ValidatorFn,
-} from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { BehaviorSubject } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Router } from '@angular/router';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { merge } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 
 import ISO6391 from 'iso-639-1';
+import { MatChipListboxChange, MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-language-selector',
@@ -49,14 +28,30 @@ import ISO6391 from 'iso-639-1';
     ReactiveFormsModule,
     MatButtonModule,
     AsyncPipe,
+    MatChipsModule,
   ],
   templateUrl: './language-selector.component.html',
   styleUrl: './language-selector.component.css',
 })
 export class LanguageSelectorComponent {
-  filteredLanguages: Observable<string[]> = new Observable<string[]>();
+  // Manually sorted list of languages by popularity
+  popularLanguages: string[] = [
+    'English',
+    'Chinese',
+    'Hindi',
+    'Spanish',
+    'French',
+    'Arabic',
+    'Bengali',
+    'Russian',
+  ];
+
+  filteredLanguages: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(
+    this.popularLanguages,
+  );
 
   languages: string[];
+  selectedLanguage: string | null = null;
 
   @Input() language: FormControl = new FormControl('', []);
 
@@ -74,18 +69,23 @@ export class LanguageSelectorComponent {
   ngOnInit() {
     this.language.addValidators(this.valideLanguage());
     this.language.addValidators(Validators.required);
-
-    this.filteredLanguages = this.language.valueChanges.pipe(
-      startWith(''),
-      map((value) => {
-        const filterValue = value?.toLowerCase();
-        return this.languages.filter((language) =>
-          language.toLowerCase().includes(filterValue ? filterValue : ''),
-        );
-      }),
-    );
   }
 
+  filterLanguages(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    const filterValue = inputElement.value?.toLowerCase();
+    if (!filterValue) {
+      this.filteredLanguages.next(this.popularLanguages);
+      return;
+    }
+    this.filteredLanguages.next(
+      this.languages
+        .filter((language) =>
+          language.toLowerCase().includes(filterValue ? filterValue : ''),
+        )
+        .slice(0, 8), // Limit to 8 languages
+    );
+  }
 
   @Output() valideLanguage(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -102,5 +102,23 @@ export class LanguageSelectorComponent {
     } else {
       this.errorMessage.set('');
     }
+  }
+
+  addLanguage(event: any): void {
+    const value = (event.value || '').trim();
+    if (value && this.languages.includes(value)) {
+      this.selectedLanguage = value;
+    }
+    event.input.value = '';
+    this.language.setValue('');
+  }
+
+  removeLanguage(): void {
+    this.selectedLanguage = null;
+  }
+
+  selectLanguage(event: MatChipListboxChange) {
+    console.log(event);
+    this.language.setValue(event.value);
   }
 }

@@ -1,14 +1,20 @@
 <div class="join-room">
   <h2>Join Room</h2>
   <form (submit)="joinRoom()" [formGroup]="joinRoomForm">
-    <mat-form-field>
-      <mat-label>Room Code</mat-label>
-      <input matInput formControlName="roomCode" />
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Username</mat-label>
-      <input matInput formControlName="username" />
-    </mat-form-field>
+    <div>
+      <label for="roomCode"><b>Enter Room Code</b></label>
+      <mat-form-field>
+        <mat-label>Room Code</mat-label>
+        <input matInput formControlName="roomCode" id="roomCode" />
+      </mat-form-field>
+    </div>
+    <div>
+      <label for="username"><b>Enter your username</b></label>
+      <mat-form-field>
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" id="username" />
+      </mat-form-field>
+    </div>
     <app-language-selector
       [language]="joinRoomForm.controls.language"
     ></app-language-selector>

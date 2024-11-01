@@ -38,7 +38,7 @@
     [value]="firebaseDBService.progressSubject | async"
   ></mat-progress-bar>
 
-  <div id="app-countdown" *ngIf="countDown > 0">
+  <div *ngIf="countDown > 0">
     <app-countdown [countDown]="countDown"></app-countdown>
   </div>
 

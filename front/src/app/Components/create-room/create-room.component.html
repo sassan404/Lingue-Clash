@@ -1,10 +1,13 @@
 <div class="create-room">
   <h2>Create Your Room</h2>
   <form [formGroup]="createRoomForm" (submit)="createRoom()">
-    <mat-form-field>
-      <mat-label>Username</mat-label>
-      <input matInput formControlName="username" />
-    </mat-form-field>
+    <div>
+      <label for="username"><b>Enter your username</b></label>
+      <mat-form-field>
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" id="username" />
+      </mat-form-field>
+    </div>
     <app-language-selector
       [language]="createRoomForm.controls.language"
     ></app-language-selector>

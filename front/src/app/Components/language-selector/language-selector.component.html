@@ -1,18 +1,29 @@
-<mat-form-field>
-  <mat-label>Choose a language</mat-label>
-  <input
-    matInput
-    [formControl]="language"
-    required
-    (blur)="updateErrorMessage()"
-    [matAutocomplete]="auto"
-  />
-  <mat-autocomplete #auto="matAutocomplete">
-    @for (option of filteredLanguages | async; track option) {
-      <mat-option [value]="option">{{ option }}</mat-option>
-    }
-  </mat-autocomplete>
-  @if (errorMessage()) {
-    <mat-error>{{ errorMessage() }}</mat-error>
-  }
-</mat-form-field>
+<div class="selectorContainer">
+  <div class="searchContainer">
+    <label for="languageFilter"><b>Select a language</b></label>
+    <mat-form-field>
+      <mat-label>Filter languages</mat-label>
+      <input
+        matInput
+        required
+        [formControl]="language"
+        (blur)="updateErrorMessage()"
+        (input)="filterLanguages($event)"
+        id="languageFilter"
+      />
+      <mat-error *ngIf="errorMessage()">{{ errorMessage() }}</mat-error>
+    </mat-form-field>
+  </div>
+  <div class="chip-list-container">
+    <mat-chip-listbox aria-label="Languages" (change)="selectLanguage($event)">
+      <div class="chips-list">
+        <mat-chip-option
+          *ngFor="let option of filteredLanguages | async"
+          [value]="option"
+        >
+          {{ option }}
+        </mat-chip-option>
+      </div>
+    </mat-chip-listbox>
+  </div>
+</div>
