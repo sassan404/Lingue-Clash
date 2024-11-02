@@ -60,7 +60,7 @@ export class CommunicateWithChatGP<
   public communicate = async (request: U): Promise<T> => {
     const messageTosend = this.message(request);
 
-    let getAndTreatmentOfAnswerStatus = async () => {
+    let getAndTreatmentOfAnswerStatus = async (): Promise<T> => {
       const answer = await this.buildChatGPTCompletion(messageTosend);
       const treatedAnswer = this.treatChatGPTReply(answer);
       if (this.checkAnswer(request, treatedAnswer)) {

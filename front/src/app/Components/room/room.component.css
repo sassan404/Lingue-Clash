@@ -5,6 +5,7 @@
   justify-content: center;
   height: 100vh;
   min-width: fit-content;
+  justify-self: center;
 }
 
 .mat-mdc-standard-chip.ready-chip {

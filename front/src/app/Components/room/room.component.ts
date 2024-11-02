@@ -23,6 +23,8 @@ import { SentenceBuildingRoundComponent } from '../sentence-building-round/sente
 import { FireBaseDBService } from '../../Services/firebase-db.service';
 import { combineLatest, map } from 'rxjs';
 
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 @Component({
   selector: 'app-room',
   standalone: true,
@@ -37,6 +39,7 @@ import { combineLatest, map } from 'rxjs';
     MatListModule,
     MatChipsModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
     SentenceBuildingRoundComponent,
     CountdownComponent,
   ],
@@ -48,6 +51,7 @@ export class RoomComponent {
   playerUsername?: string;
 
   countDown = 0;
+  roundNumber = 0;
   countDownContainer: ViewContainerRef | undefined;
   private countDownComponentRef: ComponentRef<CountdownComponent> | undefined;
 
@@ -70,8 +74,11 @@ export class RoomComponent {
     } else this.router.navigate(['/']);
 
     this.firebaseDBService.countDownSubject.subscribe((countDown) => {
-      console.log('countDown', countDown);
       this.countDown = countDown;
+    });
+
+    this.firebaseDBService.roundNumberSubject.subscribe((roundNumber) => {
+      this.roundNumber = roundNumber;
     });
   }
 

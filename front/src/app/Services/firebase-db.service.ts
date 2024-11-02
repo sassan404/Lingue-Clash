@@ -36,9 +36,7 @@ export class FireBaseDBService {
 
   roomCodeSubject = this.listenToRoomChange<string>('roomCode');
   roomLockedSubject = this.listenToRoomChange<boolean>('isLocked');
-  progressSubject = this.listenToRoomChange<number>('progress').pipe(
-    map((progress) => (progress / 10) * 100),
-  );
+  progressSubject = this.listenToRoomChange<number>('progress');
 
   roundNumberSubject = this.listenToRoomChange<number>('currentRoundNumber');
 
@@ -86,7 +84,21 @@ export class FireBaseDBService {
                 observer.next(snapshot.val());
               },
               (error) => {
-                observer.error(error);
+                let defaultValue: T;
+                if (typeof (0 as T) === 'number') {
+                  defaultValue = 0 as T;
+                } else if (typeof ('' as T) === 'string') {
+                  defaultValue = '' as T;
+                } else if (typeof (false as T) === 'boolean') {
+                  defaultValue = false as T;
+                } else if (Array.isArray([] as T)) {
+                  defaultValue = [] as T;
+                } else if (typeof ({} as T) === 'object') {
+                  defaultValue = {} as T;
+                } else {
+                  defaultValue = null as T; // Fallback for other types
+                }
+                observer.next(defaultValue);
               },
             );
             return { unsubscribe };

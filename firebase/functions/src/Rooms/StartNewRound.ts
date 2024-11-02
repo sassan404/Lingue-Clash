@@ -16,6 +16,7 @@ export const startNewRound = async (roomRef: Reference) => {
         room.currentRoundNumber++;
 
         newRoundNumber = room.currentRoundNumber;
+        room.progress = room.currentRoundNumber * 10;
 
         lastRound = room.currentRound;
       }
