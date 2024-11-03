@@ -2,7 +2,9 @@ import { Reference } from "firebase-admin/database";
 import { Sentence } from "../../../../common/Interfaces/Sentence";
 import { PlayerStates, RoundStates } from "../../../../common/Interfaces/enums";
 import { SentenceEvaluationReply } from "../../../../common/Interfaces/TreatedChatGPTStructure";
+import { RoundHelpers } from "../../../../common/Interfaces/Round/RoundHelpers";
 import { evaluateTheSentence } from "../ChatGPT/evaluateTheSentence";
+import { startNewRound } from "./StartNewRound";
 
 export abstract class RoundHelper<T> {
   constructor(
@@ -29,6 +31,12 @@ export abstract class RoundHelper<T> {
         state: PlayerStates.WAITING,
       });
     });
+    const currentRoundNumber = (
+      await this.roomRef.child("currentRound/number").once("value")
+    ).val();
+    if (currentRoundNumber >= RoundHelpers.maxRounds) {
+      startNewRound(this.roomRef);
+    }
   };
 }
 export class SentenceBuildingRoundHelper extends RoundHelper<Sentence> {

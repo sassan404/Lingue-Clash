@@ -5,6 +5,8 @@ import { giveMeWords } from "../ChatGPT/giveMeWords";
 import { SentenceBuildingRound } from "../../../../common/Interfaces/Round/SentenceBuildingRound";
 import { RoundStates, RoundTypes } from "../../../../common/Interfaces/enums";
 import { RoomContainer } from "../../../../common/Interfaces/Room";
+import { Player } from "../../../../common/Interfaces/Player";
+import { RoundHelpers } from "../../../../common/Interfaces/Round/RoundHelpers";
 
 export const startNewRound = async (roomRef: Reference) => {
   let newRoundNumber!: number;
@@ -16,7 +18,8 @@ export const startNewRound = async (roomRef: Reference) => {
         room.currentRoundNumber++;
 
         newRoundNumber = room.currentRoundNumber;
-        room.progress = room.currentRoundNumber * 10;
+        room.progress =
+          (room.currentRoundNumber / RoundHelpers.maxRounds) * 100;
 
         lastRound = room.currentRound;
       }
@@ -24,61 +27,82 @@ export const startNewRound = async (roomRef: Reference) => {
     },
   );
 
-  if (
-    transtactionResult.committed &&
-    newRoundNumber &&
-    newRoundNumber <= 10 &&
-    lastRound
-  ) {
-    const languages: Languages = {
-      wordNumber: newRoundNumber,
-      languages: (await roomRef.child("languages").get()).val(),
-    };
-
-    let newRound: SentenceBuildingRound = {
-      startAt: Date.now(),
-      startAtTimestamp: new Date().toISOString(),
-      state: RoundStates.STARTING,
-      type: RoundTypes.SENTENCE_BUILDING,
-      givenWords: [],
-      playerWords: [],
-      result: {},
-    };
-    await roomRef.child("countDown").transaction((countDown) => {
-      countDown = 5;
-      return countDown;
-    });
-
-    await roomRef.update({
-      currentRound: newRound,
-    });
-
-    giveMeWords(languages).then(async (words) => {
-      await roomRef.child("currentRound").update({
-        givenWords: words.words,
-      });
-    });
-
-    await roomRef.child("rounds").update({
-      [newRoundNumber - 1]: lastRound,
-    });
-
-    console.log("start countdown");
-    let count = 5;
-    const intervalId = await setInterval(async () => {
+  if (transtactionResult.committed && newRoundNumber && lastRound) {
+    if (newRoundNumber <= RoundHelpers.maxRounds) {
       await roomRef.child("countDown").transaction((countDown) => {
-        if (countDown >= 0) {
-          countDown = count;
-        }
+        countDown = 5;
         return countDown;
       });
-      if (count === 0) {
-        clearInterval(intervalId);
-      }
-      count--;
-    }, 500);
-    await roomRef.child("currentRound").update({
-      state: RoundStates.PLAYING,
+
+      const languages: Languages = {
+        wordNumber: newRoundNumber,
+        languages: (await roomRef.child("languages").get()).val(),
+      };
+
+      let newRound: SentenceBuildingRound = {
+        startAt: Date.now(),
+        startAtTimestamp: new Date().toISOString(),
+        state: RoundStates.STARTING,
+        type: RoundTypes.SENTENCE_BUILDING,
+        givenWords: [],
+        playerWords: [],
+        result: {},
+      };
+
+      await roomRef.update({
+        currentRound: newRound,
+      });
+
+      giveMeWords(languages).then(async (words) => {
+        await roomRef.child("currentRound").update({
+          givenWords: words.words,
+        });
+      });
+
+      let count = 5;
+      const intervalId = await setInterval(async () => {
+        await roomRef.child("countDown").transaction((countDown) => {
+          if (countDown >= 0) {
+            countDown = count;
+          }
+          return countDown;
+        });
+        if (count === 0) {
+          clearInterval(intervalId);
+        }
+        count--;
+      }, 500);
+      await roomRef.child("currentRound").update({
+        state: RoundStates.PLAYING,
+      });
+    } else {
+      const players: { [playerId: string]: Player } = (
+        await roomRef.child("players").get()
+      ).val();
+
+      // Create a map of player IDs to player scores
+      const playerScores = Object.keys(players).reduce(
+        (acc, playerId) => {
+          acc[playerId] = players[playerId].score;
+          return acc;
+        },
+        {} as { [playerId: string]: number },
+      );
+
+      let newRound: RoundContainer = {
+        startAt: Date.now(),
+        startAtTimestamp: new Date().toISOString(),
+        state: RoundStates.FINISHED,
+        type: RoundTypes.END,
+        result: playerScores,
+      };
+
+      await roomRef.update({
+        currentRound: newRound,
+      });
+    }
+    roomRef.child("rounds").update({
+      [newRoundNumber - 1]: lastRound,
     });
   }
 };

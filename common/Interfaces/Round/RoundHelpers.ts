@@ -4,6 +4,7 @@ import { SentenceBuildingRound } from "./SentenceBuildingRound";
 import { TestRound } from "./TestRound";
 
 export let RoundHelpers = {
+  maxRounds: 5,
   isSentenceBuildingRound: (
     round: RoundContainer
   ): round is SentenceBuildingRound => {
