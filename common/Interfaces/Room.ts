@@ -20,6 +20,11 @@ export interface RoomContainer {
   rounds: {
     [roundId: string]: RoundContainer; // Define the structure of a round if needed
   };
+  scoresByRound: {
+    [roundId: string]: {
+      [playerId: string]: number;
+    },
+  }
 }
 
 export class RoomContainer {
@@ -32,5 +37,6 @@ export class RoomContainer {
     this.roomName = room.roomName;
     this.players = room.players;
     this.rounds = room.rounds;
+    this.scoresByRound = room.scoresByRound;
   }
 }

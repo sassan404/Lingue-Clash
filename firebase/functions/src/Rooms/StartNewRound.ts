@@ -2,7 +2,6 @@ import { Reference } from "firebase-admin/database";
 import { RoundContainer } from "../../../../common/Interfaces/Round/Round";
 import { Languages } from "../../../../common/Interfaces/TreatedRequest";
 import { giveMeWords } from "../ChatGPT/giveMeWords";
-import { SentenceBuildingRound } from "../../../../common/Interfaces/Round/SentenceBuildingRound";
 import { RoundStates, RoundTypes } from "../../../../common/Interfaces/enums";
 import { RoomContainer } from "../../../../common/Interfaces/Room";
 import { Player } from "../../../../common/Interfaces/Player";
@@ -39,7 +38,7 @@ export const startNewRound = async (roomRef: Reference) => {
         languages: (await roomRef.child("languages").get()).val(),
       };
 
-      let newRound: SentenceBuildingRound = {
+      let newRound = {
         startAt: Date.now(),
         startAtTimestamp: new Date().toISOString(),
         state: RoundStates.STARTING,
@@ -59,7 +58,7 @@ export const startNewRound = async (roomRef: Reference) => {
         });
       });
 
-      let count = 5;
+      let count = 0;
       const intervalId = await setInterval(async () => {
         await roomRef.child("countDown").transaction((countDown) => {
           if (countDown >= 0) {
@@ -71,7 +70,7 @@ export const startNewRound = async (roomRef: Reference) => {
           clearInterval(intervalId);
         }
         count--;
-      }, 500);
+      }, 250);
       await roomRef.child("currentRound").update({
         state: RoundStates.PLAYING,
       });
@@ -89,7 +88,7 @@ export const startNewRound = async (roomRef: Reference) => {
         {} as { [playerId: string]: number },
       );
 
-      let newRound: RoundContainer = {
+      let newRound = {
         startAt: Date.now(),
         startAtTimestamp: new Date().toISOString(),
         state: RoundStates.FINISHED,

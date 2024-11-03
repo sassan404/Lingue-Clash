@@ -5,6 +5,7 @@ import { SentenceEvaluationReply } from "../../../../common/Interfaces/TreatedCh
 import { RoundHelpers } from "../../../../common/Interfaces/Round/RoundHelpers";
 import { evaluateTheSentence } from "../ChatGPT/evaluateTheSentence";
 import { startNewRound } from "./StartNewRound";
+import { Player } from "../../../../common/Interfaces/Player";
 
 export abstract class RoundHelper<T> {
   constructor(
@@ -15,30 +16,52 @@ export abstract class RoundHelper<T> {
 
   playerRef: Reference = this.roomRef.child(`players/${this.playerId}`);
   roundRef: Reference = this.roomRef.child("currentRound");
+  scoresByRoundRef: Reference = this.roomRef.child("scoresByRound");
 
   abstract buildAnswer: () => Promise<T>;
   abstract setPlayerAnswerForRound: () => void;
+
+  setPlayerScore: (score: number) => void = async (score: number) => {
+    const currentRoundNumber = (
+      await this.roomRef.child("currentRoundNumber").once("value")
+    ).val();
+    console.log("currentRoundNumber", currentRoundNumber);
+
+    this.scoresByRoundRef.child(currentRoundNumber).update({
+      [this.playerId]: score,
+    });
+
+    await this.playerRef.transaction((player: Player) => {
+      if (player) {
+        player.score = Number(player.score) + Number(score);
+      }
+      console.log("player", player);
+      return player;
+    });
+  };
 
   finishRound: () => Promise<void> = async () => {
     this.roundRef.update({
       state: RoundStates.FINISHED,
     });
-    const players = Object.keys(
-      (await this.roomRef.child("players").once("value")).val(),
-    );
-    players.forEach(async (player: string) => {
-      await this.roomRef.child(`players/${player}`).update({
-        state: PlayerStates.WAITING,
-      });
-    });
     const currentRoundNumber = (
-      await this.roomRef.child("currentRound/number").once("value")
+      await this.roomRef.child("currentRoundNumber").once("value")
     ).val();
     if (currentRoundNumber >= RoundHelpers.maxRounds) {
       startNewRound(this.roomRef);
+    } else {
+      const players = Object.keys(
+        (await this.roomRef.child("players").once("value")).val(),
+      );
+      players.forEach(async (player: string) => {
+        await this.roomRef.child(`players/${player}`).update({
+          state: PlayerStates.WAITING,
+        });
+      });
     }
   };
 }
+
 export class SentenceBuildingRoundHelper extends RoundHelper<Sentence> {
   buildAnswer: () => Promise<Sentence> = async () => {
     const playerLanguage: string = (
@@ -78,11 +101,6 @@ export class SentenceBuildingRoundHelper extends RoundHelper<Sentence> {
       [this.playerId]: sentenceEvaluation,
     });
 
-    await this.playerRef.transaction((player) => {
-      if (player) {
-        player.score += sentenceEvaluation.score;
-      }
-      return player;
-    });
+    this.setPlayerScore(sentenceEvaluation.score);
   };
 }

@@ -1,10 +1,7 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { database } from "../realtime-db.config";
 import { PlayerAnswer } from "../../../../common/Interfaces/Responses";
-import {
-  PlayerStates,
-  RoundTypes,
-} from "../../../../common/Interfaces/enums";
+import { PlayerStates, RoundTypes } from "../../../../common/Interfaces/enums";
 import { Player } from "../../../../common/Interfaces/Player";
 import {
   RoundHelper,
@@ -37,13 +34,13 @@ export const submitPlayerAnswer = onRequest(async (request, response) => {
   }
 
   if (currentRoundHelper) {
-    currentRoundHelper.setPlayerAnswerForRound();
-
     const playerRef = roomRef.child(`players/${username}`);
 
     await playerRef.update({
       state: PlayerStates.FINISHED,
     });
+
+    await currentRoundHelper.setPlayerAnswerForRound();
 
     const players = (await roomRef.child("players").once("value")).val();
     const playersList: Player[] = Object.values(players);

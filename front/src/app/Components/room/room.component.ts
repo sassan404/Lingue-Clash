@@ -24,6 +24,10 @@ import { FireBaseDBService } from '../../Services/firebase-db.service';
 import { combineLatest, map } from 'rxjs';
 
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RoundHelpers } from '../../../../../common/Interfaces/Round/RoundHelpers';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { ResultDisplayComponent } from "../result-display/result-display.component";
 
 @Component({
   selector: 'app-room',
@@ -42,7 +46,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTooltipModule,
     SentenceBuildingRoundComponent,
     CountdownComponent,
-  ],
+    MatCardModule,
+    MatTableModule,
+    ResultDisplayComponent
+],
   templateUrl: './room.component.html',
   styleUrl: './room.component.css',
 })
@@ -50,6 +57,7 @@ export class RoomComponent {
   roomId?: string;
   playerUsername?: string;
 
+  maxRound = RoundHelpers.maxRounds;
   countDown = 0;
   roundNumber = 0;
   countDownContainer: ViewContainerRef | undefined;
@@ -80,6 +88,7 @@ export class RoomComponent {
     this.firebaseDBService.roundNumberSubject.subscribe((roundNumber) => {
       this.roundNumber = roundNumber;
     });
+
   }
 
   ngOnDestroy() {}

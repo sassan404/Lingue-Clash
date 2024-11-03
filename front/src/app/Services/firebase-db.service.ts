@@ -70,6 +70,23 @@ export class FireBaseDBService {
   );
 
   roundStateSubject = this.roundSubject.pipe(map((round) => round.state));
+  totalScoresSubject = this.allPlayersSubject.pipe(
+    map((players) => {
+      const keys = Object.keys(players);
+
+      const scoreByPlayer: { [playerId: string]: number } = {};
+      keys.forEach((key) => {
+        scoreByPlayer[key] = players[key].score;
+      });
+      return scoreByPlayer;
+    }),
+  );
+
+  scoresByRoundSubject = this.listenToRoomChange<{
+    [roundId: string]: {
+      [playerId: string]: number;
+    };
+  }>('scoresByRound');
 
   countDownSubject = this.listenToRoomChange<number>('countDown');
 

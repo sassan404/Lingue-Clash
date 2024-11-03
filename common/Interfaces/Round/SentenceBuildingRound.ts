@@ -22,4 +22,13 @@ export class SentenceBuildingRound extends RoundContainer {
     this.playerWords = round.playerWords;
     this.result = round.result;
   }
+
+  override getPlayerScores(): { [playerId: string]: number }  {
+    const keys =  Object.keys(this.result)
+
+  const resultWithScore: { [playerId: string]: number }  = {}
+  keys.forEach((key) => {resultWithScore[key] = this.result[key].score})
+    return resultWithScore
+  }
 }
+

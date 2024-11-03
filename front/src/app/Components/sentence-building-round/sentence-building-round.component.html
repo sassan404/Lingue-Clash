@@ -1,5 +1,6 @@
 @if (sentenceBuildingRound) {
-  <mat-chip-listbox aria-label="Words list">
+  <label for="words-list">Words for round</label>
+  <mat-chip-listbox id="words-list" aria-label="Words list">
     @for (word of sentenceBuildingRound.playerWords; track word) {
       <mat-chip> {{ word }} </mat-chip>
     }

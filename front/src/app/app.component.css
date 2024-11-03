@@ -1,0 +1,17 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: fit-content;
+  justify-self: center;
+  height: calc(100vh - var(--mat-toolbar-height, 64px));
+}
+
+.main {
+  height: 100vh;
+  width: 100vw;
+}
+.example-spacer {
+    flex: 1 1 auto;
+  }
