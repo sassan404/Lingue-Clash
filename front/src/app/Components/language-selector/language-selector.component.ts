@@ -118,7 +118,6 @@ export class LanguageSelectorComponent {
   }
 
   selectLanguage(event: MatChipListboxChange) {
-    console.log(event);
     this.language.setValue(event.value);
   }
 }

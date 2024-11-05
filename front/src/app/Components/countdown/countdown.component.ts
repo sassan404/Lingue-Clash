@@ -1,10 +1,7 @@
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Component, Input, numberAttribute } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { RoundStates } from '../../../../../common/Interfaces/enums';
-import { FireBaseDBService } from '../../Services/firebase-db.service';
 
 @Component({
   selector: 'app-countdown',

@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { HTTPService } from '../../Services/http.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButton } from '@angular/material/button';
@@ -14,7 +14,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips';
 import { CountdownComponent } from '../countdown/countdown.component';
-import { bootstrapApplication } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -27,7 +26,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RoundHelpers } from '../../../../../common/Interfaces/Round/RoundHelpers';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
-import { ResultDisplayComponent } from "../result-display/result-display.component";
+import { ResultDisplayComponent } from '../result-display/result-display.component';
 
 @Component({
   selector: 'app-room',
@@ -48,8 +47,9 @@ import { ResultDisplayComponent } from "../result-display/result-display.compone
     CountdownComponent,
     MatCardModule,
     MatTableModule,
-    ResultDisplayComponent
-],
+    ResultDisplayComponent,
+    NgClass,
+  ],
   templateUrl: './room.component.html',
   styleUrl: './room.component.css',
 })
@@ -60,8 +60,6 @@ export class RoomComponent {
   maxRound = RoundHelpers.maxRounds;
   countDown = 0;
   roundNumber = 0;
-  countDownContainer: ViewContainerRef | undefined;
-  private countDownComponentRef: ComponentRef<CountdownComponent> | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -88,7 +86,6 @@ export class RoomComponent {
     this.firebaseDBService.roundNumberSubject.subscribe((roundNumber) => {
       this.roundNumber = roundNumber;
     });
-
   }
 
   ngOnDestroy() {}
@@ -121,28 +118,5 @@ export class RoomComponent {
 
   getPlayersArray(players: { [playerId: string]: Player }): Player[] {
     return Object.values(players);
-  }
-
-  // Dynamically create the CountdownComponent
-  async createCountdownComponent() {
-    const applicationRef = await bootstrapApplication(RoomComponent);
-    // Locate a DOM node that would be used as a host.
-    const hostElement = document.getElementById('hello-component-host');
-    // Get an `EnvironmentInjector` instance from the `ApplicationRef`.
-    const environmentInjector = applicationRef.injector;
-    // We can now create a `ComponentRef` instance.
-    if (hostElement) {
-      this.countDownComponentRef = createComponent(CountdownComponent, {
-        hostElement,
-        environmentInjector,
-      });
-    }
-  }
-
-  // Destroy the CountdownComponent
-  destroyCountdownComponent() {
-    if (this.countDownComponentRef) {
-      this.countDownComponentRef.destroy();
-    }
   }
 }

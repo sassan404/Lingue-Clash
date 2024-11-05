@@ -28,10 +28,7 @@ export const startNewRound = async (roomRef: Reference) => {
 
   if (transtactionResult.committed && newRoundNumber && lastRound) {
     if (newRoundNumber <= RoundHelpers.maxRounds) {
-      await roomRef.child("countDown").transaction((countDown) => {
-        countDown = 5;
-        return countDown;
-      });
+      startCountDown(roomRef);
 
       const languages: Languages = {
         wordNumber: newRoundNumber,
@@ -58,19 +55,6 @@ export const startNewRound = async (roomRef: Reference) => {
         });
       });
 
-      let count = 0;
-      const intervalId = await setInterval(async () => {
-        await roomRef.child("countDown").transaction((countDown) => {
-          if (countDown >= 0) {
-            countDown = count;
-          }
-          return countDown;
-        });
-        if (count === 0) {
-          clearInterval(intervalId);
-        }
-        count--;
-      }, 250);
       await roomRef.child("currentRound").update({
         state: RoundStates.PLAYING,
       });
@@ -104,4 +88,20 @@ export const startNewRound = async (roomRef: Reference) => {
       [newRoundNumber - 1]: lastRound,
     });
   }
+};
+
+const startCountDown = async (roomRef: Reference) => {
+  let count = 5;
+  const intervalId = await setInterval(async () => {
+    await roomRef.child("countDown").transaction((countDown) => {
+      if (countDown >= 0) {
+        countDown = count;
+      }
+      return countDown;
+    });
+    if (count === 0) {
+      clearInterval(intervalId);
+    }
+    count--;
+  }, 500);
 };

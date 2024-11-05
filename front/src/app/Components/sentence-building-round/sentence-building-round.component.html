@@ -1,27 +1,40 @@
-@if (sentenceBuildingRound) {
-  <label for="words-list">Words for round</label>
-  <mat-chip-listbox id="words-list" aria-label="Words list">
-    @for (word of sentenceBuildingRound.playerWords; track word) {
-      <mat-chip> {{ word }} </mat-chip>
-    }
-  </mat-chip-listbox>
+<ng-container *ngIf="sentenceBuildingRoundObervable | async as data">
+  <ng-container
+    *ngIf="
+      data.sentenceBuildingRound &&
+      !data.showPlayerIsWaiting &&
+      showSubmitButton(
+        data.sentenceBuildingRound.state,
+        data.currentPlayer.state
+      )
+    "
+  >
+    <h3>Round {{ firebaseDBService.roundNumberSubject | async }}</h3>
+    <label for="words-list">Words for round</label>
+    <mat-chip-listbox id="words-list" aria-label="Words list">
+      @for (word of data.sentenceBuildingRound.playerWords; track word) {
+        <mat-chip> {{ word }} </mat-chip>
+      }
+    </mat-chip-listbox>
 
-  <div *ngIf="currentRound && showSubmitButton()">
     <mat-form-field>
       <input
         matInput
         placeholder="Enter your sentence"
         [formControl]="answer"
-        (keyup.enter)="submitRoundAnswer()"
+        (keyup.enter)="
+          submitRoundAnswer(data.roomId, data.currentPlayer.username)
+        "
       />
     </mat-form-field>
     <button
       mat-raised-button
       color="primary"
-      (click)="submitRoundAnswer()"
+      (click)="submitRoundAnswer(data.roomId, data.currentPlayer.username)"
       [disabled]="answer.invalid"
     >
       Submit
     </button>
-  </div>
-}
+  </ng-container>
+  <div *ngIf="data.showPlayerIsWaiting">Waiting for other players</div>
+</ng-container>

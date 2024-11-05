@@ -27,11 +27,9 @@ export class ResultDisplayComponent {
   displayedColumns: string[] = ['player', 'total'];
   ngOnInit() {
     this.firebaseDBService.totalScoresSubject.subscribe((results) => {
-      console.log(results);
       this.totalResults = results;
     });
     this.firebaseDBService.scoresByRoundSubject.subscribe((scoresByRound) => {
-      console.log(scoresByRound);
       if (!scoresByRound) {
         return;
       }

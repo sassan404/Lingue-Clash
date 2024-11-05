@@ -9,16 +9,15 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
-import { RoundContainer } from '../../../../../common/Interfaces/Round/Round';
-import { Player } from '../../../../../common/Interfaces/Player';
 import { GivenWord } from '../../../../../common/Interfaces/GivenWord';
 import {
   PlayerStates,
   RoundStates,
 } from '../../../../../common/Interfaces/enums';
 import { HTTPService } from '../../Services/http.service';
-import { SentenceBuildingRound } from '../../../../../common/Interfaces/Round/SentenceBuildingRound';
 import { RoundHelpers } from '../../../../../common/Interfaces/Round/RoundHelpers';
+import { FireBaseDBService } from '../../Services/firebase-db.service';
+import { combineLatest, map } from 'rxjs';
 
 @Component({
   selector: 'app-sentence-building-round',
@@ -39,50 +38,56 @@ import { RoundHelpers } from '../../../../../common/Interfaces/Round/RoundHelper
   styleUrl: './sentence-building-round.component.css',
 })
 export class SentenceBuildingRoundComponent {
-  @Input({ required: true }) currentRound!: RoundContainer;
-  @Input({ required: true }) currentPlayer!: Player;
-  @Input() roomId?: string;
-
-  sentenceBuildingRound: SentenceBuildingRound | undefined;
   answer = new FormControl('', Validators.required);
 
-  constructor(private httpService: HTTPService) {}
-  ngOnChanges(): void {
-    if (this.currentRound && this.currentPlayer) {
-      this.sentenceBuildingRound = RoundHelpers.getSentenceBuildingRound(
-        this.currentRound,
-      );
+  constructor(
+    private httpService: HTTPService,
+    public firebaseDBService: FireBaseDBService,
+  ) {}
 
-      if (this.sentenceBuildingRound) {
+  sentenceBuildingRoundObervable = combineLatest([
+    this.firebaseDBService.roomId,
+    this.firebaseDBService.playerSubject,
+    this.firebaseDBService.roundSubject,
+  ]).pipe(
+    map(([roomId, currentPlayer, currentRound]) => {
+      const sentenceBuildingRound =
+        RoundHelpers.getSentenceBuildingRound(currentRound);
+
+      if (sentenceBuildingRound && sentenceBuildingRound.givenWords) {
         const givenWords: GivenWord[] = Array.isArray(
-          this.sentenceBuildingRound.givenWords,
+          sentenceBuildingRound.givenWords,
         )
-          ? this.sentenceBuildingRound.givenWords
-          : [this.sentenceBuildingRound.givenWords];
-        this.sentenceBuildingRound.playerWords = givenWords?.flatMap(
+          ? sentenceBuildingRound.givenWords
+          : [sentenceBuildingRound.givenWords];
+        sentenceBuildingRound.playerWords = givenWords?.flatMap(
           (givenWord: GivenWord) => {
-            const wordForPlayer: string[] = this.currentPlayer
-              ? [givenWord[this.currentPlayer.language]]
-              : [];
+            const wordForPlayer: string[] = [givenWord[currentPlayer.language]];
             return wordForPlayer;
           },
         );
       }
-    }
-  }
+      return {
+        roomId,
+        currentPlayer,
+        currentRound,
+        sentenceBuildingRound,
+        showPlayerIsWaiting: currentPlayer.isWaiting(currentRound.state),
+      };
+    }),
+  );
 
-  showSubmitButton() {
+  showSubmitButton(roundState: RoundStates, playerState: PlayerStates) {
     return (
-      this.currentRound?.state === RoundStates.PLAYING &&
-      this.currentPlayer?.state === PlayerStates.PLAYING
+      roundState === RoundStates.PLAYING && playerState === PlayerStates.PLAYING
     );
   }
 
-  submitRoundAnswer() {
-    if (this.roomId && this.currentPlayer && this.answer.value)
+  submitRoundAnswer(roomId: string, playerUserName: string) {
+    if (this.firebaseDBService.roomId && this.answer.value)
       this.httpService.submitPlayerAnswer(
-        this.roomId,
-        this.currentPlayer.username,
+        roomId,
+        playerUserName,
         this.answer.value,
       );
   }
