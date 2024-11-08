@@ -14,10 +14,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   standalone: true,
   imports: [
     RouterOutlet,
-    HomeComponent,
-    CreateRoomComponent,
-    JoinRoomComponent,
-    RoomComponent,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
