@@ -23,18 +23,18 @@ env:
   #   secret: mySecretRef
 
   - variable: apiKey
-    secret: projects/986535699243/secrets/API_KEY
+    secret: apiKey
   - variable: authDomain
-    secret: projects/986535699243/secrets/AUTH_DOMAIN
+    secret: authDomain
   - variable: databaseURL
-    secret: projects/986535699243/secrets/DATABASE_URL
+    secret: databaseURL
   - variable: projectId
-    secret: projects/986535699243/secrets/PROJECT_ID
+    secret: projectId
   - variable: storageBucket
-    secret: projects/986535699243/secrets/STORAGE_BUCKET
+    secret: storageBucket
   - variable: messagingSenderId
-    secret: projects/986535699243/secrets/MESSAGING_SENDER_ID
+    secret: messagingSenderId
   - variable: appId
-    secret: projects/986535699243/secrets/APP_ID
+    secret: appId
   - variable: measurementId
-    secret: projects/986535699243/secrets/MEASUREMENT_ID
+    secret: measurementId
