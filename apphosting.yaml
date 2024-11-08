@@ -22,19 +22,19 @@ env:
   # - variable: MY_SECRET
   #   secret: mySecretRef
 
-  - variable: apiKey
-    secret: projects/word-clash-2aa96/secrets/apiKey
-  - variable: authDomain
-    secret: projects/word-clash-2aa96/secrets/authDomain
-  - variable: databaseURL
-    secret: projects/word-clash-2aa96/secrets/databaseURL
-  - variable: projectId
-    secret: projects/word-clash-2aa96/secrets/projectId
-  - variable: storageBucket
-    secret: projects/word-clash-2aa96/secrets/storageBucket
-  - variable: messagingSenderId
-    secret: projects/word-clash-2aa96/secrets/messagingSenderId
-  - variable: appId
-    secret: projects/word-clash-2aa96/secrets/appId
-  - variable: measurementId
-    secret: projects/word-clash-2aa96/secrets/measurementId
+  - variable: API_KEY
+    secret: projects/986535699243/secrets/apiKey
+  - variable: AUTH_DOMAIN
+    secret: projects/986535699243/secrets/authDomain
+  - variable: DATABASE_URL
+    secret: projects/986535699243/secrets/databaseURL
+  - variable: PROJECT_ID
+    secret: projects/986535699243/secrets/projectId
+  - variable: STORAGE_BUCKET
+    secret: projects/986535699243/secrets/storageBucket
+  - variable: MESSAGING_SENDER_ID
+    secret: projects/986535699243/secrets/messagingSenderId
+  - variable: APP_ID
+    secret: projects/986535699243/secrets/appId
+  - variable: MEASUREMENT_ID
+    secret: projects/986535699243/secrets/measurementId
