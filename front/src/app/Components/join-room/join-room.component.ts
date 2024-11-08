@@ -18,8 +18,8 @@ import { Router } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
-import { JoinRoomRequest } from '../../../../../common/Interfaces/Requests';
-import { JoinRoomResponse } from '../../../../../common/Interfaces/Responses';
+import { JoinRoomRequest } from '@common/Interfaces/Requests';
+import { JoinRoomResponse } from '@common/Interfaces/Responses';
 @Component({
   selector: 'app-join-room',
   standalone: true,
@@ -31,7 +31,6 @@ import { JoinRoomResponse } from '../../../../../common/Interfaces/Responses';
     MatAutocompleteModule,
     ReactiveFormsModule,
     MatButtonModule,
-    AsyncPipe,
     LanguageSelectorComponent,
   ],
   templateUrl: './join-room.component.html',

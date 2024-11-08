@@ -17,13 +17,13 @@ import { CountdownComponent } from '../countdown/countdown.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { Player } from '../../../../../common/Interfaces/Player';
+import { Player } from '@common/Interfaces/Player';
 import { SentenceBuildingRoundComponent } from '../sentence-building-round/sentence-building-round.component';
 import { FireBaseDBService } from '../../Services/firebase-db.service';
 import { combineLatest, map } from 'rxjs';
 
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RoundHelpers } from '../../../../../common/Interfaces/Round/RoundHelpers';
+import { RoundHelpers } from '@common/Interfaces/Round/RoundHelpers';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { ResultDisplayComponent } from '../result-display/result-display.component';

@@ -17,8 +17,8 @@ import { Router } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
-import { CreateRoomRequest } from '../../../../../common/Interfaces/Requests';
-import { JoinRoomResponse } from '../../../../../common/Interfaces/Responses';
+import { CreateRoomRequest } from '@common/Interfaces/Requests';
+import { JoinRoomResponse } from '@common/Interfaces/Responses';
 
 @Component({
   selector: 'app-create-room',
@@ -31,7 +31,6 @@ import { JoinRoomResponse } from '../../../../../common/Interfaces/Responses';
     MatAutocompleteModule,
     ReactiveFormsModule,
     MatButtonModule,
-    AsyncPipe,
     LanguageSelectorComponent,
   ],
   templateUrl: './create-room.component.html',

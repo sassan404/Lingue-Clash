@@ -9,13 +9,10 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
-import { GivenWord } from '../../../../../common/Interfaces/GivenWord';
-import {
-  PlayerStates,
-  RoundStates,
-} from '../../../../../common/Interfaces/enums';
+import { GivenWord } from '@common/Interfaces/GivenWord';
+import { PlayerStates, RoundStates } from '@common/Interfaces/enums';
 import { HTTPService } from '../../Services/http.service';
-import { RoundHelpers } from '../../../../../common/Interfaces/Round/RoundHelpers';
+import { RoundHelpers } from '@common/Interfaces/Round/RoundHelpers';
 import { FireBaseDBService } from '../../Services/firebase-db.service';
 import { combineLatest, map } from 'rxjs';
 

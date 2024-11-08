@@ -17,12 +17,13 @@
               "base": "dist/front"
             },
             "index": "src/index.html",
-            "polyfills": ["Zone.js","src/polyfills.ts"],
+            "polyfills": ["zone.js", "src/polyfills.ts"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "../common",
+                "output": "/common"
               }
             ],
             "styles": [
@@ -79,7 +80,8 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "../common",
+                "output": "/common"
               }
             ],
             "styles": [

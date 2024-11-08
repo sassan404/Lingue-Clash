@@ -1,4 +1,7 @@
-import { Explanation } from "./Interfaces";
+export interface Explanation {
+  rule: string;
+  explanation: string;
+}
 
 // types for rpelies from ChatGPt
 export interface TreatedAIReplyStructure {}
