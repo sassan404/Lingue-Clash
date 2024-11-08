@@ -14,10 +14,10 @@ import {
   switchMap,
 } from 'rxjs';
 import { child } from '@angular/fire/database';
-import { Player } from '../../../../common/Interfaces/Player';
-import { RoundContainer } from '../../../../common/Interfaces/Round/Round';
-import { RoundHelpers } from '../../../../common/Interfaces/Round/RoundHelpers';
-import { RoundStates } from '../../../../common/Interfaces/enums';
+import { Player } from '@common/Interfaces/Player';
+import { RoundContainer } from '@common/Interfaces/Round/Round';
+import { RoundHelpers } from '@common/Interfaces/Round/RoundHelpers';
+import { RoundStates } from '@common/Interfaces/enums';
 
 @Injectable({ providedIn: 'root' })
 export class FireBaseDBService {
