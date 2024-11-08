@@ -8,55 +8,58 @@ import {
   SentenceBuildingRoundHelper,
 } from "./SentenceBuildingRoundHelper";
 
-export const submitPlayerAnswer = onRequest(async (request, response) => {
-  const { roomId, username, answer } = request.body as PlayerAnswer;
+export const submitPlayerAnswer = onRequest(
+  { cors: true },
+  async (request, response) => {
+    const { roomId, username, answer } = request.body as PlayerAnswer;
 
-  const roomRef = database.ref(`rooms/${roomId}`);
-  const roomSnapshot = await roomRef.once("value");
+    const roomRef = database.ref(`rooms/${roomId}`);
+    const roomSnapshot = await roomRef.once("value");
 
-  if (!roomSnapshot.exists()) {
-    console.log("Invalid room code");
-    return;
-  }
-
-  const currentRoundType = (
-    await roomRef.child("currentRound/type").once("value")
-  ).val();
-
-  let currentRoundHelper!: RoundHelper<any>;
-
-  if (currentRoundType === RoundTypes.SENTENCE_BUILDING) {
-    currentRoundHelper = new SentenceBuildingRoundHelper(
-      roomRef,
-      username,
-      answer,
-    );
-  }
-
-  if (currentRoundHelper) {
-    const playerRef = roomRef.child(`players/${username}`);
-
-    await playerRef.update({
-      state: PlayerStates.FINISHED,
-    });
-
-    await currentRoundHelper.setPlayerAnswerForRound();
-
-    const players = (await roomRef.child("players").once("value")).val();
-    const playersList: Player[] = Object.values(players);
-    const allPlayersFinished = playersList.every(
-      (player: { state: PlayerStates }) =>
-        player.state === PlayerStates.FINISHED,
-    );
-
-    if (allPlayersFinished) {
-      await currentRoundHelper.finishRound();
+    if (!roomSnapshot.exists()) {
+      console.log("Invalid room code");
+      return;
     }
 
-    const responseContent = {
-      success: `Player: "${username}" asnwer was submitted in room: "${roomId}"`,
-    };
+    const currentRoundType = (
+      await roomRef.child("currentRound/type").once("value")
+    ).val();
 
-    response.send(responseContent);
-  }
-});
+    let currentRoundHelper!: RoundHelper<any>;
+
+    if (currentRoundType === RoundTypes.SENTENCE_BUILDING) {
+      currentRoundHelper = new SentenceBuildingRoundHelper(
+        roomRef,
+        username,
+        answer,
+      );
+    }
+
+    if (currentRoundHelper) {
+      const playerRef = roomRef.child(`players/${username}`);
+
+      await playerRef.update({
+        state: PlayerStates.FINISHED,
+      });
+
+      await currentRoundHelper.setPlayerAnswerForRound();
+
+      const players = (await roomRef.child("players").once("value")).val();
+      const playersList: Player[] = Object.values(players);
+      const allPlayersFinished = playersList.every(
+        (player: { state: PlayerStates }) =>
+          player.state === PlayerStates.FINISHED,
+      );
+
+      if (allPlayersFinished) {
+        await currentRoundHelper.finishRound();
+      }
+
+      const responseContent = {
+        success: `Player: "${username}" asnwer was submitted in room: "${roomId}"`,
+      };
+
+      response.send(responseContent);
+    }
+  },
+);

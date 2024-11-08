@@ -6,7 +6,7 @@ const firebaseConfig = {
   // ...
   // The value of `databaseURL` depends on the location of the database
   databaseURL:
-    "https://word-clash-2aa96-default-rtdb.europe-west1.firebasedatabase.app",
+    "https://word-clash-2aa96-default-rtdb.europe-west1.firebasedatabase.app/",
 };
 
 // Initialize Firebase

@@ -5,21 +5,27 @@ import {
   JoinRoomRequest,
 } from '../../../../common/Interfaces/Requests';
 
-
 @Injectable({ providedIn: 'root' })
 export class HTTPService {
   constructor(private http: HttpClient) {}
 
-  private apiUrl = 'http://127.0.0.1:5001/word-clash-2aa96/us-central1/';
+  private apiUrl = (functionName: string) =>
+    `https://${functionName.toLowerCase()}-tvyvmn36ya-uc.a.run.app`;
+  // private apiUrl = (functionName: string) =>
+  //   'http://127.0.0.1:5001/word-clash-2aa96/us-central1/' + functionName;
 
-  private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  private headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+  });
 
   createRoom(creation: CreateRoomRequest) {
     const body = JSON.stringify({
       username: creation.username,
       language: creation.language,
     });
-    return this.http.put(this.apiUrl + 'createRoom', body, {
+    console.log(body);
+    return this.http.post(this.apiUrl('createRoom'), body, {
       headers: this.headers,
     });
   }
@@ -31,7 +37,7 @@ export class HTTPService {
       language: joining.language,
     });
 
-    return this.http.put(this.apiUrl + 'joinRoom', body, {
+    return this.http.post(this.apiUrl('joinRoom'), body, {
       headers: this.headers,
     });
   }
@@ -43,7 +49,7 @@ export class HTTPService {
     });
 
     this.http
-      .put(this.apiUrl + 'setPlayerReady', body, {
+      .post(this.apiUrl('setPlayerReady'), body, {
         headers: this.headers,
       })
       .subscribe();
@@ -57,7 +63,7 @@ export class HTTPService {
     });
 
     this.http
-      .put(this.apiUrl + 'submitPlayerAnswer', body, {
+      .post(this.apiUrl('submitPlayerAnswer'), body, {
         headers: this.headers,
       })
       .subscribe();
