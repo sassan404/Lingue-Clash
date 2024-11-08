@@ -1,9 +1,9 @@
-import { TreatedChatGPTStructure } from "./TreatedChatGPTStructure";
+import { TreatedAIReplyStructure } from "./TreatedChatGPTStructure";
 
 export interface GivenWord {
   [language: string]: string;
 }
 
-export interface GivenWords extends TreatedChatGPTStructure {
+export interface GivenWords extends TreatedAIReplyStructure {
   words: GivenWord[];
 }

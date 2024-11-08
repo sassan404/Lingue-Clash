@@ -1,8 +1,10 @@
+import { HttpsFunction, onRequest } from "firebase-functions/v2/https";
 import { GivenWords } from "../../../../common/Interfaces/GivenWord";
 import { Languages } from "../../../../common/Interfaces/TreatedRequest";
 
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
-import { ChatCompletion } from "openai/resources";
+import { Request, Response } from "firebase-functions/v1";
+import { GenerateContentResult } from "@google/generative-ai";
 
 // Define the interface structure as a constant object
 const wordMeaningStructure = {
@@ -48,8 +50,8 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
    * @return {string} The modified request object.
    */
 
-  override treatChatGPTReply(chatGPTReply: ChatCompletion): GivenWords {
-    const treatedChatGPTReply = super.treatChatGPTReply(chatGPTReply);
+  override treatAIReply(chatGPTReply: GenerateContentResult): GivenWords {
+    const treatedChatGPTReply = super.treatAIReply(chatGPTReply);
     return treatedChatGPTReply;
   }
 
@@ -63,7 +65,19 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
   }
 }
 
-const giveMeWordsContainer = new GiveMeWordsContainer();
+/**
+ * Handler for the giveMeTwoWords request.
+ */
+export const giveMeWordsRequest: HttpsFunction = onRequest(
+  async (request: Request, response: Response) => {
+    const newCommunicateWithChatGP = new GiveMeWordsContainer();
 
-export const giveMeWordsRequest = giveMeWordsContainer.communicateOnRequest;
-export const giveMeWords = giveMeWordsContainer.communicate;
+    await newCommunicateWithChatGP.communicateOnRequest(request, response);
+  },
+);
+
+export const giveMeWords = async (request: Languages): Promise<GivenWords> => {
+  const newCommunicateWithChatGP = new GiveMeWordsContainer();
+
+  return await newCommunicateWithChatGP.communicate(request);
+};

@@ -1,6 +1,8 @@
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
 import { Sentence, Sentences } from "../../../../common/Interfaces/Sentence";
 import { SentenceEvaluationReply } from "../../../../common/Interfaces/TreatedChatGPTStructure";
+import { HttpsFunction, onRequest } from "firebase-functions/v2/https";
+import { Request, Response } from "firebase-functions/v1";
 // Define the interface structure as a constant object
 const sentenceOrder = {
   language: "string",
@@ -57,7 +59,13 @@ class EvaluateTheSentencesContainer extends CommunicateWithChatGP<
   }
 }
 
-const evaluateTheSentencesContainer = new EvaluateTheSentencesContainer();
+/**
+ * Handler for the giveMeTwoWords request.
+ */
+export const evaluateTheSentencesRequest: HttpsFunction = onRequest(
+  async (request: Request, response: Response) => {
+    const newCommunicateWithChatGP = new EvaluateTheSentencesContainer();
 
-export const evaluateTheSentencesRequest =
-  evaluateTheSentencesContainer.communicateOnRequest;
+    await newCommunicateWithChatGP.communicateOnRequest(request, response);
+  },
+);

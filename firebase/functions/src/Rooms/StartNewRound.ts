@@ -1,7 +1,7 @@
 import { Reference } from "firebase-admin/database";
 import { RoundContainer } from "../../../../common/Interfaces/Round/Round";
 import { Languages } from "../../../../common/Interfaces/TreatedRequest";
-import { giveMeWords } from "../ChatGPT/giveMeWords";
+import { giveMeWords } from "../ChatGPT/GiveMeWords";
 import { RoundStates, RoundTypes } from "../../../../common/Interfaces/enums";
 import { RoomContainer } from "../../../../common/Interfaces/Room";
 import { Player } from "../../../../common/Interfaces/Player";

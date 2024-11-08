@@ -2,6 +2,8 @@ import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
 
 import { Sentence } from "../../../../common/Interfaces/Sentence";
 import { SentenceEvaluationReply } from "../../../../common/Interfaces/TreatedChatGPTStructure";
+import { HttpsFunction, onRequest } from "firebase-functions/v2/https";
+import { Request, Response } from "firebase-functions/v1";
 // Define the interface structure as a constant object
 
 const explanation = {
@@ -17,7 +19,7 @@ const sentenceEvaluationReply = {
 /**
  * Container class for the 'giveMeTwoWords' function.
  */
-class EvaluateTheSentenceContainer extends CommunicateWithChatGP<
+class EvaluateOneSentenceContainer extends CommunicateWithChatGP<
   Sentence,
   SentenceEvaluationReply
 > {
@@ -46,9 +48,21 @@ class EvaluateTheSentenceContainer extends CommunicateWithChatGP<
   }
 }
 
-const evaluateTheSentenceContainer = new EvaluateTheSentenceContainer();
+/**
+ * Handler for the giveMeTwoWords request.
+ */
+export const evaluateOneSentenceRequest: HttpsFunction = onRequest(
+  async (request: Request, response: Response) => {
+    const newCommunicateWithChatGP = new EvaluateOneSentenceContainer();
 
-export const evaluateTheSentenceRequest =
-  evaluateTheSentenceContainer.communicateOnRequest;
+    await newCommunicateWithChatGP.communicateOnRequest(request, response);
+  },
+);
 
-export const evaluateTheSentence = evaluateTheSentenceContainer.communicate;
+export const evaluateOneSentence = async (
+  request: Sentence,
+): Promise<SentenceEvaluationReply> => {
+  const newCommunicateWithChatGP = new EvaluateOneSentenceContainer();
+
+  return await newCommunicateWithChatGP.communicate(request);
+};

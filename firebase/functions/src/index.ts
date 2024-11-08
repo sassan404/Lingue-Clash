@@ -7,16 +7,13 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import { giveMeWordsRequest } from "./ChatGPT/giveMeWords";
-// import { giveMeASentenceRequest } from "./ChatGPT/giveMeASentence";
-// import { evaluateTheSentencesRequest } from "./ChatGPT/evaluateTheSentences";
-import { evaluateTheSentenceRequest } from "./ChatGPT/evaluateTheSentence";
+import { giveMeWordsRequest } from "./ChatGPT/GiveMeWords";
+import { giveMeASentenceRequest } from "./ChatGPT/GiveMeASentence";
+import { evaluateTheSentencesRequest } from "./ChatGPT/EvaluateTheSentences";
+import { evaluateOneSentenceRequest } from "./ChatGPT/EvaluateOneSentence";
 import { createRoom } from "./Rooms/CreateRoom";
 import { leaveRoom } from "./Rooms/LeaveRoom";
-// import { onCreateRoom, deleteExpiredRooms } from "./Rooms/deletingRooms";
-// import { initiateNewRound } from "./Rooms/IncrementRound";
 import { joinRoom } from "./Rooms/JoinRoom";
-// import { startNewRound } from "./Rooms/StartNewRound";
 import { setPlayerReady } from "./Rooms/SetPlayerReady";
 import { submitPlayerAnswer } from "./Rooms/SubmitPlayerAnswer";
 
@@ -25,18 +22,14 @@ import { helloWorld } from "./helloWorld";
 // https://firebase.google.com/docs/functions/typescript
 
 export {
-    giveMeWordsRequest as giveMeWords,
-  //   giveMeASentenceRequest as giveMeASentence,
-  //   evaluateTheSentencesRequest as evaluateTheSentences,
+  giveMeWordsRequest as giveMeWords,
+  giveMeASentenceRequest as giveMeASentence,
+  evaluateTheSentencesRequest as evaluateTheSentences,
   helloWorld,
   createRoom,
-  //   onCreateRoom,
-  //   deleteExpiredRooms,
-  //   initiateNewRound,
   joinRoom,
-  //   startNewRound,
   leaveRoom,
   setPlayerReady,
-  evaluateTheSentenceRequest as evaluateTheSentence,
+  evaluateOneSentenceRequest as evaluateTheSentence,
   submitPlayerAnswer,
 };

@@ -1,27 +1,32 @@
 import { Request, Response } from "firebase-functions/v1";
-import { ChatCompletion } from "openai/resources";
 import { log } from "firebase-functions/logger";
 
 import { ParamsDictionary } from "express-serve-static-core";
 
-import { openai } from "../Utilities/OpenAI.utils";
-import { HttpsFunction, onRequest } from "firebase-functions/v2/https";
 import { TreatedRequest } from "../../../../common/Interfaces/TreatedRequest";
-import { TreatedChatGPTStructure } from "../../../../common/Interfaces/TreatedChatGPTStructure";
+import { TreatedAIReplyStructure } from "../../../../common/Interfaces/TreatedChatGPTStructure";
+
+import {
+  GenerateContentResult,
+  GoogleGenerativeAI,
+} from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY ?? "");
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 /**
  * CommunicateWithChatGP class.
  * @param {U} TreatedRequest - The shape of the input received by the request
- * @param {T} TreatedChatGPTStructure - The shape of the reply from chatGPT
+ * @param {T} TreatedAIReplyStructure - The shape of the reply to the request
  */
 export class CommunicateWithChatGP<
   U extends TreatedRequest,
-  T extends TreatedChatGPTStructure,
+  T extends TreatedAIReplyStructure,
 > {
   /**
    * Treat the request.
    * @param {Request} request - The response object.
-   * @return {string} The treated response object.
+   * @return {U} The treated response object.
    */
   treatRequest(request: Request<ParamsDictionary>): U {
     const requestBody: U = request.body;
@@ -33,36 +38,39 @@ export class CommunicateWithChatGP<
   }
   /**
    * Treat the response.
-   * @param {ChatCompletion} chatGPTReply - The reply from chatGPT.
+   * @param {GenerateContentResult} aiReply - The reply from chatGPT.
    * @return {string} The treated response object.
    */
-  treatChatGPTReply(chatGPTReply: ChatCompletion): T {
-    const treatedReply = JSON.parse(
-      chatGPTReply.choices.find(
-        (choice) => choice.message && choice.message.content != null,
-      )?.message.content ?? "",
+  treatAIReply(aiReply: GenerateContentResult): T {
+    const reply = aiReply.response.text();
+    const jsonReply = reply.substring(
+      reply.indexOf("{"),
+      reply.lastIndexOf("}") + 1,
     );
+    console.log(jsonReply);
+    const treatedReply = JSON.parse(jsonReply);
     return treatedReply;
   }
 
   /**
    * Handler for the giveMeTwoWords request.
    */
-  public communicateOnRequest: HttpsFunction = onRequest(
-    async (request: Request, response: Response) => {
-      const treatedRequestBody: U = this.treatRequest(request);
+  public communicateOnRequest = async (
+    request: Request,
+    response: Response,
+  ) => {
+    const treatedRequestBody: U = this.treatRequest(request);
 
-      const treatedChatGPTReply = await this.communicate(treatedRequestBody);
-      response.send(treatedChatGPTReply);
-    },
-  );
+    const treatedAIReply = await this.communicate(treatedRequestBody);
+    response.send(treatedAIReply);
+  };
 
   public communicate = async (request: U): Promise<T> => {
     const messageTosend = this.message(request);
 
     let getAndTreatmentOfAnswerStatus = async (): Promise<T> => {
-      const answer = await this.buildChatGPTCompletion(messageTosend);
-      const treatedAnswer = this.treatChatGPTReply(answer);
+      const answer = await this.buildAICommunication(messageTosend);
+      const treatedAnswer = this.treatAIReply(answer);
       if (this.checkAnswer(request, treatedAnswer)) {
         return treatedAnswer;
       }
@@ -72,11 +80,10 @@ export class CommunicateWithChatGP<
     return await getAndTreatmentOfAnswerStatus();
   };
 
-  buildChatGPTCompletion = async (message: string): Promise<ChatCompletion> => {
-    const chatCompletion = await openai.chat.completions.create({
-      messages: [{ role: "user", content: message }],
-      model: "gpt-3.5-turbo",
-    });
+  buildAICommunication = async (
+    message: string,
+  ): Promise<GenerateContentResult> => {
+    const chatCompletion = await model.generateContent(message);
     return chatCompletion;
   };
 

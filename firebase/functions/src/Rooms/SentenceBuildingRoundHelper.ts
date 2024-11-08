@@ -3,7 +3,7 @@ import { Sentence } from "../../../../common/Interfaces/Sentence";
 import { PlayerStates, RoundStates } from "../../../../common/Interfaces/enums";
 import { SentenceEvaluationReply } from "../../../../common/Interfaces/TreatedChatGPTStructure";
 import { RoundHelpers } from "../../../../common/Interfaces/Round/RoundHelpers";
-import { evaluateTheSentence } from "../ChatGPT/evaluateTheSentence";
+import { evaluateOneSentence } from "../ChatGPT/EvaluateOneSentence";
 import { startNewRound } from "./StartNewRound";
 import { Player } from "../../../../common/Interfaces/Player";
 
@@ -94,7 +94,7 @@ export class SentenceBuildingRoundHelper extends RoundHelper<Sentence> {
   setPlayerAnswerForRound: () => void = async () => {
     const answer: Sentence = await this.buildAnswer();
     const sentenceEvaluation: SentenceEvaluationReply =
-      await evaluateTheSentence(answer);
+      await evaluateOneSentence(answer);
 
     const resultRef = this.roundRef.child(`result`);
     await resultRef.update({
