@@ -22,7 +22,7 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "../common",
+                "input": "/common",
                 "output": "/common"
               }
             ],
@@ -80,7 +80,7 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "../common",
+                "input": "/common",
                 "output": "/common"
               }
             ],
