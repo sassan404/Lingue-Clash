@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import {
   CreateRoomRequest,
   JoinRoomRequest,
-} from '../../../../common/Interfaces/Requests';
+} from '@common/Interfaces/Requests';
 
 @Injectable({ providedIn: 'root' })
 export class HTTPService {
