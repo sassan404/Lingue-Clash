@@ -1,8 +1,10 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { database } from "../realtime-db.config";
-import { PlayerAnswer } from "../../../../common/Interfaces/Responses";
-import { PlayerStates, RoundTypes } from "../../../../common/Interfaces/enums";
-import { Player } from "../../../../common/Interfaces/Player";
+import { PlayerAnswer } from "../../../front/common/Interfaces/Responses";
+import {
+  PlayerStates,
+  RoundTypes,
+} from "../../../front/common/Interfaces/enums";
 import {
   RoundHelper,
   SentenceBuildingRoundHelper,
@@ -43,17 +45,6 @@ export const submitPlayerAnswer = onRequest(
       });
 
       await currentRoundHelper.setPlayerAnswerForRound();
-
-      const players = (await roomRef.child("players").once("value")).val();
-      const playersList: Player[] = Object.values(players);
-      const allPlayersFinished = playersList.every(
-        (player: { state: PlayerStates }) =>
-          player.state === PlayerStates.FINISHED,
-      );
-
-      if (allPlayersFinished) {
-        await currentRoundHelper.finishRound();
-      }
 
       const responseContent = {
         success: `Player: "${username}" asnwer was submitted in room: "${roomId}"`,

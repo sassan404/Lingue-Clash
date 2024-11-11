@@ -10,9 +10,8 @@ export class HTTPService {
   constructor(private http: HttpClient) {}
 
   private apiUrl = (functionName: string) =>
-    `https://${functionName.toLowerCase()}-tvyvmn36ya-uc.a.run.app`;
-  // private apiUrl = (functionName: string) =>
-  //   'http://127.0.0.1:5001/word-clash-2aa96/us-central1/' + functionName;
+    // `https://${functionName.toLowerCase()}-tvyvmn36ya-uc.a.run.app`;
+    'http://127.0.0.1:5001/word-clash-2aa96/us-central1/' + functionName;
 
   private headers = new HttpHeaders({
     'Content-Type': 'application/json',
@@ -24,7 +23,6 @@ export class HTTPService {
       username: creation.username,
       language: creation.language,
     });
-    console.log(body);
     return this.http.post(this.apiUrl('createRoom'), body, {
       headers: this.headers,
     });

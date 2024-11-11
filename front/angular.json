@@ -25,6 +25,10 @@
                 "glob": "**/*",
                 "input": "/common",
                 "output": "/common"
+              },
+              {
+                "glob": "**/*",
+                "input": "public"
               }
             ],
             "styles": [
@@ -83,6 +87,10 @@
                 "glob": "**/*",
                 "input": "/common",
                 "output": "/common"
+              },
+              {
+                "glob": "**/*",
+                "input": "public"
               }
             ],
             "styles": [

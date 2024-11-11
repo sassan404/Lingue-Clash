@@ -9,6 +9,7 @@ export enum RoundStates {
   STARTING = "starting",
   PLAYING = "playing",
   FINISHED = "finished",
+  ENDED = "ended",
 }
 
 export enum RoundTypes {

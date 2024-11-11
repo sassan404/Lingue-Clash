@@ -1,11 +1,8 @@
 import { Reference } from "firebase-admin/database";
-import { Sentence } from "../../../../common/Interfaces/Sentence";
-import { PlayerStates, RoundStates } from "../../../../common/Interfaces/enums";
-import { SentenceEvaluationReply } from "../../../../common/Interfaces/TreatedChatGPTStructure";
-import { RoundHelpers } from "../../../../common/Interfaces/Round/RoundHelpers";
+import { Sentence } from "../../../front/common/Interfaces/Sentence";
+import { SentenceEvaluationReply } from "../../../front/common/Interfaces/TreatedChatGPTStructure";
 import { evaluateOneSentence } from "../ChatGPT/EvaluateOneSentence";
-import { startNewRound } from "./StartNewRound";
-import { Player } from "../../../../common/Interfaces/Player";
+import { Player } from "../../../front/common/Interfaces/Player";
 
 export abstract class RoundHelper<T> {
   constructor(
@@ -25,9 +22,8 @@ export abstract class RoundHelper<T> {
     const currentRoundNumber = (
       await this.roomRef.child("currentRoundNumber").once("value")
     ).val();
-    console.log("currentRoundNumber", currentRoundNumber);
 
-    this.scoresByRoundRef.child(currentRoundNumber).update({
+    await this.scoresByRoundRef.child(currentRoundNumber).update({
       [this.playerId]: score,
     });
 
@@ -35,30 +31,8 @@ export abstract class RoundHelper<T> {
       if (player) {
         player.score = Number(player.score) + Number(score);
       }
-      console.log("player", player);
       return player;
     });
-  };
-
-  finishRound: () => Promise<void> = async () => {
-    this.roundRef.update({
-      state: RoundStates.FINISHED,
-    });
-    const currentRoundNumber = (
-      await this.roomRef.child("currentRoundNumber").once("value")
-    ).val();
-    if (currentRoundNumber >= RoundHelpers.maxRounds) {
-      startNewRound(this.roomRef);
-    } else {
-      const players = Object.keys(
-        (await this.roomRef.child("players").once("value")).val(),
-      );
-      players.forEach(async (player: string) => {
-        await this.roomRef.child(`players/${player}`).update({
-          state: PlayerStates.WAITING,
-        });
-      });
-    }
   };
 }
 

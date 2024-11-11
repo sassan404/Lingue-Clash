@@ -3,8 +3,8 @@ import { log } from "firebase-functions/logger";
 
 import { ParamsDictionary } from "express-serve-static-core";
 
-import { TreatedRequest } from "../../../../common/Interfaces/TreatedRequest";
-import { TreatedAIReplyStructure } from "../../../../common/Interfaces/TreatedChatGPTStructure";
+import { TreatedRequest } from "../../../front/common/Interfaces/TreatedRequest";
+import { TreatedAIReplyStructure } from "../../../front/common/Interfaces/TreatedChatGPTStructure";
 
 import {
   GenerateContentResult,
@@ -47,7 +47,6 @@ export class CommunicateWithChatGP<
       reply.indexOf("{"),
       reply.lastIndexOf("}") + 1,
     );
-    console.log(jsonReply);
     const treatedReply = JSON.parse(jsonReply);
     return treatedReply;
   }

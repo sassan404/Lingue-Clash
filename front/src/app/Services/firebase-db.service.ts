@@ -88,8 +88,6 @@ export class FireBaseDBService {
     };
   }>('scoresByRound');
 
-  countDownSubject = this.listenToRoomChange<number>('countDown');
-
   listenToRoomChange<T>(parameter: string): Observable<T> {
     return this.roomRef.pipe(
       switchMap((roomRef: DatabaseReference) =>
@@ -98,7 +96,10 @@ export class FireBaseDBService {
             const unsubscribe = onValue(
               child(roomRef, parameter),
               (snapshot) => {
-                observer.next(snapshot.val());
+                const value = snapshot.val();
+                if (value) {
+                  observer.next(value);
+                }
               },
               (error) => {
                 let defaultValue: T;

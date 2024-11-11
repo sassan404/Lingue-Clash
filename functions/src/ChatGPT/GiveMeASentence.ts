@@ -1,6 +1,6 @@
 import { HttpsFunction, onRequest } from "firebase-functions/v2/https";
-import { SentenceReply } from "../../../../common/Interfaces/TreatedChatGPTStructure";
-import { SentenceRules } from "../../../../common/Interfaces/TreatedRequest";
+import { SentenceReply } from "../../../front/common/Interfaces/TreatedChatGPTStructure";
+import { SentenceRules } from "../../../front/common/Interfaces/TreatedRequest";
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
 import { Request, Response } from "firebase-functions/v1";
 

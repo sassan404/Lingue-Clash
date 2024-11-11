@@ -10,22 +10,26 @@
     "
   >
     <h3>Round {{ firebaseDBService.roundNumberSubject | async }}</h3>
-    <label for="words-list">Words for round</label>
+    <label for="words-list">Words to use</label>
     <mat-chip-listbox id="words-list" aria-label="Words list">
       @for (word of data.sentenceBuildingRound.playerWords; track word) {
         <mat-chip> {{ word }} </mat-chip>
       }
     </mat-chip-listbox>
 
+    <label for="sentence-input">Form a sentence using the words provided</label>
     <mat-form-field>
-      <input
+      <textarea
         matInput
+        id="sentence-input"
         placeholder="Enter your sentence"
+        aria-label="Form a sentence using the words provided"
+        cdkTextareaAutosize
         [formControl]="answer"
         (keyup.enter)="
           submitRoundAnswer(data.roomId, data.currentPlayer.username)
         "
-      />
+      ></textarea>
     </mat-form-field>
     <button
       mat-raised-button

@@ -1,38 +1,125 @@
 import { Reference } from "firebase-admin/database";
-import { RoundContainer } from "../../../../common/Interfaces/Round/Round";
-import { Languages } from "../../../../common/Interfaces/TreatedRequest";
+import { RoundContainer } from "../../../front/common/Interfaces/Round/Round";
+import { Languages } from "../../../front/common/Interfaces/TreatedRequest";
 import { giveMeWords } from "../ChatGPT/GiveMeWords";
-import { RoundStates, RoundTypes } from "../../../../common/Interfaces/enums";
-import { RoomContainer } from "../../../../common/Interfaces/Room";
-import { Player } from "../../../../common/Interfaces/Player";
-import { RoundHelpers } from "../../../../common/Interfaces/Round/RoundHelpers";
+import {
+  PlayerStates,
+  RoundStates,
+  RoundTypes,
+} from "../../../front/common/Interfaces/enums";
+import { Player } from "../../../front/common/Interfaces/Player";
+import { RoundHelpers } from "../../../front/common/Interfaces/Round/RoundHelpers";
+
+export const listenToPlayersStateChange = async (roomRef: Reference) => {
+  const roundRef = roomRef.child("currentRound");
+  const currentRoundState: RoundStates = (
+    await roundRef.child("state").once("value")
+  ).val();
+
+  const players: { [playerId: string]: Player } = (
+    await roomRef.child("players").once("value")
+  ).val();
+
+  if (
+    !(
+      currentRoundState &&
+      players &&
+      (await checkIfAllPlayersHaveResults(roundRef, players))
+    )
+  )
+    return;
+
+  const playersList: Player[] = Object.values(players);
+  const allPlayersReady = playersList.every(
+    (player: Player) => player.state === PlayerStates.READY,
+  );
+
+  if (allPlayersReady) {
+    if (
+      currentRoundState === RoundStates.PLAYING ||
+      currentRoundState === RoundStates.STARTING ||
+      currentRoundState === RoundStates.ENDED
+    ) {
+      return;
+    }
+
+    await roundRef.transaction((round) => {
+      if (round) {
+        round.state = RoundStates.ENDED;
+      }
+      return round;
+    });
+    await startNewRound(roomRef);
+    for (let playerId of Object.keys(players)) {
+      await roomRef.child(`players/${playerId}`).update({
+        state: PlayerStates.PLAYING,
+      });
+    }
+  } else {
+    if (currentRoundState === RoundStates.FINISHED) {
+      return;
+    }
+    const allPlayersFinished = playersList.every(
+      (player: { state: PlayerStates }) =>
+        player.state === PlayerStates.FINISHED,
+    );
+
+    if (allPlayersFinished) {
+      await roundRef.transaction((round) => {
+        if (round) {
+          round.state = RoundStates.FINISHED;
+        }
+        return round;
+      });
+      await finishRound(roomRef);
+    }
+  }
+};
+
+const finishRound = async (roomRef: Reference) => {
+  const currentRoundNumber = (
+    await roomRef.child("currentRoundNumber").once("value")
+  ).val();
+  if (currentRoundNumber >= RoundHelpers.maxRounds) {
+    startNewRound(roomRef);
+  } else {
+    const players = Object.keys(
+      (await roomRef.child("players").once("value")).val(),
+    );
+    players.forEach(async (player: string) => {
+      await roomRef.child(`players/${player}`).update({
+        state: PlayerStates.WAITING,
+      });
+    });
+  }
+};
 
 export const startNewRound = async (roomRef: Reference) => {
   let newRoundNumber!: number;
-  let lastRound!: RoundContainer;
 
-  const transtactionResult = await roomRef.transaction(
-    (room: RoomContainer) => {
-      if (room) {
-        room.currentRoundNumber++;
-
-        newRoundNumber = room.currentRoundNumber;
-        room.progress =
-          (room.currentRoundNumber / RoundHelpers.maxRounds) * 100;
-
-        lastRound = room.currentRound;
+  const transtactionResult = await roomRef
+    .child("currentRoundNumber")
+    .transaction((roundNumber: number) => {
+      if (roundNumber != null) {
+        newRoundNumber = roundNumber + 1;
+        roundNumber = newRoundNumber;
       }
-      return room;
-    },
-  );
+      return roundNumber;
+    });
 
-  if (transtactionResult.committed && newRoundNumber && lastRound) {
+  if (transtactionResult.committed && newRoundNumber >= 0) {
+    const lastRound: RoundContainer = (
+      await roomRef.child("currentRound").once("value")
+    ).val();
+    roomRef
+      .child("progress")
+      .set((newRoundNumber / RoundHelpers.maxRounds) * 100);
     if (newRoundNumber <= RoundHelpers.maxRounds) {
-      startCountDown(roomRef);
+      roomRef.update({ isLocked: true });
 
       const languages: Languages = {
-        wordNumber: newRoundNumber,
-        languages: (await roomRef.child("languages").get()).val(),
+        wordNumber: newRoundNumber + 1,
+        languages: (await roomRef.child("languages").once("value")).val(),
       };
 
       let newRound = {
@@ -49,7 +136,13 @@ export const startNewRound = async (roomRef: Reference) => {
         currentRound: newRound,
       });
 
-      giveMeWords(languages).then(async (words) => {
+      roomRef.child("currentRound").on("child_changed", async (snapshot) => {
+        if (snapshot) {
+          listenToPlayersStateChange(roomRef);
+        }
+      });
+
+      await giveMeWords(languages).then(async (words) => {
         await roomRef.child("currentRound").update({
           givenWords: words.words,
         });
@@ -60,7 +153,7 @@ export const startNewRound = async (roomRef: Reference) => {
       });
     } else {
       const players: { [playerId: string]: Player } = (
-        await roomRef.child("players").get()
+        await roomRef.child("players").once("value")
       ).val();
 
       // Create a map of player IDs to player scores
@@ -84,24 +177,33 @@ export const startNewRound = async (roomRef: Reference) => {
         currentRound: newRound,
       });
     }
-    roomRef.child("rounds").update({
+    await roomRef.child("rounds").update({
       [newRoundNumber - 1]: lastRound,
     });
+    roomRef.update({ isLocked: false });
   }
 };
 
-const startCountDown = async (roomRef: Reference) => {
-  let count = 5;
-  const intervalId = await setInterval(async () => {
-    await roomRef.child("countDown").transaction((countDown) => {
-      if (countDown >= 0) {
-        countDown = count;
+const checkIfAllPlayersHaveResults = async (
+  roundRef: Reference,
+  players: { [playerId: string]: Player },
+) => {
+  const playerIds = Object.keys(players);
+
+  let allPlayersHaveResults = false;
+  await roundRef.once("value", async (snapshot) => {
+    const roundValue = snapshot.val();
+    if (roundValue) {
+      if (roundValue.result) {
+        const playersWithResults = Object.keys(roundValue.result);
+        allPlayersHaveResults = playerIds.every((playerId) => {
+          return playersWithResults.includes(playerId);
+        });
+      } else if (roundValue.type === RoundTypes.LOBBY) {
+        allPlayersHaveResults = true;
       }
-      return countDown;
-    });
-    if (count === 0) {
-      clearInterval(intervalId);
     }
-    count--;
-  }, 500);
+  });
+
+  return allPlayersHaveResults;
 };

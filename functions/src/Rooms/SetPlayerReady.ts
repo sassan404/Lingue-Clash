@@ -1,9 +1,7 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { database } from "../realtime-db.config";
-import { LeaveRoomRequest } from "../../../../common/Interfaces/Requests";
-import { PlayerStates } from "../../../../common/Interfaces/enums";
-import { Player } from "../../../../common/Interfaces/Player";
-import { startNewRound } from "./StartNewRound";
+import { LeaveRoomRequest } from "../../../front/common/Interfaces/Requests";
+import { PlayerStates } from "../../../front/common/Interfaces/enums";
 
 export const setPlayerReady = onRequest(
   { cors: true },
@@ -11,7 +9,7 @@ export const setPlayerReady = onRequest(
     const { roomId, username } = request.body as LeaveRoomRequest;
     const roomRef = database.ref(`rooms/${roomId}`);
     try {
-      const roomSnapshot = await roomRef.get();
+      const roomSnapshot = await roomRef.once("value");
 
       if (!roomSnapshot.exists()) {
         console.log("Invalid room code");
@@ -27,23 +25,6 @@ export const setPlayerReady = onRequest(
       await playerRef.update({
         state: PlayerStates.READY,
       });
-
-      const players: { [playerId: string]: Player } = (
-        await roomRef.child("players").get()
-      ).val();
-      const playersList: Player[] = Object.values(players);
-      const allPlayersReady = playersList.every(
-        (player: Player) => player.state === PlayerStates.READY,
-      );
-
-      if (allPlayersReady) {
-        await startNewRound(roomRef);
-        for (let playerId of Object.keys(players)) {
-          await roomRef.child(`players/${playerId}`).update({
-            state: PlayerStates.PLAYING,
-          });
-        }
-      }
 
       await roomRef.update({
         isLocked: false,

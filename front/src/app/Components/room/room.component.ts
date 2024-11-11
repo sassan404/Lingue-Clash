@@ -13,7 +13,6 @@ import { MatButton } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips';
-import { CountdownComponent } from '../countdown/countdown.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -44,7 +43,6 @@ import { ResultDisplayComponent } from '../result-display/result-display.compone
     MatProgressSpinnerModule,
     MatTooltipModule,
     SentenceBuildingRoundComponent,
-    CountdownComponent,
     MatCardModule,
     MatTableModule,
     ResultDisplayComponent,
@@ -58,7 +56,7 @@ export class RoomComponent {
   playerUsername?: string;
 
   maxRound = RoundHelpers.maxRounds;
-  countDown = 0;
+  isLocked = false;
   roundNumber = 0;
 
   constructor(
@@ -79,8 +77,8 @@ export class RoomComponent {
       this.firebaseDBService.playerUserName.next(this.playerUsername);
     } else this.router.navigate(['/']);
 
-    this.firebaseDBService.countDownSubject.subscribe((countDown) => {
-      this.countDown = countDown;
+    this.firebaseDBService.roomLockedSubject.subscribe((isLocked) => {
+      this.isLocked = isLocked;
     });
 
     this.firebaseDBService.roundNumberSubject.subscribe((roundNumber) => {

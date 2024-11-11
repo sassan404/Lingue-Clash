@@ -1,7 +1,7 @@
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
 
-import { Sentence } from "../../../../common/Interfaces/Sentence";
-import { SentenceEvaluationReply } from "../../../../common/Interfaces/TreatedChatGPTStructure";
+import { Sentence } from "../../../front/common/Interfaces/Sentence";
+import { SentenceEvaluationReply } from "../../../front/common/Interfaces/TreatedChatGPTStructure";
 import { HttpsFunction, onRequest } from "firebase-functions/v2/https";
 import { Request, Response } from "firebase-functions/v1";
 // Define the interface structure as a constant object

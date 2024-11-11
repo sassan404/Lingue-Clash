@@ -27,19 +27,21 @@
   </mat-card-header>
 
   <mat-progress-bar
+    mode="buffer"
     [value]="firebaseDBService.progressSubject | async"
   ></mat-progress-bar>
 
   <mat-card-content>
     <div *ngIf="roundNumber > 0 && roundNumber <= maxRound">
-      <div *ngIf="countDown === 0">
+      <div>
         <app-sentence-building-round></app-sentence-building-round>
       </div>
     </div>
     <app-result-display
       *ngIf="
         roundNumber > 0 &&
-        ((showReadyButton | async) || (showPlayerIsWaiting | async))
+        ((roundNumber > maxRound || (showReadyButton | async)) ||
+          (showPlayerIsWaiting | async))
       "
     ></app-result-display>
   </mat-card-content>
@@ -56,8 +58,9 @@
     </button>
   </mat-card-actions>
 </mat-card>
-
-<mat-spinner *ngIf="firebaseDBService.roomLockedSubject | async"></mat-spinner>
-<div *ngIf="countDown > 0">
-  <app-countdown [countDown]="countDown"></app-countdown>
+<div
+  class="spinner-container"
+  *ngIf="firebaseDBService.roomLockedSubject | async"
+>
+  <mat-spinner mode="indeterminate"></mat-spinner>
 </div>

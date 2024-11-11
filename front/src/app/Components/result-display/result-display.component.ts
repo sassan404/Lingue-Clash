@@ -21,7 +21,7 @@ export class ResultDisplayComponent {
     };
   } = {};
 
-  playersId: string[] = []
+  playersId: string[] = [];
 
   defaultDisplayedColumns: string[] = ['player', 'total'];
   displayedColumns: string[] = ['player', 'total'];
@@ -30,15 +30,17 @@ export class ResultDisplayComponent {
       this.totalResults = results;
     });
     this.firebaseDBService.scoresByRoundSubject.subscribe((scoresByRound) => {
-      if (!scoresByRound) {
-        return;
+      if (scoresByRound) {
+        this.rounds = Object.keys(scoresByRound);
+        this.scoresByRound = scoresByRound;
+        this.displayedColumns = [
+          ...this.defaultDisplayedColumns,
+          ...this.rounds,
+        ];
       }
-      this.rounds = Object.keys(scoresByRound);
-      this.scoresByRound = scoresByRound;
-      this.displayedColumns = [...this.defaultDisplayedColumns, ...this.rounds];
     });
     this.firebaseDBService.allPlayersSubject.subscribe((players) => {
       this.playersId = Object.keys(players);
-    })
+    });
   }
 }

@@ -1,11 +1,7 @@
 import { onRequest, HttpsError } from "firebase-functions/v2/https";
 import { database } from "../realtime-db.config";
-import {
-  LeaveRoomRequest,
-} from "../../../../common/Interfaces/Requests";
-import {
-  LeaveRoomResponse,
-} from "../../../../common/Interfaces/Responses";
+import { LeaveRoomRequest } from "../../../front/common/Interfaces/Requests";
+import { LeaveRoomResponse } from "../../../front/common/Interfaces/Responses";
 
 // Function to handle user leaving a room
 export const leaveRoom = onRequest(async (request, response) => {
