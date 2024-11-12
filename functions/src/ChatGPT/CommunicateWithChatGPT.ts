@@ -67,7 +67,11 @@ export class CommunicateWithChatGP<
   public communicate = async (request: U): Promise<T> => {
     const messageTosend = this.message(request);
 
-    let getAndTreatmentOfAnswerStatus = async (): Promise<T> => {
+    let getAndTreatmentOfAnswerStatus = async (counter= 0): Promise<T> => {
+      if (counter > 3) {
+        log.apply("alert", ["The answer was not as expected and we are out of tries"]);
+        return await Promise.resolve({} as T);
+      }
       try {
         const answer = await this.buildAICommunication(messageTosend);
         const treatedAnswer: T = this.treatAIReply(answer);
@@ -78,7 +82,7 @@ export class CommunicateWithChatGP<
           "The answer was not as expected, trying again",
           error,
         ]);
-        return await Promise.resolve({} as T);
+        return await getAndTreatmentOfAnswerStatus(counter + 1);
       }
     };
     return await getAndTreatmentOfAnswerStatus();
