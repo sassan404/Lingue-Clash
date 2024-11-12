@@ -58,3 +58,7 @@
   justify-items: center;
   background-color: #fff;
 }
+
+mat-card-content {
+  width: 100%;
+}

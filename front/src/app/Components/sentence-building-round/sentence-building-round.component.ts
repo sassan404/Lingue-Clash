@@ -15,6 +15,8 @@ import { HTTPService } from '../../Services/http.service';
 import { RoundHelpers } from '@common/Interfaces/Round/RoundHelpers';
 import { FireBaseDBService } from '../../Services/firebase-db.service';
 import { combineLatest, map } from 'rxjs';
+import { Player } from '@common/Interfaces/Player';
+import { SentenceBuildingRound } from '@common/Interfaces/Round/SentenceBuildingRound';
 
 @Component({
   selector: 'app-sentence-building-round',
@@ -37,46 +39,66 @@ import { combineLatest, map } from 'rxjs';
 export class SentenceBuildingRoundComponent {
   answer = new FormControl('', Validators.required);
 
+  roomId!: string;
+  currentPlayer?: Player;
+  sentenceBuildingRound!: SentenceBuildingRound | undefined;
+
   constructor(
     private httpService: HTTPService,
     public firebaseDBService: FireBaseDBService,
   ) {}
 
-  sentenceBuildingRoundObervable = combineLatest([
-    this.firebaseDBService.roomId,
-    this.firebaseDBService.playerSubject,
-    this.firebaseDBService.roundSubject,
-  ]).pipe(
-    map(([roomId, currentPlayer, currentRound]) => {
-      const sentenceBuildingRound =
-        RoundHelpers.getSentenceBuildingRound(currentRound);
+  ngOnInit() {
+    this.firebaseDBService.roomId.subscribe((roomId) => {
+      this.roomId = roomId;
+    });
+    this.firebaseDBService.playerSubject.subscribe((currentPlayer) => {
+      this.currentPlayer = currentPlayer;
+    });
+    this.firebaseDBService.roundSubject.subscribe((currentRound) => {
+      {
+        this.sentenceBuildingRound =
+          RoundHelpers.getSentenceBuildingRound(currentRound);
 
-      if (sentenceBuildingRound && sentenceBuildingRound.givenWords) {
-        const givenWords: GivenWord[] = Array.isArray(
-          sentenceBuildingRound.givenWords,
-        )
-          ? sentenceBuildingRound.givenWords
-          : [sentenceBuildingRound.givenWords];
-        sentenceBuildingRound.playerWords = givenWords?.flatMap(
-          (givenWord: GivenWord) => {
-            const wordForPlayer: string[] = [givenWord[currentPlayer.language]];
-            return wordForPlayer;
-          },
-        );
+        if (
+          this.sentenceBuildingRound &&
+          this.sentenceBuildingRound.givenWords
+        ) {
+          const givenWords: GivenWord[] = Array.isArray(
+            this.sentenceBuildingRound.givenWords,
+          )
+            ? this.sentenceBuildingRound.givenWords
+            : [this.sentenceBuildingRound.givenWords];
+          this.sentenceBuildingRound.playerWords = givenWords?.flatMap(
+            (givenWord: GivenWord) => {
+              const wordForPlayer: string[] = [
+                givenWord[this.currentPlayer?.language ?? 'English'],
+              ];
+              return wordForPlayer;
+            },
+          );
+        }
       }
-      return {
-        roomId,
-        currentPlayer,
-        currentRound,
-        sentenceBuildingRound,
-        showPlayerIsWaiting: currentPlayer.isWaiting(currentRound.state),
-      };
-    }),
-  );
+    });
+  }
 
-  showSubmitButton(roundState: RoundStates, playerState: PlayerStates) {
+  showPlayerIsWaiting(): boolean {
+    if (this.currentPlayer && this.sentenceBuildingRound)
+      return this.currentPlayer.isWaiting(this.sentenceBuildingRound.state);
+    return false;
+  }
+
+  showSubmitButton() {
     return (
-      roundState === RoundStates.PLAYING && playerState === PlayerStates.PLAYING
+      this.sentenceBuildingRound?.state === RoundStates.PLAYING &&
+      this.currentPlayer?.state === PlayerStates.PLAYING
+    );
+  }
+
+  showRoundIfNoPlayer() {
+    return (
+      !this.currentPlayer &&
+      this.sentenceBuildingRound?.state === RoundStates.PLAYING
     );
   }
 

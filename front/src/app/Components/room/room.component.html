@@ -42,7 +42,8 @@
         roundNumber > 0 &&
         (roundNumber > maxRound ||
           (showReadyButton | async) ||
-          (showPlayerIsWaiting | async))
+          (showPlayerIsWaiting | async) ||
+          !playerUsername)
       "
     ></app-result-display>
   </mat-card-content>

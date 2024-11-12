@@ -5,10 +5,7 @@ import {
   PlayerStates,
   RoundTypes,
 } from "../../../front/common/Interfaces/enums";
-import {
-  RoundHelper,
-  SentenceBuildingRoundHelper,
-} from "./SentenceBuildingRoundHelper";
+import { SentenceBuildingRoundHelper } from "./Helpers/SentenceBuildingRoundHelper";
 
 export const submitPlayerAnswer = onRequest(
   { cors: true },
@@ -27,7 +24,7 @@ export const submitPlayerAnswer = onRequest(
       await roomRef.child("currentRound/type").once("value")
     ).val();
 
-    let currentRoundHelper!: RoundHelper<any>;
+    let currentRoundHelper!: SentenceBuildingRoundHelper;
 
     if (currentRoundType === RoundTypes.SENTENCE_BUILDING) {
       currentRoundHelper = new SentenceBuildingRoundHelper(
@@ -38,13 +35,17 @@ export const submitPlayerAnswer = onRequest(
     }
 
     if (currentRoundHelper) {
-      const playerRef = roomRef.child(`players/${username}`);
+      await currentRoundHelper.initialiseValues();
 
-      await playerRef.update({
-        state: PlayerStates.FINISHED,
+      const playerStateRef = roomRef.child(`players/${username}/state`);
+
+      await playerStateRef.transaction((state) => {
+        if (state) {
+          state = PlayerStates.FINISHED;
+        }
+        return state;
       });
-
-      await currentRoundHelper.setPlayerAnswerForRound();
+      currentRoundHelper.setPlayerAnswerForRound();
 
       const responseContent = {
         success: `Player: "${username}" asnwer was submitted in room: "${roomId}"`,

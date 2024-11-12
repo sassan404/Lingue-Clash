@@ -6,7 +6,7 @@ import {
   PlayerStates,
   RoundTypes,
 } from "../../../front/common/Interfaces/enums";
-import { listenToPlayersStateChange } from "./StartNewRound";
+import { StartFinishRoundHelper } from "./Helpers/StartFinishRoundHelper";
 
 export const joinRoom = onRequest({ cors: true }, async (request, response) => {
   const { roomCode, username, language } = request.body as JoinRoomRequest;
@@ -58,11 +58,13 @@ export const joinRoom = onRequest({ cors: true }, async (request, response) => {
     joinedAtTimestamp: new Date().toISOString(),
   });
 
+  const roundHelper = new StartFinishRoundHelper(roomRef);
   playerRef.child("state").on("value", async (snapshot) => {
     if (snapshot) {
-      listenToPlayersStateChange(roomRef);
+      await roundHelper.listenToPlayersStateChange();
     }
   });
+
   const languagesRef = roomRef.child("languages");
   const languagesSnapshot = await languagesRef.once("value");
 

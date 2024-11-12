@@ -19,6 +19,7 @@ import { Player } from '@common/Interfaces/Player';
 import { RoundContainer } from '@common/Interfaces/Round/Round';
 import { RoundHelpers } from '@common/Interfaces/Round/RoundHelpers';
 import { RoundStates } from '@common/Interfaces/enums';
+import { SentenceEvaluationReply } from '@common/Interfaces/TreatedChatGPTStructure';
 
 @Injectable({ providedIn: 'root' })
 export class FireBaseDBService {
@@ -29,7 +30,7 @@ export class FireBaseDBService {
   private database = inject(Database);
 
   roomId = new BehaviorSubject<string>('');
-  playerUserName = new BehaviorSubject<string>('');
+  playerUserName = new BehaviorSubject<string | undefined>(undefined);
 
   private roomRef = this.roomId.pipe(
     map((roomId: string) => ref(this.database, 'rooms/' + roomId)),
@@ -56,7 +57,11 @@ export class FireBaseDBService {
   playerSubject = this.allPlayersSubject.pipe(
     switchMap((players) => {
       return this.playerUserName.pipe(
-        map((userName) => new Player(players[userName])),
+        map((userName) => {
+          if (userName && players[userName]) {
+            return new Player(players[userName]);
+          } else return undefined;
+        }),
       );
     }),
   );
@@ -71,23 +76,28 @@ export class FireBaseDBService {
   );
 
   roundStateSubject = this.roundSubject.pipe(map((round) => round.state));
-  totalScoresSubject = this.allPlayersSubject.pipe(
-    map((players) => {
-      const keys = Object.keys(players);
-
-      const scoreByPlayer: { [playerId: string]: number } = {};
-      keys.forEach((key) => {
-        scoreByPlayer[key] = players[key].score;
-      });
-      return scoreByPlayer;
-    }),
-  );
 
   scoresByRoundSubject = this.listenToRoomChange<{
     [roundId: string]: {
-      [playerId: string]: number;
+      result: {
+        [playerId: string]: SentenceEvaluationReply;
+      };
     };
-  }>('scoresByRound');
+  }>('rounds').pipe(
+    map((rounds) => {
+      console.log('rounds', rounds);
+      let cleanRounds: {
+        [roundId: string]: { [playerId: string]: SentenceEvaluationReply };
+      } = {};
+      Object.keys(rounds).forEach((roundNumber) => {
+        if (rounds[roundNumber].result)
+          cleanRounds[roundNumber] = rounds[roundNumber].result;
+      });
+
+      console.log('cleanRounds', cleanRounds);
+      return cleanRounds;
+    }),
+  );
 
   listenToRoomChange<T>(parameter: string): Observable<T> {
     return this.roomRef.pipe(

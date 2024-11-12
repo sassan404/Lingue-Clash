@@ -1,44 +1,39 @@
-<ng-container *ngIf="sentenceBuildingRoundObervable | async as data">
+<ng-container *ngIf="sentenceBuildingRound">
   <ng-container
     *ngIf="
-      data.sentenceBuildingRound &&
-      !data.showPlayerIsWaiting &&
-      showSubmitButton(
-        data.sentenceBuildingRound.state,
-        data.currentPlayer.state
-      )
+      !showPlayerIsWaiting() && (showSubmitButton() || showRoundIfNoPlayer())
     "
   >
     <h3>Round {{ firebaseDBService.roundNumberSubject | async }}</h3>
     <label for="words-list">Words to use</label>
     <mat-chip-listbox id="words-list" aria-label="Words list">
-      @for (word of data.sentenceBuildingRound.playerWords; track word) {
+      @for (word of sentenceBuildingRound.playerWords; track word) {
         <mat-chip> {{ word }} </mat-chip>
       }
     </mat-chip-listbox>
 
     <label for="sentence-input">Form a sentence using the words provided</label>
-    <mat-form-field>
-      <textarea
-        matInput
-        id="sentence-input"
-        placeholder="Enter your sentence"
-        aria-label="Form a sentence using the words provided"
-        cdkTextareaAutosize
-        [formControl]="answer"
-        (keyup.enter)="
-          submitRoundAnswer(data.roomId, data.currentPlayer.username)
-        "
-      ></textarea>
-    </mat-form-field>
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="submitRoundAnswer(data.roomId, data.currentPlayer.username)"
-      [disabled]="answer.invalid"
-    >
-      Submit
-    </button>
+    <ng-container *ngIf="currentPlayer">
+      <mat-form-field>
+        <textarea
+          matInput
+          id="sentence-input"
+          placeholder="Enter your sentence"
+          aria-label="Form a sentence using the words provided"
+          cdkTextareaAutosize
+          [formControl]="answer"
+          (keyup.enter)="submitRoundAnswer(roomId, currentPlayer.username)"
+        ></textarea>
+      </mat-form-field>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="submitRoundAnswer(roomId, currentPlayer.username)"
+        [disabled]="answer.invalid"
+      >
+        Submit
+      </button>
+    </ng-container>
   </ng-container>
-  <div *ngIf="data.showPlayerIsWaiting">Waiting for other players</div>
+  <div *ngIf="showPlayerIsWaiting()">Waiting for other players</div>
 </ng-container>

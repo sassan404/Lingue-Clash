@@ -24,3 +24,8 @@ button {
 label {
   margin: 10px;
 }
+
+mat-checkbox {
+  margin: 10px;
+  align-self: center;
+}

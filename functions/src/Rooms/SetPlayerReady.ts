@@ -16,18 +16,13 @@ export const setPlayerReady = onRequest(
         return;
       }
 
-      await roomRef.update({
-        isLocked: true,
-      });
+      const playerStateRef = roomRef.child(`players/${username}/state`);
 
-      const playerRef = roomRef.child(`players/${username}`);
-
-      await playerRef.update({
-        state: PlayerStates.READY,
-      });
-
-      await roomRef.update({
-        isLocked: false,
+      await playerStateRef.transaction((state) => {
+        if (state) {
+          state = PlayerStates.READY;
+        }
+        return state;
       });
 
       const responseContent = {
@@ -37,9 +32,6 @@ export const setPlayerReady = onRequest(
       response.send(responseContent);
     } catch (error) {
       console.error("Error setting player ready: ", error);
-      await roomRef.update({
-        isLocked: false,
-      });
       response.send({ error: error });
     }
   },

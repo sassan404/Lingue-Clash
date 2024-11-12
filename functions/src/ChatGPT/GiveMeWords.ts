@@ -55,13 +55,15 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
     return treatedChatGPTReply;
   }
 
-  override checkAnswer(input: Languages, answer: GivenWords): boolean {
-    return (
+  override checkAnswer(input: Languages, answer: GivenWords): void {
+    if(! (
       input.wordNumber == answer.words.length &&
       input.languages.every((language) =>
         answer.words.every((word) => word.hasOwnProperty(language)),
       )
-    );
+    )) {
+      throw new Error("The answer does not match the request");
+    }
   }
 }
 

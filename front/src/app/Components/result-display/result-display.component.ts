@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { FireBaseDBService } from '../../Services/firebase-db.service';
 import { MatSortModule } from '@angular/material/sort';
+import { SentenceEvaluationReply } from '@common/Interfaces/TreatedChatGPTStructure';
 
 @Component({
   selector: 'app-result-display',
@@ -17,30 +18,45 @@ export class ResultDisplayComponent {
   rounds: string[] = [];
   scoresByRound: {
     [roundId: string]: {
-      [playerId: string]: number;
+      [playerId: string]: SentenceEvaluationReply | undefined;
     };
   } = {};
 
   playersId: string[] = [];
 
-  defaultDisplayedColumns: string[] = ['player', 'total'];
-  displayedColumns: string[] = ['player', 'total'];
+  defaultDisplayedColumns: string[] = ['Rounds'];
+  displayedColumns: string[] = ['Rounds'];
+
+  defaultDisplayRows: string[] = ['player', 'total'];
+
   ngOnInit() {
-    this.firebaseDBService.totalScoresSubject.subscribe((results) => {
-      this.totalResults = results;
-    });
     this.firebaseDBService.scoresByRoundSubject.subscribe((scoresByRound) => {
       if (scoresByRound) {
         this.rounds = Object.keys(scoresByRound);
+        this.defaultDisplayRows.concat(this.rounds);
         this.scoresByRound = scoresByRound;
-        this.displayedColumns = [
-          ...this.defaultDisplayedColumns,
-          ...this.rounds,
-        ];
+        this.calculateTotalScores();
       }
     });
     this.firebaseDBService.allPlayersSubject.subscribe((players) => {
       this.playersId = Object.keys(players);
+      this.displayedColumns = [
+        ...this.defaultDisplayedColumns,
+        ...this.playersId,
+      ];
     });
+  }
+
+  calculateTotalScores() {
+    this.totalResults = {};
+    for (const round of this.rounds) {
+      for (const playerId of this.playersId) {
+        if (!this.totalResults[playerId]) {
+          this.totalResults[playerId] = 0;
+        }
+        this.totalResults[playerId] +=
+          this.scoresByRound[round][playerId]?.score || 0;
+      }
+    }
   }
 }

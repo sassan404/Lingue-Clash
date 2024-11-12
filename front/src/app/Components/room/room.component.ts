@@ -72,7 +72,7 @@ export class RoomComponent {
   }
 
   ngOnInit() {
-    if (this.roomId && this.playerUsername) {
+    if (this.roomId) {
       this.firebaseDBService.roomId.next(this.roomId);
       this.firebaseDBService.playerUserName.next(this.playerUsername);
     } else this.router.navigate(['/']);
@@ -101,7 +101,10 @@ export class RoomComponent {
     this.firebaseDBService.roundSubject,
   ]).pipe(
     map(([player, players, round]) => {
-      return player.canReady(this.getPlayersArray(players).length, round.state);
+      return player?.canReady(
+        this.getPlayersArray(players).length,
+        round.state,
+      );
     }),
   );
 
@@ -110,7 +113,7 @@ export class RoomComponent {
     this.firebaseDBService.roundSubject,
   ]).pipe(
     map(([player, round]) => {
-      return player.isWaiting(round.state);
+      return player?.isWaiting(round.state);
     }),
   );
 

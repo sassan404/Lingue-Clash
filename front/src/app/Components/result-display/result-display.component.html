@@ -1,26 +1,18 @@
-<table mat-table [dataSource]="playersId">
-  @for (column of rounds; track column) {
+<table mat-table [dataSource]="rounds">
+  @for (column of displayedColumns; track column) {
     <ng-container [matColumnDef]="column">
       <th mat-header-cell *matHeaderCellDef>
         {{ column }}
       </th>
       <td mat-cell *matCellDef="let row">
-        {{ scoresByRound[column][row] }}
+        {{ column === "Rounds" ? row : scoresByRound[row][column]?.score }}
+      </td>
+      <td mat-footer-cell *matFooterCellDef>
+        {{ column === "Rounds" ? 'Total' : totalResults[column] }}
       </td>
     </ng-container>
   }
-
-  <!-- Number Column -->
-  <ng-container matColumnDef="player">
-    <th mat-header-cell *matHeaderCellDef>Player</th>
-    <td mat-cell *matCellDef="let row">{{ row }}</td>
-  </ng-container>
-
-  <!-- Title Column -->
-  <ng-container matColumnDef="total">
-    <th mat-header-cell *matHeaderCellDef>Total</th>
-    <td mat-cell *matCellDef="let row">{{ totalResults[row] }}</td>
-  </ng-container>
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
 </table>

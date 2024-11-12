@@ -2,6 +2,7 @@ import { PlayerStates, RoundStates } from "./enums";
 
 export interface Player {
   joinedAt: number;
+  joinedAtTimestamp: string,
   language: string;
   score: number;
   username: string;
@@ -11,6 +12,7 @@ export interface Player {
 export class Player {
   constructor(player: Player) {
     this.joinedAt = player.joinedAt;
+    this.joinedAtTimestamp = player.joinedAtTimestamp;
     this.language = player.language;
     this.score = player.score;
     this.username = player.username;
