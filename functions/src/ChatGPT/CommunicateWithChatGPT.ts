@@ -78,8 +78,7 @@ export class CommunicateWithChatGP<
           "The answer was not as expected, trying again",
           error,
         ]);
-        // return await getAndTreatmentOfAnswerStatus();
-        return await Promise.reject(error);
+        return await Promise.resolve({} as T);
       }
     };
     return await getAndTreatmentOfAnswerStatus();
