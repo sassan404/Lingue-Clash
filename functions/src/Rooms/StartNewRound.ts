@@ -96,7 +96,7 @@ const finishRound = async (roomRef: Reference) => {
 
 export const startNewRound = async (roomRef: Reference) => {
   let newRoundNumber!: number;
-
+  roomRef.update({ isLocked: true });
   const transtactionResult = await roomRef
     .child("currentRoundNumber")
     .transaction((roundNumber: number) => {
@@ -115,8 +115,6 @@ export const startNewRound = async (roomRef: Reference) => {
       .child("progress")
       .set((newRoundNumber / RoundHelpers.maxRounds) * 100);
     if (newRoundNumber <= RoundHelpers.maxRounds) {
-      roomRef.update({ isLocked: true });
-
       const languages: Languages = {
         wordNumber: newRoundNumber + 1,
         languages: (await roomRef.child("languages").once("value")).val(),
@@ -180,8 +178,8 @@ export const startNewRound = async (roomRef: Reference) => {
     await roomRef.child("rounds").update({
       [newRoundNumber - 1]: lastRound,
     });
-    roomRef.update({ isLocked: false });
   }
+  roomRef.update({ isLocked: false });
 };
 
 const checkIfAllPlayersHaveResults = async (

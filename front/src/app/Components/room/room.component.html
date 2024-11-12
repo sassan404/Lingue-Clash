@@ -40,7 +40,8 @@
     <app-result-display
       *ngIf="
         roundNumber > 0 &&
-        ((roundNumber > maxRound || (showReadyButton | async)) ||
+        (roundNumber > maxRound ||
+          (showReadyButton | async) ||
           (showPlayerIsWaiting | async))
       "
     ></app-result-display>
@@ -58,9 +59,6 @@
     </button>
   </mat-card-actions>
 </mat-card>
-<div
-  class="spinner-container"
-  *ngIf="firebaseDBService.roomLockedSubject | async"
->
-  <mat-spinner mode="indeterminate"></mat-spinner>
+<div class="spinner-container" *ngIf="isLocked">
+  <mat-spinner></mat-spinner>
 </div>

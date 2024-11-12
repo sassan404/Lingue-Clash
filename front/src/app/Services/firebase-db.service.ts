@@ -11,6 +11,7 @@ import {
   map,
   Observable,
   Subject,
+  Subscriber,
   switchMap,
 } from 'rxjs';
 import { child } from '@angular/fire/database';
@@ -99,24 +100,10 @@ export class FireBaseDBService {
                 const value = snapshot.val();
                 if (value) {
                   observer.next(value);
-                }
+                } else this.setDefaultValueForObserver(observer);
               },
               (error) => {
-                let defaultValue: T;
-                if (typeof (0 as T) === 'number') {
-                  defaultValue = 0 as T;
-                } else if (typeof ('' as T) === 'string') {
-                  defaultValue = '' as T;
-                } else if (typeof (false as T) === 'boolean') {
-                  defaultValue = false as T;
-                } else if (Array.isArray([] as T)) {
-                  defaultValue = [] as T;
-                } else if (typeof ({} as T) === 'object') {
-                  defaultValue = {} as T;
-                } else {
-                  defaultValue = null as T; // Fallback for other types
-                }
-                observer.next(defaultValue);
+                this.setDefaultValueForObserver(observer);
               },
             );
             return { unsubscribe };
@@ -124,6 +111,24 @@ export class FireBaseDBService {
         ),
       ),
     );
+  }
+
+  setDefaultValueForObserver<T>(observer: Subscriber<T>) {
+    let defaultValue: T;
+    if (typeof (0 as T) === 'number') {
+      defaultValue = 0 as T;
+    } else if (typeof ('' as T) === 'string') {
+      defaultValue = '' as T;
+    } else if (typeof (false as T) === 'boolean') {
+      defaultValue = false as T;
+    } else if (Array.isArray([] as T)) {
+      defaultValue = [] as T;
+    } else if (typeof ({} as T) === 'object') {
+      defaultValue = {} as T;
+    } else {
+      defaultValue = null as T; // Fallback for other types
+    }
+    observer.next(defaultValue);
   }
 
   listenToState(
