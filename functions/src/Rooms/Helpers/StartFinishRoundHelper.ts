@@ -13,7 +13,8 @@ export class StartFinishRoundHelper {
   roundRef = this.roomRef.child("currentRound");
   roundStateRef = this.roundRef.child("state");
   lockedRef = this.roomRef.child("isLocked");
-  roundRefByRoundNumber!: Reference;
+  roundRefByRoundNumber = (roundNumber: number) =>
+    this.roomRef.child(`rounds/${roundNumber}`);
 
   currentRoundState!: RoundStates;
   players!: { [playerId: string]: Player };
@@ -28,9 +29,6 @@ export class StartFinishRoundHelper {
     this.currentRoundNumber = (
       await this.roomRef.child("currentRoundNumber").once("value")
     ).val();
-    this.roundRefByRoundNumber = this.roomRef.child(
-      `rounds/${this.currentRoundNumber + 1}`,
-    );
     this.languages = (
       await this.roomRef.child("languages").once("value")
     ).val();
@@ -132,7 +130,7 @@ export class StartFinishRoundHelper {
             }
           });
 
-          this.roundRefByRoundNumber.set(round);
+          this.roundRefByRoundNumber(newRoundNumber).set(round);
 
           this.setStateForAllPlayers(PlayerStates.PLAYING);
         });

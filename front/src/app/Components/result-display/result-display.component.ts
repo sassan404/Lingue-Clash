@@ -44,6 +44,7 @@ export class ResultDisplayComponent {
         ...this.defaultDisplayedColumns,
         ...this.playersId,
       ];
+      this.calculateTotalScores();
     });
   }
 
