@@ -43,14 +43,14 @@ class EvaluateOneSentenceContainer extends CommunicateWithChatGP<
 
   override checkAnswer(input: Sentence, answer: SentenceEvaluationReply): void {
     if (
-      !answer.missingWords.every((word) =>
+      !answer.missingWords?.every((word) =>
         input.words
-          .map((word) => word.toLowerCase())
+          ?.map((word) => word.toLowerCase())
           .includes(word.toLowerCase()),
       )
     ) {
-      console.log("input.words", input.words);
-      console.log("answer.missingWords", answer.missingWords);
+      console.log("input.words", input);
+      console.log("answer.missingWords", answer);
       throw new Error("The answer is not valid");
     }
   }

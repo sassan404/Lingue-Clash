@@ -1,0 +1,103 @@
+<section>
+  <form [formGroup]="updateRoomPropertiesForm">
+    <mat-form-field class="example-form-field">
+      <mat-label>Enter the number of rounds for the game</mat-label>
+      <input
+        matInput
+        placeholder="Number of rounds"
+        value="5"
+        [formControl]="numberOfRounds"
+        [errorStateMatcher]="matcher"
+      />
+      @if (
+        updateRoomPropertiesForm.hasError("wordsLessThanRounds") &&
+        !updateRoomPropertiesForm.hasError("zeroRoundsNumber") &&
+        !numberOfRounds.hasError("required")
+      ) {
+        <mat-error>Number of words should exceed number of rounds</mat-error>
+      }
+      @if (
+        updateRoomPropertiesForm.hasError("zeroRoundsNumber") &&
+        !numberOfRounds.hasError("required")
+      ) {
+        <mat-error>Number of rounds cannot be zero</mat-error>
+      }
+      @if (numberOfRounds.hasError("required")) {
+        <mat-error>Number of rounds is <strong>required</strong></mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field class="example-form-field">
+      <mat-label>Enter the number fo words to practice</mat-label>
+      <input
+        matInput
+        placeholder="Number of words"
+        value="6"
+        [formControl]="numberOfWords"
+        [errorStateMatcher]="matcher"
+      />
+      @if (
+        updateRoomPropertiesForm.hasError("wordsLessThanRounds") &&
+        !updateRoomPropertiesForm.hasError("zeroWordsNumber") &&
+        !numberOfWords.hasError("required")
+      ) {
+        <mat-error>Number of words should exceed number of rounds</mat-error>
+      }
+      @if (
+        updateRoomPropertiesForm.hasError("zeroWordsNumber") &&
+        !numberOfWords.hasError("required")
+      ) {
+        <mat-error>Number of words cannot be zero</mat-error>
+      }
+      @if (numberOfWords.hasError("required")) {
+        <mat-error>Number of rounds is <strong>required</strong></mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field class="example-form-field">
+      <mat-label><b>Choose words to use in the game</b></mat-label>
+      <mat-chip-grid #reactiveChipGrid aria-label="Enter words">
+        <ng-container *ngFor="let keyword of wordsToUse()">
+          <mat-chip-row
+            [editable]="true"
+            (edited)="edit(keyword, $event)"
+            (removed)="removeWord(keyword)"
+          >
+            {{ keyword }}
+            <button matChipRemove aria-label="'remove word">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+        </ng-container>
+        <input
+          matInput
+          placeholder="New word..."
+          [matChipInputFor]="reactiveChipGrid"
+          (matChipInputTokenEnd)="addWord($event)"
+          [errorStateMatcher]="matcher"
+          [disabled]="enoughNumberOfWords()"
+        />
+
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="clickEvent($event)"
+          [attr.aria-label]="'Hide password'"
+          [disabled]="enoughNumberOfWords()"
+        >
+          <mat-icon>{{ "autorenew" }}</mat-icon>
+        </button>
+      </mat-chip-grid>
+      @if (updateRoomPropertiesForm.hasError("haveNoWords")) {
+        <mat-hint class="error">Not the right number of words</mat-hint>
+      }
+    </mat-form-field>
+  </form>
+  <button
+    class="submit-button"
+    mat-fab
+    extended
+    [disabled]="updateRoomPropertiesForm.invalid"
+    (click)="updateRoomProperties()"
+  >
+    Update properties
+  </button>
+</section>

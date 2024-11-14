@@ -10,6 +10,7 @@ export interface SentenceEvaluationReply extends TreatedAIReplyStructure {
   grammarMistakes: string[];
   coherenceMistakes: string[];
 }
+export type SentenceEvaluationReplyKeys = keyof SentenceEvaluationReply;
 
 export interface SentenceReply extends TreatedAIReplyStructure {
   language: string;

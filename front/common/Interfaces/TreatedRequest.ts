@@ -10,3 +10,9 @@ export interface Languages extends TreatedRequest {
   wordNumber: number;
   languages: string[];
 }
+
+
+export interface WordsToTranslate {
+  languages: string[];
+  words: string[]
+}

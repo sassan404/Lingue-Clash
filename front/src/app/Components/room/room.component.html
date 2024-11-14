@@ -32,6 +32,9 @@
   ></mat-progress-bar>
 
   <mat-card-content>
+    <ng-container *ngIf="showGameProperties()">
+      <app-choose-words></app-choose-words>
+      </ng-container> 
     <div *ngIf="roundNumber > 0 && roundNumber <= maxRound">
       <div>
         <app-sentence-building-round></app-sentence-building-round>

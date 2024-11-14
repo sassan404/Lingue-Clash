@@ -18,3 +18,11 @@ export interface LeaveRoomRequest {
   roomId: string;
   username: string;
 }
+
+
+export interface RoomPropertiesUpdateRequest {
+  numberOfRounds: number;
+  numberofWords: number;
+  wordsList: string[];
+  roomId: string;
+}

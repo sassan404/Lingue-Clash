@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import {
   CreateRoomRequest,
   JoinRoomRequest,
+  RoomPropertiesUpdateRequest,
 } from '@common/Interfaces/Requests';
 
 @Injectable({ providedIn: 'root' })
@@ -66,6 +67,37 @@ export class HTTPService {
 
     this.http
       .post(this.apiUrl('submitPlayerAnswer'), body, {
+        headers: this.headers,
+      })
+      .subscribe();
+  }
+
+  getWordSuggestion(numberOfWords: number, language: string) {
+    const body = JSON.stringify({
+      wordNumber: numberOfWords,
+      languages: [language],
+    });
+    return this.http.post(this.apiUrl('giveMeWords'), body, {
+      headers: this.headers,
+    });
+  }
+
+  updateGameProperties(
+    numberOfRounds: number,
+    numberOfWords: number,
+    wordsList: string[],
+    roomId: string,
+  ) {
+    const body: RoomPropertiesUpdateRequest = {
+      numberOfRounds,
+      numberofWords: numberOfWords,
+      wordsList,
+      roomId,
+    };
+    const bosyAsString = JSON.stringify(body);
+
+    this.http
+      .post(this.apiUrl('updateRoomProperties'), body, {
         headers: this.headers,
       })
       .subscribe();

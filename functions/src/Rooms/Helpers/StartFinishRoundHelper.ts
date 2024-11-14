@@ -1,6 +1,4 @@
 import { Reference } from "firebase-admin/database";
-import { Languages } from "../../../../front/common/Interfaces/TreatedRequest";
-import { giveMeWords } from "../../ChatGPT/GiveMeWords";
 import {
   PlayerStates,
   RoundStates,
@@ -8,18 +6,19 @@ import {
 } from "../../../../front/common/Interfaces/enums";
 import { Player } from "../../../../front/common/Interfaces/Player";
 import { RoundHelpers } from "../../../../front/common/Interfaces/Round/RoundHelpers";
+import { GivenWord } from "../../../../front/common/Interfaces/GivenWord";
 
 export class StartFinishRoundHelper {
   roundRef = this.roomRef.child("currentRound");
   roundStateRef = this.roundRef.child("state");
   lockedRef = this.roomRef.child("isLocked");
+  wordListRef = this.roomRef.child("wordsList");
   roundRefByRoundNumber = (roundNumber: number) =>
     this.roomRef.child(`rounds/${roundNumber}`);
 
   currentRoundState!: RoundStates;
   players!: { [playerId: string]: Player };
   currentRoundNumber!: number;
-  languages!: string[];
 
   constructor(public roomRef: Reference) {}
 
@@ -28,9 +27,6 @@ export class StartFinishRoundHelper {
     this.players = (await this.roomRef.child("players").once("value")).val();
     this.currentRoundNumber = (
       await this.roomRef.child("currentRoundNumber").once("value")
-    ).val();
-    this.languages = (
-      await this.roomRef.child("languages").once("value")
     ).val();
   }
 
@@ -107,18 +103,17 @@ export class StartFinishRoundHelper {
         .set((newRoundNumber / RoundHelpers.maxRounds) * 100);
 
       if (newRoundNumber <= RoundHelpers.maxRounds) {
-        const languages: Languages = {
-          wordNumber: newRoundNumber + 1,
-          languages: this.languages,
-        };
-
-        await giveMeWords(languages).then(async (words) => {
+        await this.wordListRef.once("value").then(async (snapshot) => {
+          const words: GivenWord[] = snapshot.val();
+          console.log("words", words);
           const round = {
             startAt: Date.now(),
             startAtTimestamp: new Date().toISOString(),
             state: RoundStates.PLAYING,
             type: RoundTypes.SENTENCE_BUILDING,
-            givenWords: words.words,
+            givenWords: words
+              .sort(() => 0.5 - Math.random())
+              .slice(0, newRoundNumber + 1),
             playerWords: [],
             result: {},
           };

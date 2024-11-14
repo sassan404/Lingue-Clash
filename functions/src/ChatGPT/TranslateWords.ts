@@ -1,6 +1,6 @@
 import { HttpsFunction, onRequest } from "firebase-functions/v2/https";
 import { GivenWords } from "../../../front/common/Interfaces/GivenWord";
-import { Languages } from "../../../front/common/Interfaces/TreatedRequest";
+import { WordsToTranslate } from "../../../front/common/Interfaces/TreatedRequest";
 
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
 import { Request, Response } from "firebase-functions/v1";
@@ -15,36 +15,32 @@ const wordMeaningArray = {
   words: [wordMeaningStructure],
 };
 /**
- * Container class for the 'giveMeWords' function.
+ * Container class for the 'wordsToTranslate' function.
  */
-class GiveMeWordsContainer extends CommunicateWithChatGP<
-  Languages,
+class TranslateWordsContainer extends CommunicateWithChatGP<
+  WordsToTranslate,
   GivenWords
 > {
   /**
    * Message to be sent to the ChatGPT model.
-   * @param {Languages} languages the languages to be used.
+   * @param {WordsToTranslate} wordsToTranslate the words and languages to be used.
    * @return {String} The message.
    */
-  override message(languages: Languages): string {
+  override message(wordsToTranslate: WordsToTranslate): string {
     const languagesWithEnglish =
-      languages.languages.indexOf("English") < 0
-        ? ["English", ...languages.languages]
-        : languages.languages;
+      wordsToTranslate.languages.indexOf("English") < 0
+        ? ["English", ...wordsToTranslate.languages]
+        : wordsToTranslate.languages;
     const languagesList = languagesWithEnglish.join("\n- ");
 
     const firstSentence =
-      languages.wordNumber == 1
-        ? `I need ${languages.wordNumber} random word with its translations into the languages:`
-        : `I need ${languages.wordNumber} different random words each with its translations into the languages:`;
+      wordsToTranslate.words.length == 1
+        ? `Translate this word ${wordsToTranslate.words} into the languages:`
+        : `Translate these words ${wordsToTranslate.words} into the languages:`;
 
-    const messageContent = `You are my language teacher and I am your student.
-    We are doing an excercise where you give me a list of words in different languages and I have to guess the meaning of each word.
-    The dificulty of our class is between A1 and B1.
-    So for this exercise, ${firstSentence}
+    const messageContent = `${firstSentence}
     - ${languagesList}
-    Mix between nouns, verbs, adjectives, adverbs, articles, etc...
-    The response should be a json array following the format of this interface:
+    The response should contain a property words which is an array with each element presenting each words in multiple languages in json array format following the format of this interface:
    ${JSON.stringify(wordMeaningArray, null, 2)}`;
     return messageContent;
   }
@@ -60,15 +56,19 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
     return treatedChatGPTReply;
   }
 
-  override checkAnswer(input: Languages, answer: GivenWords): void {
+  override checkAnswer(input: WordsToTranslate, answer: GivenWords): void {
     if (
       !(
-        input.wordNumber == answer.words.length &&
+        input.words.length == answer.words.length &&
         input.languages.every((language) =>
           answer.words.every((word) => word.hasOwnProperty(language)),
         )
       )
     ) {
+      console.log("input", input);
+      answer.words.forEach((word) => {
+        console.log("answer", word);
+      });
       throw new Error("The answer does not match the request");
     }
   }
@@ -77,16 +77,18 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
 /**
  * Handler for the giveMeTwoWords request.
  */
-export const giveMeWordsRequest: HttpsFunction = onRequest(
+export const translateWordsRequest: HttpsFunction = onRequest(
   async (request: Request, response: Response) => {
-    const newCommunicateWithChatGP = new GiveMeWordsContainer();
+    const newCommunicateWithChatGP = new TranslateWordsContainer();
 
     await newCommunicateWithChatGP.communicateOnRequest(request, response);
   },
 );
 
-export const giveMeWords = async (request: Languages): Promise<GivenWords> => {
-  const newCommunicateWithChatGP = new GiveMeWordsContainer();
+export const translateWords = async (
+  request: WordsToTranslate,
+): Promise<GivenWords> => {
+  const newCommunicateWithChatGP = new TranslateWordsContainer();
 
   return await newCommunicateWithChatGP.communicate(request);
 };

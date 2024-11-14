@@ -2,14 +2,43 @@ import { Component } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { FireBaseDBService } from '../../Services/firebase-db.service';
 import { MatSortModule } from '@angular/material/sort';
-import { SentenceEvaluationReply } from '@common/Interfaces/TreatedChatGPTStructure';
+import {
+  SentenceEvaluationReply,
+  SentenceEvaluationReplyKeys,
+} from '@common/Interfaces/TreatedChatGPTStructure';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-result-display',
   standalone: true,
-  imports: [MatTableModule, MatSortModule],
+  imports: [
+    MatTableModule,
+    MatSortModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+  ],
   templateUrl: './result-display.component.html',
   styleUrl: './result-display.component.css',
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed,void', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition(
+        'expanded <=> collapsed',
+        animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)'),
+      ),
+    ]),
+  ],
 })
 export class ResultDisplayComponent {
   constructor(public firebaseDBService: FireBaseDBService) {}
@@ -26,7 +55,20 @@ export class ResultDisplayComponent {
 
   defaultDisplayedColumns: string[] = ['Rounds'];
   displayedColumns: string[] = ['Rounds'];
+  displayedWithExpand: string[] = [...this.displayedColumns, 'expand'];
+  expandedElement: string = '';
 
+  innerColumns = [
+    { name: 'Player', key: 'player' },
+    {name: 'Language', key: 'language'},
+    { name: 'Sentence', key: 'sentence' },
+    { name: 'Missing words', key: 'missingWords' },
+    { name: 'Spelling mistakes', key: 'spellingMistakes' },
+    { name: 'Grammar mistakes', key: 'grammarMistakes' },
+    { name: 'Coherence mistakes', key: 'coherenceMistakes' },
+    { name: 'Score', key: 'score' },
+  ];
+  displayedInnerColumns = this.innerColumns.map((column) => column.key);
   defaultDisplayRows: string[] = ['player', 'total'];
 
   ngOnInit() {
@@ -44,6 +86,7 @@ export class ResultDisplayComponent {
         ...this.defaultDisplayedColumns,
         ...this.playersId,
       ];
+      this.displayedWithExpand = [...this.displayedColumns, 'expand'];
       this.calculateTotalScores();
     });
   }
@@ -59,5 +102,29 @@ export class ResultDisplayComponent {
           this.scoresByRound[round][playerId]?.score || 0;
       }
     }
+  }
+
+  getEvaluationProperty(
+    column: string,
+    evaluation: SentenceEvaluationReply | undefined,
+  ) {
+    const evaluationProperty =
+      evaluation?.[column as SentenceEvaluationReplyKeys];
+    if (!evaluationProperty) return 0;
+    if (Array.isArray(evaluationProperty)) {
+      return evaluationProperty.length;
+    }
+    return evaluationProperty;
+  }
+
+  getEvaluationPropertyTooltip(
+    column: string,
+    evaluation: SentenceEvaluationReply | undefined,
+  ): string | null | undefined {
+    const evaluationProperty =
+      evaluation?.[column as SentenceEvaluationReplyKeys];
+    if (Array.isArray(evaluationProperty)) {
+      return evaluationProperty.join('\n');
+    } else return null;
   }
 }

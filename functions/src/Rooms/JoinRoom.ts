@@ -4,6 +4,7 @@ import { JoinRoomRequest } from "../../../front/common/Interfaces/Requests";
 import { JoinRoomResponse } from "../../../front/common/Interfaces/Responses";
 import {
   PlayerStates,
+  RoundStates,
   RoundTypes,
 } from "../../../front/common/Interfaces/enums";
 import { StartFinishRoundHelper } from "./Helpers/StartFinishRoundHelper";
@@ -29,10 +30,13 @@ export const joinRoom = onRequest({ cors: true }, async (request, response) => {
   const currentRoundType = (
     await roomRef.child("currentRound/type").once("value")
   ).val();
+  const currentRoundState = (
+    await roomRef.child("currentRound/state").once("value")
+  ).val();
 
-  if (currentRoundType !== RoundTypes.LOBBY) {
+  if (currentRoundType !== RoundTypes.LOBBY && currentRoundState !== RoundStates.STARTING) {
     console.log("Room is not in lobby");
-    response.send({ error: "Room is not in lobby phase, player can't join" });
+    response.send({ error: "Room is not in a strting lobby phase, player can't join" });
     return;
   }
   const isRoomLocked = (await roomRef.child("locked").once("value")).val();

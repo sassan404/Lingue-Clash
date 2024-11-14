@@ -26,6 +26,8 @@ import { RoundHelpers } from '@common/Interfaces/Round/RoundHelpers';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { ResultDisplayComponent } from '../result-display/result-display.component';
+import { ChooseWordsComponent } from '../choose-words/choose-words.component';
+import { RoundStates } from '@common/Interfaces/enums';
 
 @Component({
   selector: 'app-room',
@@ -47,6 +49,7 @@ import { ResultDisplayComponent } from '../result-display/result-display.compone
     MatTableModule,
     ResultDisplayComponent,
     NgClass,
+    ChooseWordsComponent,
   ],
   templateUrl: './room.component.html',
   styleUrl: './room.component.css',
@@ -58,6 +61,8 @@ export class RoomComponent {
   maxRound = RoundHelpers.maxRounds;
   isLocked = false;
   roundNumber = 0;
+  createdBy = '';
+  roundState = RoundStates.STARTING;
 
   constructor(
     private route: ActivatedRoute,
@@ -83,6 +88,12 @@ export class RoomComponent {
 
     this.firebaseDBService.roundNumberSubject.subscribe((roundNumber) => {
       this.roundNumber = roundNumber;
+    });
+    this.firebaseDBService.createdBySubject.subscribe((createdBy) => {
+      this.createdBy = createdBy;
+    });
+    this.firebaseDBService.roundStateSubject.subscribe((roundState) => {
+      this.roundState = roundState;
     });
   }
 
@@ -119,5 +130,14 @@ export class RoomComponent {
 
   getPlayersArray(players: { [playerId: string]: Player }): Player[] {
     return Object.values(players);
+  }
+
+  showGameProperties() {
+    return (
+      this.roundNumber == 0 &&
+      this.roundState == RoundStates.STARTING &&
+      (this.playerUsername?.length === 0 ||
+        this.playerUsername === this.createdBy)
+    );
   }
 }

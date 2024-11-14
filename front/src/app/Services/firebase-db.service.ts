@@ -40,7 +40,10 @@ export class FireBaseDBService {
   roomLockedSubject = this.listenToRoomChange<boolean>('isLocked');
   progressSubject = this.listenToRoomChange<number>('progress');
 
+  createdBySubject = this.listenToRoomChange<string>('createdBy');
+
   roundNumberSubject = this.listenToRoomChange<number>('currentRoundNumber');
+  mainLanguageSubject = this.listenToRoomChange<string>('mainLanguage');
 
   allPlayersSubject = this.listenToRoomChange<{ [playerId: string]: Player }>(
     'players',
@@ -85,7 +88,6 @@ export class FireBaseDBService {
     };
   }>('rounds').pipe(
     map((rounds) => {
-      console.log('rounds', rounds);
       let cleanRounds: {
         [roundId: string]: { [playerId: string]: SentenceEvaluationReply };
       } = {};
@@ -93,8 +95,6 @@ export class FireBaseDBService {
         if (rounds[roundNumber].result)
           cleanRounds[roundNumber] = rounds[roundNumber].result;
       });
-
-      console.log('cleanRounds', cleanRounds);
       return cleanRounds;
     }),
   );

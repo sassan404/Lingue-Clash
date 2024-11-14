@@ -12,7 +12,6 @@ export interface RoomContainer {
   progress: number;
   currentRound: RoundContainer;
   currentRoundNumber: number;
-  countDown: number;
   players: {
     [playerId: string]: Player;
   };
@@ -20,11 +19,10 @@ export interface RoomContainer {
   rounds: {
     [roundId: string]: RoundContainer; // Define the structure of a round if needed
   };
-  scoresByRound: {
-    [roundId: string]: {
-      [playerId: string]: number;
-    },
-  }
+
+  numberOfRounds: number;
+  numberofWords: number;
+  wordsList: string[];
 }
 
 export class RoomContainer {
@@ -37,6 +35,11 @@ export class RoomContainer {
     this.roomName = room.roomName;
     this.players = room.players;
     this.rounds = room.rounds;
-    this.scoresByRound = room.scoresByRound;
+    this.languages = room.languages;
+    this.numberOfRounds = room.numberOfRounds;
+    this.numberofWords = room.numberofWords;
+    this.wordsList = room.wordsList;
+    this.progress = room.progress;
+    this.currentRoundNumber = room.currentRoundNumber;
   }
 }
