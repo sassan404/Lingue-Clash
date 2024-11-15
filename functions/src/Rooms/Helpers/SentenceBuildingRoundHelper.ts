@@ -63,22 +63,35 @@ export class SentenceBuildingRoundHelper {
 
   setPlayerAnswerForRound: () => void = async () => {
     const answer: Sentence = this.buildAnswer();
-    const sentenceEvaluation: SentenceEvaluationReply =
-      await evaluateOneSentence(answer);
+    let sentenceEvaluation: SentenceEvaluationReply;
+    try {
+      sentenceEvaluation = await evaluateOneSentence(answer);
 
-    sentenceEvaluation.sentence = answer.sentence;
-    sentenceEvaluation.score =
-      20 -
-      (sentenceEvaluation.language === answer.language ? 0 : 20) -
-      sentenceEvaluation.missingWords.length -
-      sentenceEvaluation.spellingMistakes.length -
-      sentenceEvaluation.grammarMistakes.length -
-      sentenceEvaluation.coherenceMistakes.length;
+      sentenceEvaluation.sentence = answer.sentence;
+      sentenceEvaluation.score =
+        20 -
+        (sentenceEvaluation.language === answer.language ? 0 : 20) -
+        sentenceEvaluation.missingWords.length -
+        sentenceEvaluation.spellingMistakes.length -
+        sentenceEvaluation.grammarMistakes.length -
+        sentenceEvaluation.coherenceMistakes.length;
 
-    if (sentenceEvaluation.score < 0) {
-      sentenceEvaluation.score = 0;
-    } else if (sentenceEvaluation.score > 20) {
-      sentenceEvaluation.score = 20;
+      if (sentenceEvaluation.score < 0) {
+        sentenceEvaluation.score = 0;
+      } else if (sentenceEvaluation.score > 20) {
+        sentenceEvaluation.score = 20;
+      }
+    } catch (error) {
+      sentenceEvaluation = {
+        sentence: answer.sentence,
+        // continue
+        score: 0,
+        missingWords: [],
+        spellingMistakes: [],
+        grammarMistakes: [],
+        coherenceMistakes: [],
+        language: answer.language,
+      };
     }
     const resultRef = this.resultRef();
     resultRef.set(sentenceEvaluation);

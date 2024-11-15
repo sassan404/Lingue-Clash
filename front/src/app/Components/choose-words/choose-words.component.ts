@@ -33,6 +33,7 @@ import { HTTPService } from 'src/app/Services/http.service';
 
 import { ErrorStateMatcher } from '@angular/material/core';
 import { FireBaseDBService } from 'src/app/Services/firebase-db.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-choose-words',
@@ -80,6 +81,7 @@ export class ChooseWordsComponent {
   constructor(
     private httpService: HTTPService,
     private firebaseDBService: FireBaseDBService,
+    private snackBar: MatSnackBar,
   ) {}
   announcer = inject(LiveAnnouncer);
 
@@ -168,16 +170,23 @@ export class ChooseWordsComponent {
     console.log('neededNumber', neededNumber);
     this.httpService
       .getWordSuggestion(neededNumber + 4, this.mainLanguage)
-      .subscribe((response) => {
-        const typedReply = response as GivenWords;
-        this.wordsToUse.update((keywords) => [
-          ...keywords,
-          ...typedReply.words
-            .map((word) => word[this.mainLanguage].toLowerCase())
-            .filter((word) => !keywords.includes(word))
-            .splice(0, neededNumber),
-        ]);
-        this.wordsToUseControl.setValue(this.wordsToUse());
+      .subscribe({
+        next: (response) => {
+          const typedReply = response as GivenWords;
+          this.wordsToUse.update((keywords) => [
+            ...keywords,
+            ...typedReply.words
+              .map((word) => word[this.mainLanguage].toLowerCase())
+              .filter((word) => !keywords.includes(word))
+              .splice(0, neededNumber),
+          ]);
+          this.wordsToUseControl.setValue(this.wordsToUse());
+        },
+        error: () => {
+          this.snackBar.open(
+            'Error getting word suggestions, AI might be busy, try again later or enter some words yourself.',
+          );
+        },
       });
     event.stopPropagation();
   }
