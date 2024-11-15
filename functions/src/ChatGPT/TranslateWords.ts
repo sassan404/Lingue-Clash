@@ -78,7 +78,7 @@ class TranslateWordsContainer extends CommunicateWithChatGP<
  * Handler for the giveMeTwoWords request.
  */
 export const translateWordsRequest: HttpsFunction = onRequest(
-  { cors: true },
+  { cors: true, region: "europe-west1" },
   async (request: Request, response: Response) => {
     const newCommunicateWithChatGP = new TranslateWordsContainer();
 

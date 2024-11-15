@@ -2,12 +2,15 @@ import { onRequest } from "firebase-functions/v2/https";
 import { database } from "../realtime-db.config";
 import { RoomPropertiesUpdateRequest } from "../../../front/common/Interfaces/Requests";
 import { JoinRoomResponse } from "../../../front/common/Interfaces/Responses";
-import { RoundStates, RoundTypes } from "../../../front/common/Interfaces/enums";
+import {
+  RoundStates,
+  RoundTypes,
+} from "../../../front/common/Interfaces/enums";
 import { WordsToTranslate } from "../../../front/common/Interfaces/TreatedRequest";
 import { translateWords } from "../ChatGPT/TranslateWords";
 
 export const updateRoomProperties = onRequest(
-  { cors: true },
+  { cors: true, region: "europe-west1" },
   async (request, response) => {
     const { numberOfRounds, numberofWords, wordsList, roomId } =
       request.body as RoomPropertiesUpdateRequest;
@@ -48,8 +51,8 @@ export const updateRoomProperties = onRequest(
         numberofWords: numberofWords,
         wordsList: givenWords.words,
         currentRound: {
-          state: RoundStates.FINISHED
-        }
+          state: RoundStates.FINISHED,
+        },
       });
 
       await roomRef.update({

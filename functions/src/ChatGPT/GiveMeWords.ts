@@ -78,7 +78,7 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
  * Handler for the giveMeTwoWords request.
  */
 export const giveMeWordsRequest: HttpsFunction = onRequest(
-  { cors: true },
+  { cors: true, region: "europe-west1" },
   async (request: Request, response: Response) => {
     const newCommunicateWithChatGP = new GiveMeWordsContainer();
 

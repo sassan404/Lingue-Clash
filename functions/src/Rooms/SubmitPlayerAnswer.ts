@@ -8,7 +8,7 @@ import {
 import { SentenceBuildingRoundHelper } from "./Helpers/SentenceBuildingRoundHelper";
 
 export const submitPlayerAnswer = onRequest(
-  { cors: true },
+  { cors: true, region: "europe-west1" },
   async (request, response) => {
     const { roomId, username, answer } = request.body as PlayerAnswer;
 

@@ -4,7 +4,7 @@ import { LeaveRoomRequest } from "../../../front/common/Interfaces/Requests";
 import { PlayerStates } from "../../../front/common/Interfaces/enums";
 
 export const setPlayerReady = onRequest(
-  { cors: true },
+  { cors: true, region: "europe-west1" },
   async (request, response) => {
     const { roomId, username } = request.body as LeaveRoomRequest;
     const roomRef = database.ref(`rooms/${roomId}`);

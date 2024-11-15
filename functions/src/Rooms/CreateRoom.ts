@@ -15,7 +15,7 @@ const generateRoomCode = () => {
 };
 
 export const createRoom = onRequest(
-  { cors: true },
+  { cors: true, region: "europe-west1" },
   async (request, response) => {
     const { username, language } = request.body as CreateRoomRequest;
 

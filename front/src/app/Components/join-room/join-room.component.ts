@@ -6,13 +6,11 @@ import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
-  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { HTTPService } from '../../Services/http.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { AsyncPipe } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Router } from '@angular/router';
 
@@ -20,6 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
 import { JoinRoomRequest } from '@common/Interfaces/Requests';
 import { JoinRoomResponse } from '@common/Interfaces/Responses';
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-join-room',
   standalone: true,
@@ -46,6 +45,7 @@ export class JoinRoomComponent {
   constructor(
     private router: Router,
     private httpService: HTTPService,
+    private snackBar: MatSnackBar,
   ) {}
 
   joinRoom() {
@@ -54,14 +54,20 @@ export class JoinRoomComponent {
       roomCode: this.joinRoomForm.value.roomCode || '',
       language: this.joinRoomForm.value.language || '',
     };
-    this.httpService.joinRoom(joinRequest).subscribe((reply) => {
-      const typedReply = reply as JoinRoomResponse;
-      this.router.navigate(['/room'], {
-        queryParams: {
-          roomId: typedReply.roomId,
-          playerUsername: joinRequest.username,
-        },
-      });
-    });
+    this.httpService.joinRoom(joinRequest).subscribe(
+      (reply) => {
+        const typedReply = reply as JoinRoomResponse;
+        this.router.navigate(['/room'], {
+          queryParams: {
+            roomId: typedReply.roomId,
+            playerUsername: joinRequest.username,
+          },
+        });
+      },
+      (error) => {
+        console.log('error joining room');
+        this.snackBar.open('Error joining the room');
+      },
+    );
   }
 }
