@@ -19,7 +19,9 @@ export const createRoom = onRequest(
   { cors: true, region: "europe-west1" },
   async (request, response) => {
     try {
-      const { username, language, mode } = request.body as CreateRoomRequest;
+      let { username, language, mode } = request.body as CreateRoomRequest;
+
+      username = mode === GameModes.ADMIN ? "Admin" : username;
 
       const roomCode = generateRoomCode();
 
@@ -32,27 +34,27 @@ export const createRoom = onRequest(
       const currentTimestamp = new Date(currentTime);
       const currentTimeISOString = currentTimestamp.toISOString();
 
-      const adminPlayer = username
-        ? {
-            [username]: {
-              state:
-                mode === GameModes.SOLO
-                  ? PlayerStates.READY
-                  : PlayerStates.WAITING,
-              username: username,
-              language: language,
-              score: 0,
-              joinedAt: currentTime,
-              joinedAtTimestamp: currentTimeISOString,
-            },
-          }
-        : {};
-
+      const adminPlayer =
+        mode === GameModes.ADMIN
+          ? {}
+          : {
+              [username]: {
+                state:
+                  mode === GameModes.SOLO
+                    ? PlayerStates.READY
+                    : PlayerStates.WAITING,
+                username: username,
+                language: language,
+                score: 0,
+                joinedAt: currentTime,
+                joinedAtTimestamp: currentTimeISOString,
+              },
+            };
       await roomRef.set({
         roomId: roomId,
-        roomName: `Room created by ${username ?? "Admin"}`,
+        roomName: `Room created by ${username}`,
         roomCode: roomCode,
-        createdBy: username ?? "Admin",
+        createdBy: username,
         createdAt: currentTime,
         mainLanguage: language ?? "English",
         createdAtTimestamp: currentTimeISOString,

@@ -39,15 +39,12 @@ export class HTTPService {
   }
 
   createRoom(creation: CreateRoomRequest) {
-    const body = creation.username
-      ? JSON.stringify({
-          username: creation.username,
-          language: creation.language,
-          mode: creation.mode,
-        })
-      : JSON.stringify({
-          language: creation.language,
-        });
+    const body = JSON.stringify({
+      username: creation.username,
+      language: creation.language,
+      mode: creation.mode,
+    });
+
     return this.http.post(this.apiUrl('createRoom'), body, {
       headers: this.headers,
     });
