@@ -48,7 +48,6 @@ Lingue Clash is built using a modern tech stack to ensure a smooth and responsiv
 - **Dynamic Rounds**: Each round grows in complexity, challenging players' language skills.
 - **Real-time Updates**: The game leverages Firebase Realtime Database to reflect changes instantly.
 - **AI Assistance**: AI can evaluate players' responses, providing feedback on grammar and vocabulary.
-- **Minimalist Design**: The interface is clean, intuitive, and adventurous, creating an immersive experience.
 
 ---
 
