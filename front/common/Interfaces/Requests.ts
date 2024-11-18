@@ -6,6 +6,7 @@ export interface InitiateNewRoundRequest {
 export interface CreateRoomRequest {
   username: string;
   language: string;
+  mode: string;
 }
 
 export interface JoinRoomRequest {
@@ -18,7 +19,6 @@ export interface LeaveRoomRequest {
   roomId: string;
   username: string;
 }
-
 
 export interface RoomPropertiesUpdateRequest {
   numberOfRounds: number;

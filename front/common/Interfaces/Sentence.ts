@@ -1,4 +1,4 @@
-import { TreatedRequest } from "./TreatedRequest";
+import { TreatedRequest } from './TreatedRequest';
 
 export interface Sentence {
   language: string;

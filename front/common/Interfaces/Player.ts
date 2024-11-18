@@ -1,8 +1,8 @@
-import { PlayerStates, RoundStates } from "./enums";
+import { GameModes, PlayerStates, RoundStates } from './enums';
 
 export interface Player {
   joinedAt: number;
-  joinedAtTimestamp: string,
+  joinedAtTimestamp: string;
   language: string;
   score: number;
   username: string;
@@ -25,9 +25,13 @@ export class Player {
     );
   };
 
-  canReady = (PlayerCount: number, roundState: RoundStates | undefined) => {
+  canReady = (
+    PlayerCount: number,
+    roundState: RoundStates | undefined,
+    gameMode: GameModes,
+  ) => {
     return (
-      PlayerCount >= 2 &&
+      (PlayerCount >= 2 || gameMode === GameModes.SOLO) &&
       (!roundState || roundState === RoundStates.FINISHED) &&
       this.state === PlayerStates.WAITING
     );
@@ -40,6 +44,8 @@ export class Player {
   };
 
   isWaiting = (roundState: RoundStates) => {
-    return roundState === RoundStates.PLAYING && this.state === PlayerStates.FINISHED;
+    return (
+      roundState === RoundStates.PLAYING && this.state === PlayerStates.FINISHED
+    );
   };
 }

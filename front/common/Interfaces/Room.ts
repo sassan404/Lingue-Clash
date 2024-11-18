@@ -1,13 +1,16 @@
-import { Player } from "./Player";
-import { RoundContainer } from "./Round/Round";
+import { RoundTypes } from './enums';
+import { Player } from './Player';
+import { RoundContainer } from './Round/Round';
 
 export interface RoomContainer {
   roomId: string;
   roomName: string;
   roomCode: string;
   createdBy: string;
-  createdAt: number,
-  createdAtTimestamp: string,
+  createdAt: number;
+  createdAtTimestamp: string;
+  gameMode: RoundTypes;
+  roundCanStart: boolean;
   isLocked: boolean;
   progress: number;
   currentRound: RoundContainer;
@@ -15,7 +18,7 @@ export interface RoomContainer {
   players: {
     [playerId: string]: Player;
   };
-  languages: string[]
+  languages: string[];
   rounds: {
     [roundId: string]: RoundContainer; // Define the structure of a round if needed
   };
@@ -41,5 +44,9 @@ export class RoomContainer {
     this.wordsList = room.wordsList;
     this.progress = room.progress;
     this.currentRoundNumber = room.currentRoundNumber;
+    this.createdAt = room.createdAt;
+    this.createdAtTimestamp = room.createdAtTimestamp;
+    this.gameMode = room.gameMode;
+    this.roundCanStart = room.roundCanStart;
   }
 }

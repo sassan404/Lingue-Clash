@@ -1,12 +1,30 @@
 <div class="create-room">
   <h2>Create Your Room</h2>
   <form [formGroup]="createRoomForm" (submit)="createRoom()">
-    <mat-checkbox
-      [labelPosition]="'before'"
-      formControlName="adminMode"
-      (change)="toggleUserNameForm($event.checked)"
-      ><b>Create game as an admin only</b></mat-checkbox
-    >
+    <p>
+      <b>Choose game mode</b>
+      <mat-button-toggle-group
+        (change)="toggleUserNameForm($event)"
+        formControlName="gameMode"
+        aria-label="Game Mode"
+      >
+        <mat-button-toggle
+          matTooltip="Play alone and challenge yourself."
+          value="solo"
+          >Solo</mat-button-toggle
+        >
+        <mat-button-toggle
+          matTooltip="Compete with other players in real-time."
+          value="multi"
+          >Multiplayer</mat-button-toggle
+        >
+        <mat-button-toggle
+          matTooltip="Manage the game as an administrator while all players join via their phones."
+          value="admin"
+          >Admin</mat-button-toggle
+        >
+      </mat-button-toggle-group>
+    </p>
     <div>
       <label for="username"><b>Enter your username</b></label>
       <mat-form-field>

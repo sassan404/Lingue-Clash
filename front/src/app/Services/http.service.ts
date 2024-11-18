@@ -1,5 +1,11 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ComponentType } from '@angular/cdk/portal';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import {
   CreateRoomRequest,
   JoinRoomRequest,
@@ -8,22 +14,36 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class HTTPService {
-  constructor(private http: HttpClient) {}
+  config!: MatSnackBarConfig;
+  constructor(
+    private http: HttpClient,
+    public snackbar: MatSnackBar,
+  ) {
+    const config = new MatSnackBarConfig();
+    config.duration = 2000;
+    config.horizontalPosition = 'right';
+    config.verticalPosition = 'top';
+  }
 
   private apiUrl = (functionName: string) =>
     `https://${functionName.toLowerCase()}-tvyvmn36ya-ew.a.run.app`;
-  // 'http://127.0.0.1:5001/word-clash-2aa96/us-central1/' + functionName;
+  // 'http://127.0.0.1:5001/word-clash-2aa96/europe-west1/' + functionName;
 
   private headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
   });
 
+  openSnackBarOnErrors(error: HttpErrorResponse) {
+    this.snackbar.open(error?.error?.message, '', this.config);
+  }
+
   createRoom(creation: CreateRoomRequest) {
     const body = creation.username
       ? JSON.stringify({
           username: creation.username,
           language: creation.language,
+          mode: creation.mode,
         })
       : JSON.stringify({
           language: creation.language,
@@ -55,7 +75,7 @@ export class HTTPService {
       .post(this.apiUrl('setPlayerReady'), body, {
         headers: this.headers,
       })
-      .subscribe();
+      .subscribe({ error: this.openSnackBarOnErrors });
   }
 
   submitPlayerAnswer(roomId: string, username: string, answer: string) {
@@ -69,7 +89,7 @@ export class HTTPService {
       .post(this.apiUrl('submitPlayerAnswer'), body, {
         headers: this.headers,
       })
-      .subscribe();
+      .subscribe({ error: this.openSnackBarOnErrors });
   }
 
   getWordSuggestion(numberOfWords: number, language: string) {
@@ -100,6 +120,18 @@ export class HTTPService {
       .post(this.apiUrl('updateRoomProperties'), bosyAsString, {
         headers: this.headers,
       })
-      .subscribe();
+      .subscribe({ error: this.openSnackBarOnErrors });
+  }
+
+  startNewRound(roomId: string) {
+    const body = JSON.stringify({
+      roomId: roomId,
+    });
+
+    this.http
+      .post(this.apiUrl('startNewRound'), body, {
+        headers: this.headers,
+      })
+      .subscribe({ error: this.openSnackBarOnErrors });
   }
 }

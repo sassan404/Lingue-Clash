@@ -1,4 +1,4 @@
-import { onRequest } from "firebase-functions/v2/https";
+import { HttpsError, onRequest } from "firebase-functions/v2/https";
 import { database } from "../realtime-db.config";
 import { RoomPropertiesUpdateRequest } from "../../../front/common/Interfaces/Requests";
 import { JoinRoomResponse } from "../../../front/common/Interfaces/Responses";
@@ -8,62 +8,86 @@ import {
 } from "../../../front/common/Interfaces/enums";
 import { WordsToTranslate } from "../../../front/common/Interfaces/TreatedRequest";
 import { translateWords } from "../ChatGPT/TranslateWords";
+import { warn } from "firebase-functions/logger";
+import { Reference } from "firebase-admin/database";
+import { setRoundCanStartIfAllPlayersReady } from "./Helpers/PlayerStateHelper";
 
 export const updateRoomProperties = onRequest(
   { cors: true, region: "europe-west1" },
   async (request, response) => {
-    const { numberOfRounds, numberofWords, wordsList, roomId } =
-      request.body as RoomPropertiesUpdateRequest;
-
-    const roomRef = database.ref(`rooms/${roomId}`);
-
     try {
-      const currentRoundType = (
-        await roomRef.child("currentRound/type").once("value")
-      ).val();
+      const { numberOfRounds, numberofWords, wordsList, roomId } =
+        request.body as RoomPropertiesUpdateRequest;
 
-      if (currentRoundType !== RoundTypes.LOBBY) {
-        console.log("Room is not in lobby");
-        response.send({
-          error: "Room is not in lobby phase, player can't join",
-        });
-        return;
-      }
+      const roomRef = database.ref(`rooms/${roomId}`);
 
-      await roomRef.update({
-        isLocked: true,
-      });
+      await checkThatRoomIsInLobby(roomRef);
 
-      const languages: string[] = (
-        await roomRef.child("languages").once("value")
-      ).val();
+      await setRoomProperties(
+        roomRef,
+        numberOfRounds,
+        numberofWords,
+        wordsList,
+      );
 
-      const wordsToTranslate: WordsToTranslate = {
-        words: wordsList,
-        languages: languages,
-      };
-
-      // Call the ChatGPT function
-      const givenWords = await translateWords(wordsToTranslate);
-
-      await roomRef.update({
-        numberOfRounds: numberOfRounds,
-        numberofWords: numberofWords,
-        wordsList: givenWords.words,
-        currentRound: {
-          state: RoundStates.FINISHED,
-        },
-      });
-
-      await roomRef.update({
-        isLocked: false,
-      });
+      setRoundCanStartIfAllPlayersReady(roomRef);
 
       const reponseContent: JoinRoomResponse = { roomId };
       response.send(reponseContent);
     } catch (error) {
-      console.error("Error updating room properties: ", error);
-      response.send({ error: error });
+      warn((error as Error).message);
+      response.status(500).send(error);
     }
   },
 );
+
+async function checkThatRoomIsInLobby(roomRef: Reference) {
+  const roomSnapshot = await roomRef.once("value");
+
+  if (!roomSnapshot.exists()) {
+    throw new HttpsError("not-found", "Room does not exist");
+  }
+
+  const currentRoundType = (
+    await roomRef.child("currentRound/type").once("value")
+  ).val();
+
+  if (currentRoundType !== RoundTypes.LOBBY) {
+    throw new HttpsError(
+      "permission-denied",
+      "Room is not in lobby phase, player can't join",
+    );
+  }
+}
+
+async function setRoomProperties(
+  roomRef: Reference,
+  numberOfRounds: number,
+  numberofWords: number,
+  wordsList: string[],
+) {
+  await roomRef.update({
+    isLocked: true,
+  });
+
+  const wordsToTranslate: WordsToTranslate = {
+    words: wordsList,
+    languages: (await roomRef.child("languages").once("value")).val(),
+  };
+
+  // Call the ChatGPT function
+  const givenWordsWithTranslation = await translateWords(wordsToTranslate);
+
+  await roomRef.update({
+    numberOfRounds: numberOfRounds,
+    numberofWords: numberofWords,
+    wordsList: givenWordsWithTranslation.words,
+  });
+  await roomRef.child("currentRound").update({
+    state: RoundStates.FINISHED,
+  });
+
+  await roomRef.update({
+    isLocked: false,
+  });
+}

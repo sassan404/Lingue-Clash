@@ -18,7 +18,7 @@ import { child } from '@angular/fire/database';
 import { Player } from '@common/Interfaces/Player';
 import { RoundContainer } from '@common/Interfaces/Round/Round';
 import { RoundHelpers } from '@common/Interfaces/Round/RoundHelpers';
-import { RoundStates } from '@common/Interfaces/enums';
+import { GameModes, RoundStates } from '@common/Interfaces/enums';
 import { SentenceEvaluationReply } from '@common/Interfaces/TreatedChatGPTStructure';
 
 @Injectable({ providedIn: 'root' })
@@ -44,6 +44,11 @@ export class FireBaseDBService {
 
   roundNumberSubject = this.listenToRoomChange<number>('currentRoundNumber');
   mainLanguageSubject = this.listenToRoomChange<string>('mainLanguage');
+
+  roundCanStartSubject = this.listenToRoomChange<boolean>('roundCanStart');
+  gameModeSubject = this.listenToRoomChange<GameModes>('gameMode');
+
+  maxRoundSubject = this.listenToRoomChange<number>('numberOfRounds');
 
   allPlayersSubject = this.listenToRoomChange<{ [playerId: string]: Player }>(
     'players',

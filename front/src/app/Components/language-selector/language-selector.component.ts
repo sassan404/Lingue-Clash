@@ -36,14 +36,15 @@ import { MatChipListboxChange, MatChipsModule } from '@angular/material/chips';
 export class LanguageSelectorComponent {
   // Manually sorted list of languages by popularity
   popularLanguages: string[] = [
+    // replace these names by their native names
     'English',
-    'Chinese',
-    'Hindi',
-    'Spanish',
-    'French',
-    'Arabic',
-    'Bengali',
-    'Russian',
+    '中文',
+    'हिन्दी',
+    'Español',
+    'Français',
+    'العربية',
+    '日本語',
+    'Русский',
   ];
 
   filteredLanguages: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(
@@ -58,7 +59,7 @@ export class LanguageSelectorComponent {
   errorMessage = signal('');
 
   constructor() {
-    this.languages = ISO6391.getAllNames();
+    this.languages = ISO6391.getAllNativeNames();
     merge(this.language.statusChanges, this.language.valueChanges)
       .pipe(takeUntilDestroyed())
       .subscribe(() => {

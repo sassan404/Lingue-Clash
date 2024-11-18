@@ -1,4 +1,4 @@
-import { TreatedAIReplyStructure } from "./TreatedChatGPTStructure";
+import { TreatedAIReplyStructure } from './TreatedChatGPTStructure';
 
 export interface GivenWord {
   [language: string]: string;

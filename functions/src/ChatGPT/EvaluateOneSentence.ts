@@ -4,6 +4,8 @@ import { Sentence } from "../../../front/common/Interfaces/Sentence";
 import { SentenceEvaluationReply } from "../../../front/common/Interfaces/TreatedChatGPTStructure";
 import { HttpsFunction, onRequest } from "firebase-functions/v2/https";
 import { Request, Response } from "firebase-functions/v1";
+import { GenerateContentResult } from "@google/generative-ai";
+import { warn } from "firebase-functions/logger";
 // Define the interface structure as a constant object
 
 const sentenceEvaluationReply = {
@@ -34,23 +36,26 @@ class EvaluateOneSentenceContainer extends CommunicateWithChatGP<
     The rules to check:
      1 - Each sentence should include all the corresposing words or one of their corresponsing forms (conjugations for verbs for example), so from those words give me the ones missing from the sentence
      2 - The sentence should be in the correct language so give me which language the sentence is in
-     3 - The spelling of the words should be correct, so give me thel ist of words spelled incorrectly
+     3 - The spelling of the words should be correct, so give me the list of words spelled incorrectly
      4 - The sentence should be grammatically correct, so give me the list of gramatical mistakes
      5 - The sentence should be coherent and convey a proper meaning, so give me the number of incoherent usages of words in the sentence
   The response should only be a json array following the format of this interface:
   ${JSON.stringify(sentenceEvaluationReply, null, 2)}`;
   }
 
+  override treatAIReply(
+    chatGPTReply: GenerateContentResult,
+  ): SentenceEvaluationReply {
+    const treatedChatGPTReply: SentenceEvaluationReply = super.treatAIReply(
+      chatGPTReply,
+    );
+    return new SentenceEvaluationReply(treatedChatGPTReply);
+  }
+
   override checkAnswer(input: Sentence, answer: SentenceEvaluationReply): void {
-    if (
-      !answer.missingWords?.every((word) =>
-        input.words
-          ?.map((word) => word.toLowerCase())
-          .includes(word.toLowerCase()),
-      )
-    ) {
-      console.log("input.words", input);
-      console.log("answer.missingWords", answer);
+    if (!answer) {
+      warn("input.words", input);
+      warn("answer.missingWords", answer);
       throw new Error("The answer is not valid");
     }
   }

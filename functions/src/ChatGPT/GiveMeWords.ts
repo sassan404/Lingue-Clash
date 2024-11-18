@@ -56,7 +56,7 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
    */
 
   override treatAIReply(chatGPTReply: GenerateContentResult): GivenWords {
-    const treatedChatGPTReply = super.treatAIReply(chatGPTReply);
+    const treatedChatGPTReply: GivenWords = super.treatAIReply(chatGPTReply);
     return treatedChatGPTReply;
   }
 
@@ -65,7 +65,9 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
       !(
         input.wordNumber == answer.words.length &&
         input.languages.every((language) =>
-          answer.words.every((word) => word.hasOwnProperty(language)),
+          answer.words.every(
+            (word) => word.hasOwnProperty(language) && word[language],
+          ),
         )
       )
     ) {

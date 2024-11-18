@@ -62,6 +62,7 @@ export class SentenceBuildingRoundHelper {
   };
 
   setPlayerAnswerForRound: () => void = async () => {
+    await this.initialiseValues();
     const answer: Sentence = this.buildAnswer();
     let sentenceEvaluation: SentenceEvaluationReply;
     try {
@@ -71,10 +72,10 @@ export class SentenceBuildingRoundHelper {
       sentenceEvaluation.score =
         20 -
         (sentenceEvaluation.language === answer.language ? 0 : 20) -
-        sentenceEvaluation.missingWords.length -
+        sentenceEvaluation.missingWords.length * 3 -
         sentenceEvaluation.spellingMistakes.length -
-        sentenceEvaluation.grammarMistakes.length -
-        sentenceEvaluation.coherenceMistakes.length;
+        sentenceEvaluation.grammarMistakes.length * 2 -
+        sentenceEvaluation.coherenceMistakes.length * 2;
 
       if (sentenceEvaluation.score < 0) {
         sentenceEvaluation.score = 0;

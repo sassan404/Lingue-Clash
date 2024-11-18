@@ -5,7 +5,7 @@ import { WordsToTranslate } from "../../../front/common/Interfaces/TreatedReques
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
 import { Request, Response } from "firebase-functions/v1";
 import { GenerateContentResult } from "@google/generative-ai";
-import { log } from "firebase-functions/logger";
+import { warn } from "firebase-functions/logger";
 
 // Define the interface structure as a constant object
 const wordMeaningStructure = {
@@ -66,9 +66,9 @@ class TranslateWordsContainer extends CommunicateWithChatGP<
         )
       )
     ) {
-      log.apply("alert", [input]);
+      warn("Requested value", input);
       answer.words.forEach((word) => {
-        log.apply("alert", [word]);
+        warn("Response from AI", word);
       });
       throw new Error("The answer does not match the request");
     }

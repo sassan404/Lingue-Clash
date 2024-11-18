@@ -1,17 +1,16 @@
-import { RoundTypes } from "../enums";
-import { RoundContainer } from "./Round";
-import { SentenceBuildingRound } from "./SentenceBuildingRound";
-import { TestRound } from "./TestRound";
+import { RoundTypes } from '../enums';
+import { RoundContainer } from './Round';
+import { SentenceBuildingRound } from './SentenceBuildingRound';
+import { TestRound } from './TestRound';
 
 export let RoundHelpers = {
-  maxRounds: 5,
   isSentenceBuildingRound: (
-    round: RoundContainer
+    round: RoundContainer,
   ): round is SentenceBuildingRound => {
     return round.type == RoundTypes.SENTENCE_BUILDING;
   },
   getSentenceBuildingRound: (
-    round: RoundContainer
+    round: RoundContainer,
   ): SentenceBuildingRound | undefined => {
     if (RoundHelpers.isSentenceBuildingRound(round)) {
       return new SentenceBuildingRound(round);

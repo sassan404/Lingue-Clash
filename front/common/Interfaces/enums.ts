@@ -1,34 +1,40 @@
 export enum PlayerStates {
-  WAITING = "waiting",
-  READY = "ready",
-  PLAYING = "playing",
-  FINISHED = "finished",
+  WAITING = 'waiting',
+  READY = 'ready',
+  PLAYING = 'playing',
+  FINISHED = 'finished',
 }
 
 export enum RoundStates {
-  STARTING = "starting",
-  PLAYING = "playing",
-  FINISHED = "finished",
-  ENDED = "ended",
+  STARTING = 'starting',
+  PLAYING = 'playing',
+  FINISHED = 'finished',
+  ENDED = 'ended',
 }
 
 export enum RoundTypes {
-  SENTENCE_BUILDING = "sentenceBuilding",
-  TEST = "test",
-  LOBBY = "lobby",
-  ROUND = "round",
-  END = "end",
+  SENTENCE_BUILDING = 'sentenceBuilding',
+  TEST = 'test',
+  LOBBY = 'lobby',
+  ROUND = 'round',
+  END = 'end',
 }
 
 export enum GamePhases {
-  LOBBY = "lobby",
-  ROUND = "round",
-  END = "end",
+  LOBBY = 'lobby',
+  ROUND = 'round',
+  END = 'end',
 }
 
 export enum GameActions {
-  JOIN = "join",
-  READY = "ready",
-  PLAY = "play",
-  Finish = "finish",
+  JOIN = 'join',
+  READY = 'ready',
+  PLAY = 'play',
+  Finish = 'finish',
+}
+
+export enum GameModes {
+  SOLO = 'solo',
+  MULTIPLAYER = 'multiplayer',
+  ADMIN = 'admin',
 }

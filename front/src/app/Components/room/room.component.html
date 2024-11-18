@@ -1,5 +1,8 @@
 <mat-card class="room-card">
-  <mat-card-header>
+  <mat-card-header *ngIf="gameMode === 'solo'"
+    ><mat-card-title><h3>Solo game</h3></mat-card-title></mat-card-header
+  >
+  <mat-card-header *ngIf="gameMode !== 'solo'">
     <mat-card-title>
       <h3 *ngIf="firebaseDBService.roomCodeSubject | async as roomCode">
         Room Code: {{ roomCode }}
@@ -34,7 +37,7 @@
   <mat-card-content>
     <ng-container *ngIf="showGameProperties()">
       <app-choose-words></app-choose-words>
-      </ng-container> 
+    </ng-container>
     <div *ngIf="roundNumber > 0 && roundNumber <= maxRound">
       <div>
         <app-sentence-building-round></app-sentence-building-round>
@@ -46,6 +49,7 @@
         (roundNumber > maxRound ||
           (showReadyButton | async) ||
           (showPlayerIsWaiting | async) ||
+          (firebaseDBService.roundCanStartSubject | async) ||
           !playerUsername)
       "
     ></app-result-display>
@@ -60,6 +64,18 @@
       (click)="declarePlayerReady()"
     >
       Ready
+    </button>
+    <button
+      class="ready-button"
+      mat-raised-button
+      color="primary"
+      *ngIf="
+        (playerUsername?.length === 0 || playerUsername === createdBy) &&
+        (firebaseDBService.roundCanStartSubject | async)
+      "
+      (click)="startNewRound()"
+    >
+      Start next round
     </button>
   </mat-card-actions>
 </mat-card>

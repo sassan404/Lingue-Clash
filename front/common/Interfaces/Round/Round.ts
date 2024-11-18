@@ -1,4 +1,4 @@
-import { RoundStates, RoundTypes } from "../enums";
+import { RoundStates, RoundTypes } from '../enums';
 
 export interface RoundContainer {
   startAt: number;
@@ -17,7 +17,7 @@ export class RoundContainer {
     this.result = round.result;
   }
 
-  getPlayerScores(): { [playerId: string]: number }  {
-    return this.result
+  getPlayerScores(): { [playerId: string]: number } {
+    return this.result;
   }
 }

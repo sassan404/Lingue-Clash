@@ -1,5 +1,5 @@
 import { Request, Response } from "firebase-functions/v1";
-import { log } from "firebase-functions/logger";
+import { log, warn } from "firebase-functions/logger";
 
 import { ParamsDictionary } from "express-serve-static-core";
 
@@ -67,9 +67,9 @@ export class CommunicateWithChatGP<
   public communicate = async (request: U): Promise<T> => {
     const messageTosend = this.message(request);
 
-    let getAndTreatmentOfAnswerStatus = async (counter= 0): Promise<T> => {
+    let getAndTreatmentOfAnswerStatus = async (counter = 0): Promise<T> => {
       if (counter > 3) {
-        log.apply("alert", ["The answer was not as expected and we are out of tries"]);
+        warn("The answer was not as expected and we are out of tries");
         return await Promise.resolve({} as T);
       }
       try {

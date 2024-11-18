@@ -4,7 +4,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  Input,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -33,7 +32,6 @@ import { HTTPService } from 'src/app/Services/http.service';
 
 import { ErrorStateMatcher } from '@angular/material/core';
 import { FireBaseDBService } from 'src/app/Services/firebase-db.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-choose-words',
@@ -81,7 +79,6 @@ export class ChooseWordsComponent {
   constructor(
     private httpService: HTTPService,
     private firebaseDBService: FireBaseDBService,
-    private snackBar: MatSnackBar,
   ) {}
   announcer = inject(LiveAnnouncer);
 
@@ -167,7 +164,6 @@ export class ChooseWordsComponent {
   clickEvent(event: MouseEvent) {
     const neededNumber =
       (this.numberOfWords.value ?? 0) - this.wordsToUse().length;
-    console.log('neededNumber', neededNumber);
     this.httpService
       .getWordSuggestion(neededNumber + 4, this.mainLanguage)
       .subscribe({
@@ -182,11 +178,7 @@ export class ChooseWordsComponent {
           ]);
           this.wordsToUseControl.setValue(this.wordsToUse());
         },
-        error: () => {
-          this.snackBar.open(
-            'Error getting word suggestions, AI might be busy, try again later or enter some words yourself.',
-          );
-        },
+        error: this.httpService.openSnackBarOnErrors.bind(this.httpService),
       });
     event.stopPropagation();
   }

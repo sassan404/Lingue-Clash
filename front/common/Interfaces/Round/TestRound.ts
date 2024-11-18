@@ -1,5 +1,5 @@
-import { RoundTypes } from "../enums";
-import { RoundContainer } from "./Round";
+import { RoundTypes } from '../enums';
+import { RoundContainer } from './Round';
 
 export interface TestRound extends RoundContainer {
   type: RoundTypes.TEST;

@@ -8,7 +8,6 @@ import {
   ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
-  Validators,
 } from '@angular/forms';
 import { HTTPService } from '../../Services/http.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,7 +20,12 @@ import { LanguageSelectorComponent } from '../language-selector/language-selecto
 import { CreateRoomRequest } from '@common/Interfaces/Requests';
 import { JoinRoomResponse } from '@common/Interfaces/Responses';
 
+import {
+  MatButtonToggleChange,
+  MatButtonToggleModule,
+} from '@angular/material/button-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-create-room',
@@ -35,6 +39,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatButtonModule,
     LanguageSelectorComponent,
     MatCheckboxModule,
+    MatTooltipModule,
+    MatButtonToggleModule,
   ],
   templateUrl: './create-room.component.html',
   styleUrl: './create-room.component.css',
@@ -44,9 +50,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 export class CreateRoomComponent {
   createRoomForm = new FormGroup(
     {
-      username: new FormControl(''),
-      language: new FormControl(''),
-      adminMode: new FormControl(false),
+      username: new FormControl(),
+      language: new FormControl(),
+      gameMode: new FormControl(),
     },
     { validators: [this.customValidator()] },
   );
@@ -60,8 +66,9 @@ export class CreateRoomComponent {
     return (control: AbstractControl): ValidationErrors | null => {
       const username = control.get('username')?.value;
       const languageValid = control.get('language')?.valid;
-      const adminMode = control.get('adminMode')?.value;
-      const allowed = (adminMode || username) && languageValid;
+      const gameMode = control.get('gameMode')?.value;
+      const allowed =
+        gameMode && (gameMode === 'admin' || username) && languageValid;
       return allowed ? null : { forbiddenName: { value: control.value } };
     };
   }
@@ -70,20 +77,24 @@ export class CreateRoomComponent {
     const createRequest: CreateRoomRequest = {
       username: this.createRoomForm.value.username || '',
       language: this.createRoomForm.value.language || '',
+      mode: this.createRoomForm.value.gameMode || '',
     };
-    this.httpService.createRoom(createRequest).subscribe((reply) => {
-      const typedReply = reply as JoinRoomResponse;
-      this.router.navigate(['/room'], {
-        queryParams: {
-          roomId: typedReply.roomId,
-          playerUsername: createRequest.username,
-        },
-      });
+    this.httpService.createRoom(createRequest).subscribe({
+      next: (reply) => {
+        const typedReply = reply as JoinRoomResponse;
+        this.router.navigate(['/room'], {
+          queryParams: {
+            roomId: typedReply.roomId,
+            playerUsername: createRequest.username,
+          },
+        });
+      },
+      error: this.httpService.openSnackBarOnErrors.bind(this.httpService),
     });
   }
 
-  toggleUserNameForm(event: boolean) {
-    if (event) {
+  toggleUserNameForm(event: MatButtonToggleChange) {
+    if (event.value === 'admin') {
       this.createRoomForm.get('username')?.reset();
       this.createRoomForm.get('username')?.disable();
     } else {

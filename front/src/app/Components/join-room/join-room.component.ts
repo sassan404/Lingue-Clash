@@ -18,7 +18,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
 import { JoinRoomRequest } from '@common/Interfaces/Requests';
 import { JoinRoomResponse } from '@common/Interfaces/Responses';
-import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-join-room',
   standalone: true,
@@ -45,7 +44,6 @@ export class JoinRoomComponent {
   constructor(
     private router: Router,
     private httpService: HTTPService,
-    private snackBar: MatSnackBar,
   ) {}
 
   joinRoom() {
@@ -54,8 +52,8 @@ export class JoinRoomComponent {
       roomCode: this.joinRoomForm.value.roomCode || '',
       language: this.joinRoomForm.value.language || '',
     };
-    this.httpService.joinRoom(joinRequest).subscribe(
-      (reply) => {
+    this.httpService.joinRoom(joinRequest).subscribe({
+      next: (reply) => {
         const typedReply = reply as JoinRoomResponse;
         this.router.navigate(['/room'], {
           queryParams: {
@@ -64,10 +62,7 @@ export class JoinRoomComponent {
           },
         });
       },
-      (error) => {
-        console.log('error joining room');
-        this.snackBar.open('Error joining the room');
-      },
-    );
+      error: this.httpService.openSnackBarOnErrors.bind(this.httpService),
+    });
   }
 }
