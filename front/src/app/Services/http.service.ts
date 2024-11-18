@@ -11,6 +11,7 @@ import {
   JoinRoomRequest,
   RoomPropertiesUpdateRequest,
 } from '@common/Interfaces/Requests';
+import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class HTTPService {
@@ -26,8 +27,9 @@ export class HTTPService {
   }
 
   private apiUrl = (functionName: string) =>
-    `https://${functionName.toLowerCase()}-tvyvmn36ya-ew.a.run.app`;
-  // 'http://127.0.0.1:5001/word-clash-2aa96/europe-west1/' + functionName;
+    environment.production
+      ? `https://${functionName.toLowerCase()}-tvyvmn36ya-ew.a.run.app`
+      : 'http://127.0.0.1:5001/word-clash-2aa96/europe-west1/' + functionName;
 
   private headers = new HttpHeaders({
     'Content-Type': 'application/json',
