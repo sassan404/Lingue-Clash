@@ -109,5 +109,7 @@ export class SentenceBuildingRoundComponent {
         playerUserName,
         this.answer.value,
       );
+
+    this.answer.reset();
   }
 }
