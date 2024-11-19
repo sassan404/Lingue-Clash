@@ -15,7 +15,7 @@
           "options": {
             "allowedCommonJsDependencies": ["lodash", "iso-639-1"],
             "outputPath": {
-              "base": "dist/front"
+              "base": "dist"
             },
             "index": "src/index.html",
             "polyfills": ["zone.js"],
