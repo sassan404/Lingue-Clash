@@ -8,8 +8,6 @@
  */
 
 import { giveMeWordsRequest } from "./ChatGPT/GiveMeWords";
-import { giveMeASentenceRequest } from "./ChatGPT/GiveMeASentence";
-import { evaluateTheSentencesRequest } from "./ChatGPT/EvaluateTheSentences";
 import { evaluateOneSentenceRequest } from "./ChatGPT/EvaluateOneSentence";
 import { translateWordsRequest } from "./ChatGPT/TranslateWords";
 import { createRoom } from "./Rooms/CreateRoom";
@@ -25,8 +23,6 @@ import { helloWorld } from "./helloWorld";
 
 export {
   giveMeWordsRequest as giveMeWords,
-  giveMeASentenceRequest as giveMeASentence,
-  evaluateTheSentencesRequest as evaluateTheSentences,
   helloWorld,
   createRoom,
   joinRoom,

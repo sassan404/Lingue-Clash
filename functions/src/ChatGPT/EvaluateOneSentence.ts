@@ -4,17 +4,8 @@ import { Sentence } from "../../../front/common/Interfaces/Sentence";
 import { SentenceEvaluationReply } from "../../../front/common/Interfaces/TreatedChatGPTStructure";
 import { HttpsFunction, onRequest } from "firebase-functions/v2/https";
 import { Request, Response } from "firebase-functions/v1";
-import { GenerateContentResult } from "@google/generative-ai";
+import { GenerateContentResult, SchemaType } from "@google/generative-ai";
 import { warn } from "firebase-functions/logger";
-// Define the interface structure as a constant object
-
-const sentenceEvaluationReply = {
-  language: "string",
-  missingWords: "string[]",
-  spellingMistakes: "string[]",
-  grammarMistakes: "string[]",
-  coherenceMistakes: "string[]",
-} as const;
 
 /**
  * Container class for the 'giveMeTwoWords' function.
@@ -23,6 +14,62 @@ class EvaluateOneSentenceContainer extends CommunicateWithChatGP<
   Sentence,
   SentenceEvaluationReply
 > {
+  buildSchemaforAI(sentence: Sentence) {
+    this.schema = {
+      description: "Evaluation of the sentence",
+      type: SchemaType.OBJECT,
+      properties: {
+        sentence: {
+          type: SchemaType.STRING,
+          description: "the sentence that needs to be evaluated",
+          nullable: false,
+        },
+        language: {
+          type: SchemaType.STRING,
+          description:
+            "The language of the sentence that needs to be evaluated",
+          nullable: false,
+        },
+        missingWords: {
+          type: SchemaType.ARRAY,
+          description: "List of words missing from the sentence",
+          items: {
+            type: SchemaType.STRING,
+          },
+        },
+        spellingMistakes: {
+          type: SchemaType.ARRAY,
+          description: "List of words spelled incorrectly",
+          items: {
+            type: SchemaType.STRING,
+          },
+        },
+        grammarMistakes: {
+          type: SchemaType.ARRAY,
+          description: "List of gramatical mistakes",
+          items: {
+            type: SchemaType.STRING,
+          },
+        },
+        coherenceMistakes: {
+          type: SchemaType.ARRAY,
+          description: "List of incoherent usages of words in the sentence",
+          items: {
+            type: SchemaType.STRING,
+          },
+        },
+      },
+      required: [
+        "sentence",
+        "missingWords",
+        "spellingMistakes",
+        "grammarMistakes",
+        "coherenceMistakes",
+      ],
+    };
+
+    super.buildSchemaforAI(sentence);
+  }
   /**
    * Message to be sent to the ChatGPT model.
    * @param {Languages} sentences the languages to be used.
@@ -38,9 +85,7 @@ class EvaluateOneSentenceContainer extends CommunicateWithChatGP<
      2 - The sentence should be in the correct language so give me which language the sentence is in
      3 - The spelling of the words should be correct, so give me the list of words spelled incorrectly
      4 - The sentence should be grammatically correct, so give me the list of gramatical mistakes
-     5 - The sentence should be coherent and convey a proper meaning, so give me the number of incoherent usages of words in the sentence
-  The response should only be a json array following the format of this interface:
-  ${JSON.stringify(sentenceEvaluationReply, null, 2)}`;
+     5 - The sentence should be coherent and convey a proper meaning, so give me the number of incoherent usages of words in the sentence`;
   }
 
   override treatAIReply(
