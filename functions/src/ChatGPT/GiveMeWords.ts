@@ -4,16 +4,8 @@ import { Languages } from "../../../front/common/Interfaces/TreatedRequest";
 
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
 import { Request, Response } from "firebase-functions/v1";
-import { GenerateContentResult } from "@google/generative-ai";
+import { GenerateContentResult, SchemaType } from "@google/generative-ai";
 
-// Define the interface structure as a constant object
-const wordMeaningStructure = {
-  "[lanugage: string]": "string",
-} as const;
-
-const wordMeaningArray = {
-  words: [wordMeaningStructure],
-};
 /**
  * Container class for the 'giveMeWords' function.
  */
@@ -21,6 +13,39 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
   Languages,
   GivenWords
 > {
+  buildSchemaforAI(languages: Languages) {
+    const properties: Record<string, object> = {};
+    const languagesWithEnglish =
+      languages.languages.indexOf("English") < 0
+        ? ["English", ...languages.languages]
+        : languages.languages;
+    languagesWithEnglish.forEach((language) => {
+      properties[language] = {
+        type: SchemaType.STRING,
+        description: `Translation of the word into ${language}`,
+        nullable: false,
+      };
+    });
+    this.schema = {
+      description: "Container for list of words and their translations",
+      type: SchemaType.OBJECT,
+      properties: {
+        words: {
+          type: SchemaType.ARRAY,
+          description: "List of words and their translations",
+          items: {
+            type: SchemaType.OBJECT,
+            properties: properties,
+            required: languagesWithEnglish,
+          },
+          nullable: false,
+        },
+      },
+      required: ["words"],
+    };
+
+    super.buildSchemaforAI(languages);
+  }
   /**
    * Message to be sent to the ChatGPT model.
    * @param {Languages} languages the languages to be used.
@@ -43,9 +68,7 @@ class GiveMeWordsContainer extends CommunicateWithChatGP<
     The dificulty of our class is between A1 and B1.
     So for this exercise, ${firstSentence}
     - ${languagesList}
-    Mix between nouns, verbs, adjectives, adverbs, articles, etc...
-    The response should be a json array following the format of this interface:
-   ${JSON.stringify(wordMeaningArray, null, 2)}`;
+    Mix between nouns, verbs, adjectives, adverbs, articles, etc...`;
     return messageContent;
   }
 

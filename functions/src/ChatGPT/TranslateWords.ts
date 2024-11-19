@@ -4,17 +4,9 @@ import { WordsToTranslate } from "../../../front/common/Interfaces/TreatedReques
 
 import { CommunicateWithChatGP } from "./CommunicateWithChatGPT";
 import { Request, Response } from "firebase-functions/v1";
-import { GenerateContentResult } from "@google/generative-ai";
+import { GenerateContentResult, SchemaType } from "@google/generative-ai";
 import { warn } from "firebase-functions/logger";
 
-// Define the interface structure as a constant object
-const wordMeaningStructure = {
-  "[lanugage: string]": "string",
-} as const;
-
-const wordMeaningArray = {
-  words: [wordMeaningStructure],
-};
 /**
  * Container class for the 'wordsToTranslate' function.
  */
@@ -22,6 +14,39 @@ class TranslateWordsContainer extends CommunicateWithChatGP<
   WordsToTranslate,
   GivenWords
 > {
+  buildSchemaforAI(wordsToTranslate: WordsToTranslate) {
+    const properties: Record<string, object> = {};
+    const languagesWithEnglish =
+      wordsToTranslate.languages.indexOf("English") < 0
+        ? ["English", ...wordsToTranslate.languages]
+        : wordsToTranslate.languages;
+    languagesWithEnglish.forEach((language) => {
+      properties[language] = {
+        type: SchemaType.STRING,
+        description: `Translation of the word into ${language}`,
+        nullable: false,
+      };
+    });
+    this.schema = {
+      description: "Container for list of words and their translations",
+      type: SchemaType.OBJECT,
+      properties: {
+        words: {
+          type: SchemaType.ARRAY,
+          description: "List of words and their translations",
+          items: {
+            type: SchemaType.OBJECT,
+            properties: properties,
+            required: languagesWithEnglish,
+          },
+          nullable: false,
+        },
+      },
+      required: ["words"],
+    };
+
+    super.buildSchemaforAI(wordsToTranslate);
+  }
   /**
    * Message to be sent to the ChatGPT model.
    * @param {WordsToTranslate} wordsToTranslate the words and languages to be used.
@@ -40,9 +65,7 @@ class TranslateWordsContainer extends CommunicateWithChatGP<
         : `Translate these words ${wordsToTranslate.words} into the languages:`;
 
     const messageContent = `${firstSentence}
-    - ${languagesList}
-    The response should contain a property words which is an array with each element presenting each words in multiple languages in json array format following the format of this interface:
-   ${JSON.stringify(wordMeaningArray, null, 2)}`;
+    - ${languagesList}`;
     return messageContent;
   }
 

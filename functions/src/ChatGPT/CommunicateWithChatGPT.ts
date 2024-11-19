@@ -8,11 +8,11 @@ import { TreatedAIReplyStructure } from "../../../front/common/Interfaces/Treate
 
 import {
   GenerateContentResult,
+  GenerativeModel,
   GoogleGenerativeAI,
 } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY ?? "");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 /**
  * CommunicateWithChatGP class.
@@ -23,6 +23,20 @@ export class CommunicateWithChatGP<
   U extends TreatedRequest,
   T extends TreatedAIReplyStructure,
 > {
+  schema = {};
+
+  model!: GenerativeModel;
+
+  buildSchemaforAI(input: U) {
+    this.model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema: this.schema,
+      },
+      systemInstruction: "You are my language teacher and I am your student.",
+    });
+  }
   /**
    * Treat the request.
    * @param {Request} request - The response object.
@@ -65,6 +79,7 @@ export class CommunicateWithChatGP<
   };
 
   public communicate = async (request: U): Promise<T> => {
+    this.buildSchemaforAI(request);
     const messageTosend = this.message(request);
 
     let getAndTreatmentOfAnswerStatus = async (counter = 0): Promise<T> => {
@@ -91,7 +106,7 @@ export class CommunicateWithChatGP<
   buildAICommunication = async (
     message: string,
   ): Promise<GenerateContentResult> => {
-    const chatCompletion = await model.generateContent(message);
+    const chatCompletion = await this.model.generateContent(message);
     return chatCompletion;
   };
 
