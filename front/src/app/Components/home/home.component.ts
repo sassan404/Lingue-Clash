@@ -8,7 +8,7 @@ import { JoinRoomComponent } from '../join-room/join-room.component';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [JoinRoomComponent, CreateRoomComponent, MatButtonModule],
+  imports: [MatButtonModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })

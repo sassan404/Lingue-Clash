@@ -104,11 +104,7 @@ export class SentenceBuildingRoundComponent {
 
   submitRoundAnswer(roomId: string, playerUserName: string) {
     if (this.firebaseDBService.roomId && this.answer.value)
-      this.httpService.submitPlayerAnswer(
-        roomId,
-        playerUserName,
-        this.answer.value,
-      );
+      this.httpService.submitPlayerAnswer(roomId, playerUserName, this.answer);
 
     this.answer.reset();
   }
