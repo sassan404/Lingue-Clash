@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { filter, map } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 function promptUser(event: VersionReadyEvent): boolean {
   return true;
@@ -7,6 +7,7 @@ function promptUser(event: VersionReadyEvent): boolean {
 @Injectable({ providedIn: 'root' })
 export class PromptUpdateService {
   constructor(swUpdate: SwUpdate) {
+    console.log('PromptUpdateService constructor');
     if (swUpdate.isEnabled) {
       swUpdate.versionUpdates
         .pipe(
@@ -17,6 +18,7 @@ export class PromptUpdateService {
         .subscribe((evt) => {
           if (promptUser(evt)) {
             // Reload the page to update to the latest version.
+            console.log('Prompting user to update to the latest version');
             document.location.reload();
           }
         });
