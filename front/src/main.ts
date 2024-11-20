@@ -2,8 +2,8 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
 import {
   ApplicationConfig,
-  mergeApplicationConfig,
   provideZoneChangeDetection,
+  isDevMode,
 } from '@angular/core';
 
 import { provideRouter } from '@angular/router';
@@ -15,6 +15,8 @@ import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { getFunctions, provideFunctions } from '@angular/fire/functions';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { routes } from './app/app.routes';
+import { provideServiceWorker } from '@angular/service-worker';
+import { PromptUpdateService } from './app/Services/prompt-update.service';
 
 const appConfig: ApplicationConfig = {
   providers: [
@@ -38,6 +40,11 @@ const appConfig: ApplicationConfig = {
     provideDatabase(() => getDatabase()),
     provideFunctions(() => getFunctions()),
     provideAnimationsAsync(),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
+    PromptUpdateService,
   ],
 };
 
