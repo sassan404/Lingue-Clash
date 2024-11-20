@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { filter, map } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 function promptUser(event: VersionReadyEvent): boolean {
   return true;

@@ -20,12 +20,7 @@ export class HTTPService {
   constructor(
     private http: HttpClient,
     public snackbar: MatSnackBar,
-  ) {
-    const config = new MatSnackBarConfig();
-    config.duration = 2000;
-    config.horizontalPosition = 'right';
-    config.verticalPosition = 'top';
-  }
+  ) {}
 
   private apiUrl = (functionName: string) =>
     environment.production
@@ -38,7 +33,11 @@ export class HTTPService {
   });
 
   openSnackBarOnErrors(error: HttpErrorResponse) {
-    this.snackbar.open(error?.error?.message, '', this.config);
+    this.snackbar.open(error?.error?.message, 'close', {
+      duration: 1500,
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+    });
   }
 
   createRoom(creation: CreateRoomRequest) {
