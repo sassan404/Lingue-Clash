@@ -10,18 +10,15 @@ label {
 
 .chips-list {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 chips per row */
-  gap: 10px; /* Adjust the gap between chips as needed */
+  grid-template-columns: repeat(4, 2fr); /* 4 chips per row */
+  gap: 8%; /* Adjust the gap between chips as needed */
+  margin: 10px;
 }
 
 .searchContainer {
   display: flex;
   flex-direction: row;
-  width: max-content;
-}
-
-.selectorContainer {
-  width: min-content;
+  width: 100%;
 }
 
 .mat-chip-option {
