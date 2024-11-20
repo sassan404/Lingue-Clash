@@ -5,6 +5,7 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import {
   CreateRoomRequest,
@@ -77,18 +78,21 @@ export class HTTPService {
       .subscribe({ error: this.openSnackBarOnErrors });
   }
 
-  submitPlayerAnswer(roomId: string, username: string, answer: string) {
+  submitPlayerAnswer(roomId: string, username: string, form: FormControl) {
     const body = JSON.stringify({
       roomId,
       username,
-      answer,
+      answer: form.value,
     });
 
     this.http
       .post(this.apiUrl('submitPlayerAnswer'), body, {
         headers: this.headers,
       })
-      .subscribe({ error: this.openSnackBarOnErrors });
+      .subscribe({
+        error: this.openSnackBarOnErrors,
+        complete: () => form.reset(),
+      });
   }
 
   getWordSuggestion(numberOfWords: number, language: string) {
