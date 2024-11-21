@@ -18,6 +18,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
 import { JoinRoomRequest } from '@common/Interfaces/Requests';
 import { JoinRoomResponse } from '@common/Interfaces/Responses';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
 @Component({
   selector: 'app-join-room',
   standalone: true,
@@ -30,6 +32,8 @@ import { JoinRoomResponse } from '@common/Interfaces/Responses';
     ReactiveFormsModule,
     MatButtonModule,
     LanguageSelectorComponent,
+    MatCardModule,
+    MatDividerModule,
   ],
   templateUrl: './join-room.component.html',
   styleUrl: './join-room.component.css',

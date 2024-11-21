@@ -1,10 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { CreateRoomComponent } from '../create-room/create-room.component';
-import { JoinRoomComponent } from '../join-room/join-room.component';
-
+import { MatDialog } from '@angular/material/dialog';
+import { GameExplanationDialogComponent } from '../game-explanation-dialog/game-explanation-dialog.component';
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -13,6 +12,8 @@ import { JoinRoomComponent } from '../join-room/join-room.component';
   styleUrl: './home.component.css',
 })
 export class HomeComponent {
+  readonly dialog = inject(MatDialog);
+
   constructor(private router: Router) {}
 
   navigateToCreateRoom() {
@@ -21,5 +22,13 @@ export class HomeComponent {
 
   navigateToJoinRoom() {
     this.router.navigate(['/join-room']);
+  }
+
+  openDialog() {
+    const dialogRef = this.dialog.open(GameExplanationDialogComponent);
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+    });
   }
 }

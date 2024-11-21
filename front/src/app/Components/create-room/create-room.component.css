@@ -1,41 +1,25 @@
-.create-room {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  min-width: fit-content;
-  max-width: 90%;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  margin-top: 20px;
-  min-width: fit-content;
-  align-items: end;
-  margin-right: 10px;
-}
-
 button {
   margin: 10px;
   font-size: larger;
   width: 100%;
 }
+.create-room {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90vw;
+  text-align: center;
+  max-height: 100%;
+}
 
-label {
+.form-control {
   margin: 10px;
 }
 
-mat-checkbox {
-  margin: 10px;
-  align-self: center;
-}
-
-b {
-  margin: 10px;
-}
-
-p {
-  margin-right: 10px;
+form {
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+  align-items: flex-start;
 }

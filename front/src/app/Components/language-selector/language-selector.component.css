@@ -1,26 +1,26 @@
-label {
+.searchContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.form-control {
   margin: 20px;
 }
 
 .chip-list-container {
   width: 100%;
   max-width: 100%;
-  margin-top: 20px;
 }
 
 .chips-list {
-  display: grid;
-  grid-template-columns: repeat(4, 2fr); /* 4 chips per row */
-  gap: 8%; /* Adjust the gap between chips as needed */
-  margin: 10px;
-}
-
-.searchContainer {
   display: flex;
-  flex-direction: row;
-  width: 100%;
+  flex-wrap: wrap;
+  max-width: calc(4 * (50px + 20px));
 }
 
-.mat-chip-option {
-  width: 100%; /* Ensure each chip takes up the full width of its grid cell */
+mat-chip-option {
+  min-width: fit-content;
+  width: calc(100% / 4 - 20px); /* 5 columns */
 }

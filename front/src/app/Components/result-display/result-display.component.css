@@ -26,8 +26,9 @@ tr.example-element-row:not(.example-expanded-row):active {
 
 .example-element-detail {
   width: 100%;
-  max-width: 60vw;
+  max-width: 75vw;
   overflow: auto;
+  margin: auto;
 }
 .example-element-detail table {
   margin: 5px;

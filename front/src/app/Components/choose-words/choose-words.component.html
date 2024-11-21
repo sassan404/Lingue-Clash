@@ -72,6 +72,7 @@
           placeholder="New word..."
           [matChipInputFor]="reactiveChipGrid"
           (matChipInputTokenEnd)="addWord($event)"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
           [errorStateMatcher]="matcher"
           [disabled]="enoughNumberOfWords()"
         />
@@ -86,8 +87,12 @@
           <mat-icon>{{ "autorenew" }}</mat-icon>
         </button>
       </mat-chip-grid>
-      @if (updateRoomPropertiesForm.hasError("haveNoWords")) {
-        <mat-hint class="error">Not the right number of words</mat-hint>
+      @if (updateRoomPropertiesForm.hasError("notEnoughWords")) {
+        <mat-hint class="error">
+          You need
+          {{ updateRoomPropertiesForm.getError("notEnoughWords").value }} more
+          words. Click the button for AI suggestions.
+        </mat-hint>
       }
     </mat-form-field>
   </form>

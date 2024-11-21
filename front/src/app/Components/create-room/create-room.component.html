@@ -1,40 +1,54 @@
-<div class="create-room">
-  <h2>Create Your Room</h2>
-  <form [formGroup]="createRoomForm" (submit)="createRoom()">
-    <p>
-      <b>Choose game mode</b>
-      <mat-button-toggle-group
-        (change)="toggleUserNameForm($event)"
-        formControlName="gameMode"
-        aria-label="Game Mode"
-      >
-        <mat-button-toggle
-          matTooltip="Play alone and challenge yourself."
-          value="solo"
-          >Solo</mat-button-toggle
+<mat-card class="create-room">
+  <mat-card-title><h2>Create Your Room</h2></mat-card-title>
+  <mat-divider></mat-divider>
+  <mat-card-content>
+    <form [formGroup]="createRoomForm" (submit)="createRoom()">
+      <label for="game-mode"><b>Choose game mode</b></label>
+      <div class="form-control">
+        <mat-button-toggle-group
+          (change)="toggleUserNameForm($event)"
+          formControlName="gameMode"
+          aria-label="Game Mode"
+          id="game-mode"
         >
-        <mat-button-toggle
-          matTooltip="Compete with other players in real-time."
-          value="multi"
-          >Multiplayer</mat-button-toggle
-        >
-        <mat-button-toggle
-          matTooltip="Manage the game as an administrator while all players join via their phones."
-          value="admin"
-          >Admin</mat-button-toggle
-        >
-      </mat-button-toggle-group>
-    </p>
-    <p>
+          <mat-button-toggle
+            matTooltip="Play alone and challenge yourself."
+            value="solo"
+            >Solo</mat-button-toggle
+          >
+          <mat-button-toggle
+            matTooltip="Compete with other players in real-time."
+            value="multi"
+            >Multiplayer</mat-button-toggle
+          >
+          <mat-button-toggle
+            matTooltip="Manage the game as an administrator while all players join via their phones."
+            value="admin"
+            >Admin</mat-button-toggle
+          >
+        </mat-button-toggle-group>
+      </div>
       <label for="username"><b>Enter your username</b></label>
-      <mat-form-field>
-        <mat-label>Username</mat-label>
-        <input matInput formControlName="username" id="username" />
-      </mat-form-field>
-    </p>
-    <app-language-selector
-      [language]="createRoomForm.controls.language"
-    ></app-language-selector>
-    <button mat-fab extended [disabled]="createRoomForm.invalid">Create</button>
-  </form>
-</div>
+      <div class="form-control">
+        <mat-form-field>
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username" id="username" />
+        </mat-form-field>
+      </div>
+      <div>
+        <app-language-selector
+          [language]="createRoomForm.controls.language"
+        ></app-language-selector>
+      </div>
+    </form>
+  </mat-card-content>
+  <mat-card-actions>
+    <button
+      mat-flat-button
+      [disabled]="createRoomForm.invalid"
+      (click)="createRoom()"
+    >
+      Create
+    </button>
+  </mat-card-actions>
+</mat-card>
