@@ -3,13 +3,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: calc(100vh - 2 * var(--mat-toolbar-standard-height));
-  width: 95vw;
-  margin-left: 2.5vw;
-  margin-right: 2.5vw;
+  width: 100vw;
+  background-image: url("../../public/ai/logo-with-game-name-3.webp");
+  background-size: cover;
+  background-position: center;
+  overflow: auto;
 }
 
 .main {
+  display: grid;
+  grid-template-rows: minmax(60px, auto) minmax(0, 100%);
   height: 100vh;
   width: 100vw;
 }

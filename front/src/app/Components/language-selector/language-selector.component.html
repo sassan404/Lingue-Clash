@@ -1,6 +1,6 @@
-<div class="selectorContainer">
-  <div class="searchContainer">
-    <label for="languageFilter"><b>Select a language to practice</b></label>
+<div class="searchContainer">
+  <label for="languageFilter"><b>Select a language to practice</b></label>
+  <div class="form-control">
     <mat-form-field>
       <mat-label>Filter languages</mat-label>
       <input
@@ -14,6 +14,7 @@
       <mat-error *ngIf="errorMessage()">{{ errorMessage() }}</mat-error>
     </mat-form-field>
   </div>
+
   <div class="chip-list-container">
     <mat-chip-listbox aria-label="Languages" (change)="selectLanguage($event)">
       <div class="chips-list">

@@ -33,6 +33,8 @@ import { HTTPService } from 'src/app/Services/http.service';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { FireBaseDBService } from 'src/app/Services/firebase-db.service';
 
+import { SPACE, ENTER } from '@angular/cdk/keycodes';
+
 @Component({
   selector: 'app-choose-words',
   standalone: true,
@@ -50,6 +52,7 @@ import { FireBaseDBService } from 'src/app/Services/firebase-db.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChooseWordsComponent {
+  readonly separatorKeysCodes: number[] = [ENTER, SPACE];
   roomId!: string;
 
   mainLanguage!: string;
@@ -92,7 +95,7 @@ export class ChooseWordsComponent {
         Number(control.get('numberOfWords')?.value) ?? 0;
       const wordsToUse: string[] = control.get('wordsInput')?.value;
       const roundsMoreThanWords: boolean = numberOfRounds < numberOfWords;
-      const wordsToUseCorrectLength = wordsToUse.length == numberOfWords;
+      const remainingWords = numberOfWords - wordsToUse.length;
       const errors: { [name: string]: any } = {};
       if (numberOfWords == 0) {
         errors['zeroWordsNumber'] = { value: control.value };
@@ -103,8 +106,8 @@ export class ChooseWordsComponent {
       if (!roundsMoreThanWords) {
         errors['wordsLessThanRounds'] = { value: control.value };
       }
-      if (!wordsToUseCorrectLength) {
-        errors['haveNoWords'] = { value: control.value };
+      if (remainingWords > 0) {
+        errors['notEnoughWords'] = { value: remainingWords };
       }
       return errors;
     };

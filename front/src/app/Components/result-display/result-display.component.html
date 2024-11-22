@@ -11,7 +11,11 @@
           {{ column }}
         </th>
         <td mat-cell *matCellDef="let row">
-          {{ column === "Rounds" ? row : scoresByRound[row][column]?.score }}
+          {{
+            column === "Rounds"
+              ? row
+              : (scoresByRound[row][column]?.score ?? "Loading")
+          }}
         </td>
         <td mat-footer-cell *matFooterCellDef>
           {{ column === "Rounds" ? "Total" : totalResults[column] }}

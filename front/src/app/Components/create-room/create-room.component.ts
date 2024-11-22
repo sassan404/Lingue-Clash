@@ -26,6 +26,8 @@ import {
 } from '@angular/material/button-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-create-room',
@@ -41,6 +43,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatCheckboxModule,
     MatTooltipModule,
     MatButtonToggleModule,
+    MatCardModule,
+    MatDividerModule,
   ],
   templateUrl: './create-room.component.html',
   styleUrl: './create-room.component.css',

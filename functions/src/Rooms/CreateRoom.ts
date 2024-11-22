@@ -28,7 +28,7 @@ export const createRoom = onRequest(
       const roomRef: Reference = database.ref("rooms").push();
       const roomId = roomRef.key as string; // Get the room ID and Assert that it is a string
 
-      database.ref("roomCodes").set({ [roomCode]: roomId });
+      database.ref("roomCodes").update({ [roomCode]: roomId });
 
       const currentTime = Date.now();
       const currentTimestamp = new Date(currentTime);
