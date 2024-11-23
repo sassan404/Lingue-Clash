@@ -50,7 +50,7 @@ async function isRoomInLobbyPhase(roomRef: Reference) {
   ).val();
 
   if (
-    currentRoundType !== RoundTypes.LOBBY &&
+    currentRoundType !== RoundTypes.LOBBY ||
     currentRoundState !== RoundStates.STARTING
   ) {
     throw new HttpsError(
