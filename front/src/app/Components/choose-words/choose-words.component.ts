@@ -34,6 +34,8 @@ import { ErrorStateMatcher } from '@angular/material/core';
 import { FireBaseDBService } from 'src/app/Services/firebase-db.service';
 
 import { SPACE, ENTER } from '@angular/cdk/keycodes';
+import { MatDialog } from '@angular/material/dialog';
+import { StartGameDialogComponent } from '../start-game-dialog/start-game-dialog.component';
 
 @Component({
   selector: 'app-choose-words',
@@ -56,6 +58,9 @@ export class ChooseWordsComponent {
   roomId!: string;
 
   mainLanguage!: string;
+
+  readonly dialog = inject(MatDialog);
+
   ngOnInit() {
     this.firebaseDBService.roomId.subscribe((roomId) => {
       this.roomId = roomId;
@@ -190,14 +195,22 @@ export class ChooseWordsComponent {
     return (this.numberOfWords.value ?? 0) - this.wordsToUse().length === 0;
   }
 
-  updateRoomProperties() {
-    if (this.numberOfRounds.value && this.numberOfWords.value) {
-      this.httpService.updateGameProperties(
-        this.numberOfRounds.value,
-        this.numberOfWords.value,
-        this.wordsToUse(),
-        this.roomId,
-      );
+  StartGame() {
+    if (this.updateRoomPropertiesForm.valid) {
+      const dialogRef = this.dialog.open(StartGameDialogComponent);
+
+      dialogRef.afterClosed().subscribe((result) => {
+        console.log('The dialog was closed');
+        if (result !== undefined) {
+          if (this.numberOfRounds.value && this.numberOfWords.value)
+            this.httpService.updateGameProperties(
+              this.numberOfRounds.value,
+              this.numberOfWords.value,
+              this.wordsToUse(),
+              this.roomId,
+            );
+        }
+      });
     }
   }
 }
