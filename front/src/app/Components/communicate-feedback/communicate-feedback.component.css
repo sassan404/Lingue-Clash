@@ -1,0 +1,14 @@
+.commuication {
+  max-width: 80%;
+  margin: auto;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+p {
+  padding: 5px;
+}
+
+button {
+  margin-top: 10px;
+}

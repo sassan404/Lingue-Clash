@@ -200,7 +200,6 @@ export class ChooseWordsComponent {
       const dialogRef = this.dialog.open(StartGameDialogComponent);
 
       dialogRef.afterClosed().subscribe((result) => {
-        console.log('The dialog was closed');
         if (result !== undefined) {
           if (this.numberOfRounds.value && this.numberOfWords.value)
             this.httpService.updateGameProperties(
