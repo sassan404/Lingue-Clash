@@ -26,3 +26,9 @@ export interface RoomPropertiesUpdateRequest {
   wordsList: string[];
   roomId: string;
 }
+
+export interface FeedBackRequest {
+  roomId: string;
+  playerId: string;
+  message: string;
+}

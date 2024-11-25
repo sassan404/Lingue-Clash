@@ -6,7 +6,11 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import {
+  MatSnackBar,
+  MatSnackBarModule,
+  MatSnackBarConfig,
+} from '@angular/material/snack-bar';
 import {
   CreateRoomRequest,
   JoinRoomRequest,
@@ -32,13 +36,13 @@ export class HTTPService {
     'Access-Control-Allow-Origin': '*',
   });
 
-  openSnackBarOnErrors(error: HttpErrorResponse) {
+  openSnackBarOnErrors = (error: HttpErrorResponse) => {
     this.snackbar.open(error?.error?.message, 'close', {
       duration: 1500,
       horizontalPosition: 'right',
       verticalPosition: 'top',
     });
-  }
+  };
 
   createRoom(creation: CreateRoomRequest) {
     const body = JSON.stringify({
@@ -132,6 +136,20 @@ export class HTTPService {
 
     this.http
       .post(this.apiUrl('startNewRound'), body, {
+        headers: this.headers,
+      })
+      .subscribe({ error: this.openSnackBarOnErrors });
+  }
+
+  sendFeedback(roomId: string = '', playerId: string = '', message: string) {
+    const body = JSON.stringify({
+      roomId,
+      playerId,
+      message,
+    });
+
+    this.http
+      .post(this.apiUrl('registerFeedback'), body, {
         headers: this.headers,
       })
       .subscribe({ error: this.openSnackBarOnErrors });

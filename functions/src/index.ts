@@ -16,6 +16,7 @@ import { setPlayerReady } from "./Rooms/SetPlayerReady";
 import { submitPlayerAnswer } from "./Rooms/SubmitPlayerAnswer";
 import { updateRoomProperties } from "./Rooms/UpdateRoomProperties";
 import { startNewRound } from "./Rooms/StartNewRound";
+import { registerFeedback } from "./Rooms/RegisterFeedback";
 
 import { helloWorld } from "./helloWorld";
 // Start writing functions
@@ -32,4 +33,5 @@ export {
   translateWordsRequest as translateWords,
   updateRoomProperties,
   startNewRound,
+  registerFeedback,
 };

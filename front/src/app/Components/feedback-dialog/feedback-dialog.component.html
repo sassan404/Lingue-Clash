@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Send us a message</h2>
+<mat-dialog-content>
+  <mat-form-field style="width: 100%">
+    <mat-label>Let us know your thoughts!</mat-label>
+    <textarea matInput [(ngModel)]="message"></textarea>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="message()" cdkFocusInitial>
+    Send
+  </button>
+</mat-dialog-actions>

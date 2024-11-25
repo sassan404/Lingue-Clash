@@ -25,10 +25,6 @@ export class HomeComponent {
   }
 
   openDialog() {
-    const dialogRef = this.dialog.open(GameExplanationDialogComponent);
-
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
-    });
+    this.dialog.open(GameExplanationDialogComponent);
   }
 }
