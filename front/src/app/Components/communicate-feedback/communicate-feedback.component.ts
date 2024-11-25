@@ -39,6 +39,7 @@ export class CommunicateFeedbackComponent {
     });
   }
   openDialog(): void {
+    //Todo #32: remove this line and replace it with a cleaner way to avoid the error
     const buttonElement = document.activeElement as HTMLElement; // Get the currently focused element
     buttonElement.blur(); // Remove focus from the button
     const dialogRef = this.dialog.open(FeedbackDialogComponent, {
